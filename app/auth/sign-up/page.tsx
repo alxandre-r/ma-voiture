@@ -22,7 +22,7 @@ export default function SignUpPage() {
         e.preventDefault();
         setError(null);
 
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
         email,
         password,
         });
@@ -61,7 +61,7 @@ export default function SignUpPage() {
             type="submit"
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
             >
-            S'inscrire
+            S&apos;inscrire
             </button>
         </form>
         </div>

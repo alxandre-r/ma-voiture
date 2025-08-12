@@ -23,7 +23,7 @@ export default function Home() {
       </Link>
       <Link href="/auth/sign-up">
       <button className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-        S'inscrire
+        S&apos;inscrire
       </button>
       </Link>
     </div>

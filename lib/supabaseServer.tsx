@@ -22,13 +22,7 @@ export const createSupabaseServerClient = async () => {
         cookies: {
             get(name: string) {
             return cookieStore.get(name)?.value;
-            },
-            set(name: string, value: string, options: any) {
-            // Next gère la réponse
-            },
-            remove(name: string, options: any) {
-            // Next gère la suppression dans la réponse
-            },
+            }
         },
         }
     );
