@@ -1,5 +1,5 @@
 /**
- * supabaseClient.ts
+ * supabaseBrowser.ts
  * -----------------
  * Client Supabase côté navigateur.
  * Utilisé pour toutes les opérations côté client (React, appels depuis des pages).

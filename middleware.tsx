@@ -17,8 +17,8 @@ export async function middleware(req: NextRequest) {
 
   // Si pas de session → rediriger
   if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
-    console.log('Utilisateur non connecté, redirection vers /auth/sign-in');
-    return NextResponse.redirect(new URL('/auth/sign-in', req.url));
+    console.log('Utilisateur non connecté, redirection vers la page de déconnexion');
+    return NextResponse.redirect(new URL('/auth/not-identified', req.url));
   }
 
   return NextResponse.next();

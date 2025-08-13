@@ -4,6 +4,8 @@
  */
 
 import VehicleForm from '@/components/VehicleForm';
+import LogoutButton from '@/components/LogoutButton';
+
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
 export default async function DashboardPage() {
@@ -32,6 +34,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="p-6 space-y-6">
+      <LogoutButton />
       <h1 className="text-2xl font-bold">Your Vehicles</h1>
 
       {vehicles?.length ? (
