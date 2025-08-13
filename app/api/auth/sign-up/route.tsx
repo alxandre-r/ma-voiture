@@ -1,14 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { createSupabaseServerClient }  from "@/lib/supabaseServer";
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
+    const supabase = await createSupabaseServerClient();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -17,8 +15,10 @@ export async function POST(req: Request) {
       );
     }
 
+
+
     // Vérifier si un utilisateur avec cet email existe déjà
-    const { data: existingUsers, error: checkError } = await supabaseAdmin
+    const { data: existingUsers, error: checkError } = await supabase
       .from("users") // vue
       .select("id")
       .eq("email", email);
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     }
 
     // Créer un nouvel utilisateur
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true, 
