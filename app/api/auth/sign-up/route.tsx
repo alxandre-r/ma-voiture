@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     }
 
     // Créer un nouvel utilisateur
-    const { data, error } = await supabase.auth.admin.createUser({
+    const { error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true, 
