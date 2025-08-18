@@ -24,7 +24,6 @@ export default function SignUpForm() {
     setLoading(true);
 
     try {
-      // 1) Call server route which creates the confirmed user
       const res = await fetch("/api/auth/sign-up", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,18 +38,15 @@ export default function SignUpForm() {
         return;
       }
 
-      // 2) Optionnel: tenter connexion automatique
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
       if (signInError) {
-        // Si la connexion échoue, on informe mais l'utilisateur existe (confirmé)
         setIsError(true);
         setMessage("Compte créé mais échec de connexion automatique : " + signInError.message);
         setLoading(false);
         return;
       }
 
-      // Connexion réussie → redirection
       window.location.href = "/dashboard";
     } catch (err) {
       console.error("Erreur signup client:", err);
@@ -62,17 +58,39 @@ export default function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSignUp} className="space-y-4 w-full max-w-md">
-      <h2 className="text-xl font-bold">S&apos;inscrire</h2>
-
+    <form
+      onSubmit={handleSignUp}
+      className="space-y-4 bg-transparent p-6 border-t border-gray-300 w-full max-w-md"
+    >
+      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">S&apos;inscrire</h2>
       {message && (
-        <p className={isError ? "text-red-500" : "text-green-600"}>{message}</p>
+        <p className={`text-center font-semibold ${isError ? "text-red-400" : "text-green-600"}`}>
+          {message}
+        </p>
       )}
 
-      <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value.toLowerCase())} className="w-full px-4 py-2 rounded border" />
-      <input type="password" required placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-2 rounded border" />
+      <input
+        type="email"
+        required
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value.toLowerCase())}
+        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-500"
+      />
+      <input
+        type="password"
+        required
+        placeholder="Mot de passe"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-500"
+      />
 
-      <button type="submit" disabled={loading} className="w-full py-2 bg-indigo-600 text-white rounded disabled:opacity-60">
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-2 bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors disabled:opacity-60"
+      >
         {loading ? "Inscription…" : "S'inscrire"}
       </button>
     </form>

@@ -47,7 +47,7 @@ export default function SignInForm() {
 
       <button
         type="submit"
-        className="w-full py-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded transition-colors"
+        className="w-full py-2 bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors"
       >
         Se connecter
       </button>

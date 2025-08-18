@@ -46,13 +46,13 @@ export default function LandingPage() {
         <div className="flex gap-4 justify-center">
           <button
             onClick={() => setFormType(formType === "signin" ? null : "signin")}
-            className="px-6 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-400 transition"
+            className="px-6 py-2 bg-blue-700 text-white rounded hover:bg-blue-600 transition"
           >
             Connexion
           </button>
           <button
             onClick={() => setFormType(formType === "signup" ? null : "signup")}
-            className="px-6 py-2 bg-transparent border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition"
+            className="px-6 py-2 bg-transparent border border-blue-700 text-blue-700 rounded hover:bg-blue-50 dark:hover:bg-blue-950 transition"
           >
             Inscription
           </button>
