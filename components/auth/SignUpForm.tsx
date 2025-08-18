@@ -63,7 +63,7 @@ export default function SignUpForm() {
 
   return (
     <form onSubmit={handleSignUp} className="space-y-4 w-full max-w-md">
-      <h2 className="text-xl font-bold">S'inscrire</h2>
+      <h2 className="text-xl font-bold">S&apos;inscrire</h2>
 
       {message && (
         <p className={isError ? "text-red-500" : "text-green-600"}>{message}</p>

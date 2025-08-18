@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     // Create the user and mark as confirmed so they can sign in immediately.
     // email_confirmed_at will be set by Supabase when email_confirm: true
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    const { error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true, // <- marque confirmé, pas d'email envoyé
