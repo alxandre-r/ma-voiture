@@ -11,16 +11,12 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
 export async function middleware(req: NextRequest) {
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { data: { session } } = await supabase.auth.getSession();
+  console.log("Middleware - session:", Boolean(session), "path:", req.nextUrl.pathname);
 
-  // Si pas de session → rediriger
   if (!session && req.nextUrl.pathname.startsWith('/dashboard')) {
-    console.log('Utilisateur non connecté, redirection vers la page de déconnexion');
     return NextResponse.redirect(new URL('/auth/not-identified', req.url));
   }
-
   return NextResponse.next();
 }
 
