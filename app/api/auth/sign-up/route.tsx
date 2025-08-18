@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient }  from "@/lib/supabaseServer";
 
@@ -14,8 +13,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-
 
     // Vérifier si un utilisateur avec cet email existe déjà
     const { data: existingUsers, error: checkError } = await supabase

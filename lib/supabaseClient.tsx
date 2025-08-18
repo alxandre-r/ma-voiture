@@ -9,10 +9,9 @@
  * - Sert pour les opérations qui ne nécessitent pas un contexte serveur sécurisé (par exemple : auth via email/password).
  */
 
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from "@supabase/supabase-js";
 
-export const createSupabaseBrowserClient = () =>
-  createBrowserClient(
+export const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+);
