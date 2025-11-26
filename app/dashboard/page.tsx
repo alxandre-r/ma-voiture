@@ -6,6 +6,7 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import LogoutButton from '@/components/LogoutButton';
 import AddVehicleClient from './AddVehicleClient';
+import VehicleList from "@/components/VehicleList";
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient();
@@ -27,11 +28,12 @@ export default async function DashboardPage() {
         <AddVehicleClient />
       </div>
 
-      <h1 className="text-2xl font-bold">Your Dashboard</h1>
+      <h1 className="text-2xl font-bold">Votre garage</h1>
 
-      <p className="text-gray-500">
-        Click the button to add a new vehicle.
-      </p>
+      <div className="mt-4">
+          <VehicleList />
+      </div>
+
     </main>
   );
 }
