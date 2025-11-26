@@ -11,7 +11,7 @@ type Vehicle = {
     model?: string | null;
     plate?: string | null;
     created_at?: string | null;
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
 export default function VehicleList(): React.ReactElement {
