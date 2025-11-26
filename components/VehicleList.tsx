@@ -50,28 +50,23 @@ export default function VehicleList(): React.ReactElement {
         };
     }, []);
 
-    if (loading) return <div>Loading vehicles…</div>;
-    if (error) return <div style={{ color: 'var(--error, #c00)' }}>Error: {error}</div>;
+    if (loading) return <div className="text-white">Chargement...</div>;
+    if (error) return <div className="text-red-300">Erreur : {error}</div>;
     if (!vehicles || vehicles.length === 0)
-        return <div>You don’t have any vehicles yet.</div>;
+        return <div className="text-white">Vous n’avez pas encore de véhicules.</div>;
 
     return (
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        <ul className="list-none p-0 m-0 divide-y divide-white/10">
             {vehicles.map((v) => (
-                <li
-                    key={v.id}
-                    style={{
-                        padding: '12px',
-                        borderBottom: '1px solid rgba(0,0,0,0.06)',
-                    }}
-                >
-                    <div style={{ fontWeight: 600 }}>
-                        {v.make ?? 'Unknown make'} {v.model ?? ''}
+                <li key={v.id} className="py-3">
+                    <div className="font-semibold text-white">
+                        {v.make ?? 'Marque inconnue'} {v.model ?? ''}
                     </div>
-                    {v.plate && <div style={{ color: 'rgba(0,0,0,0.6)' }}>Plate: {v.plate}</div>}
+                    {v.plate && <div className="text-white/80">Plaque : {v.plate}</div>}
+
                     {v.created_at && (
-                        <div style={{ color: 'rgba(0,0,0,0.45)', fontSize: '0.9em' }}>
-                            Added: {new Date(v.created_at).toLocaleString()}
+                        <div className="text-white/70 text-sm">
+                            Ajouté le : {new Date(v.created_at).toLocaleString()}
                         </div>
                     )}
                 </li>
