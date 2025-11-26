@@ -1,9 +1,10 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 
 // Component that displays, if user has any car, the list of vehicles data
 // use the api/vehicles/get route to fetch vehicles data from authenticated user
 
-'use client';
+
 type Vehicle = {
     id: string;
     make?: string | null;
