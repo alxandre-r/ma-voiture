@@ -12,15 +12,20 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
-    const onChange = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile("matches" in e ? e.matches : !!(e as any).matches);
+
+    const handleEvent = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    const handleLegacy = (e: MediaQueryList | MediaQueryListEvent) =>
+      setIsMobile("matches" in e ? e.matches : mq.matches);
+
     setIsMobile(mq.matches);
+
     if ("addEventListener" in mq) {
-      mq.addEventListener("change", onChange as any);
-      return () => mq.removeEventListener("change", onChange as any);
-    } else {
+      mq.addEventListener("change", handleEvent);
+      return () => mq.removeEventListener("change", handleEvent);
+    } else if ("addListener" in mq) {
       // fallback for older browsers
-      (mq as any).addListener(onChange);
-      return () => (mq as any).removeListener(onChange);
+      (mq as MediaQueryList).addListener(handleLegacy);
+      return () => (mq as MediaQueryList).removeListener(handleLegacy);
     }
   }, []);
 
