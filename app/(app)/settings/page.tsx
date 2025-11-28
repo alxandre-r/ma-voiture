@@ -117,7 +117,7 @@ export default function SettingsPage() {
 
         {/* Change email */}
         <div>
-          <label className="font-medium block mb-1">Changer l'adresse email</label>
+          <label className="font-medium block mb-1">Changer l&apos;adresse email</label>
           <input
             type="email"
             className="p-2 rounded border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
@@ -130,7 +130,7 @@ export default function SettingsPage() {
             onClick={handleChangeEmail}
             className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:cursor-pointer"
           >
-            Mettre à jour l'email
+            Mettre à jour l&apos;email
           </button>
         </div>
 
