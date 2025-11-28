@@ -25,17 +25,19 @@ export default function VehicleModal({ open, onClose }: VehicleModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-lg w-full max-w-lg"
         onClick={(e) => e.stopPropagation()}
+        className="relative bg-gray-800 rounded-lg shadow-lg p-6"
       >
-        <h2 className="text-xl font-semibold mb-4">Add a Vehicle</h2>
-        <VehicleForm />
+        {/* Croix en haut à droite */}
         <button
           onClick={onClose}
-          className="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center text-gray-200 text-2xl hover:text-white hover:cursor-pointer"
+          aria-label="Fermer"
         >
-          Close
+          ✕
         </button>
+
+        <VehicleForm onCancel={onClose} />
       </div>
     </div>
   );

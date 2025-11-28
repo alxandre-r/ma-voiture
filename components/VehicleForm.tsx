@@ -7,7 +7,11 @@
 
 import { useState } from 'react';
 
-export default function VehicleForm() {
+interface VehicleFormProps {
+  onCancel?: () => void;
+}
+
+export default function VehicleForm({ onCancel }: VehicleFormProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -45,9 +49,9 @@ export default function VehicleForm() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error creating vehicle');
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la création du véhicule');
 
-      setMessage('✅ Vehicle added successfully!');
+      setMessage('✅ Véhicule ajouté avec succès !');
       setFormData({
         name: '',
         make: '',
@@ -60,7 +64,7 @@ export default function VehicleForm() {
       if (err instanceof Error) {
         setMessage(`❌ ${err.message}`);
       } else {
-        setMessage('❌ An unknown error occurred');
+        setMessage('❌ Une erreur inconnue est survenue');
       }
     } finally {
       setLoading(false);
@@ -68,66 +72,80 @@ export default function VehicleForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 max-w-md p-6 rounded-lg bg-gray-800 text-white"
+    >
       <input
         type="text"
         name="name"
-        placeholder="Vehicle Name"
+        placeholder="Nom du véhicule"
         value={formData.name}
         onChange={handleChange}
         required
-        className="w-full border p-2 rounded"
+        className="w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
+
       <input
         type="text"
         name="make"
-        placeholder="Make"
+        placeholder="Marque"
         value={formData.make}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
       <input
         type="text"
         name="model"
-        placeholder="Model"
+        placeholder="Modèle"
         value={formData.model}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
       <input
         type="number"
         name="year"
-        placeholder="Year"
+        placeholder="Année"
         value={formData.year}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
       <input
         type="text"
         name="fuel_type"
-        placeholder="Fuel Type"
+        placeholder="Type de carburant"
         value={formData.fuel_type}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
       <input
         type="number"
         step="0.01"
         name="manufacturer_consumption"
-        placeholder="Consumption (L/100km)"
+        placeholder="Consommation (L/100km)"
         value={formData.manufacturer_consumption}
         onChange={handleChange}
-        className="w-full border p-2 rounded"
+        className="w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
-      <button
-        type="submit"
-        disabled={loading}
-        className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
-      >
-        {loading ? 'Saving...' : 'Add Vehicle'}
-      </button>
+      {/* Boutons alignés */}
+      <div className="flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 cursor-pointer transition-colors"
+        >
+          {loading ? 'Enregistrement...' : 'Ajouter le véhicule'}
+        </button>
+      </div>
 
-      {message && <p className="mt-2">{message}</p>}
+      {message && <p className="mt-2 text-sm">{message}</p>}
     </form>
   );
 }
