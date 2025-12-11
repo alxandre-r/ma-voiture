@@ -97,12 +97,9 @@ export default function OdometerChart({ data }: OdometerChartProps) {
   const svgHeight = 140; // logical SVG inner height (pixels)
   const pointRadius = 6; // px for HTML point element
 
-  // early return
-  if (!data || data.length === 0) return null;
-
   // get min/max odometer
-  const maxOdom = Math.max(...data.map((d) => d.odometer));
-  const minOdom = Math.min(...data.map((d) => d.odometer));
+  const maxOdom = data && data.length > 0 ? Math.max(...data.map((d) => d.odometer)) : 0;
+  const minOdom = data && data.length > 0 ? Math.min(...data.map((d) => d.odometer)) : 0;
   const range = Math.max(1, maxOdom - minOdom);
 
   // Resize observer to compute container width/height
