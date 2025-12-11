@@ -172,7 +172,7 @@ export default function VehicleCard({
               {/* Basic additional info always visible */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4">
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">Plaque d'immatriculation</span>
+                  <span className="text-gray-400 text-xs">Plaque d&apos;immatriculation</span>
                   <span className="text-white font-medium">{formatValue(vehicle.plate)}</span>
                 </div>
                 <div className="flex flex-col">
@@ -180,7 +180,7 @@ export default function VehicleCard({
                   <span className="text-white font-medium">{formatValue(vehicle.owner)}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">Date d'ajout</span>
+                  <span className="text-gray-400 text-xs">Date d&apos;ajout</span>
                   <span className="text-white font-medium">
                     {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString() : '—'}
                   </span>

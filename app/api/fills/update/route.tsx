@@ -62,7 +62,7 @@ export async function PATCH(request: Request) {
     
     if (existingFill.owner !== user.id) {
       return NextResponse.json(
-        { error: 'Vous n\'êtes pas autorisé à modifier ce plein' },
+        { error: 'Vous n&apos;êtes pas autorisé à modifier ce plein' },
         { status: 403 }
       );
     }

@@ -42,7 +42,7 @@ export default function FillChart({ data }: FillChartProps) {
 
   return (
     <div className="w-full">
-      <h4 className="text-sm font-medium mb-3">Évolution du prix de l'essence</h4>
+      <h4 className="text-sm font-medium mb-3">Évolution du prix de l&apos;essence</h4>
 
       {/* CHART CONTAINER */}
       <div className="relative w-full" style={{ paddingBottom: 24, paddingTop: 46 }}>

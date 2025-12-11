@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("Erreur création utilisateur:", error);
-      return NextResponse.json({ error: "Erreur lors de l'inscription" }, { status: 500 });
+      return NextResponse.json({ error: "Erreur lors de l&apos;inscription" }, { status: 500 });
     }
 
     return NextResponse.json({ message: "Inscription réussie. Vous pouvez vous connecter." }, { status: 201 });

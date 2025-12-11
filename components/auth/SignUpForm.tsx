@@ -33,7 +33,7 @@ export default function SignUpForm() {
       const body = await res.json();
       if (!res.ok) {
         setIsError(true);
-        setMessage(body.error || "Erreur lors de l'inscription");
+        setMessage(body.error || "Erreur lors de l&apos;inscription");
         setLoading(false);
         return;
       }

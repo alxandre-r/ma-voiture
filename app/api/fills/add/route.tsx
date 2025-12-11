@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     
     if (vehicleError || !vehicle) {
       return NextResponse.json(
-        { error: 'Véhicule non trouvé ou vous n\'êtes pas le propriétaire' },
+        { error: 'Véhicule non trouvé ou vous n&apos;êtes pas le propriétaire' },
         { status: 404 }
       );
     }
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error('Error adding fill:', error);
       return NextResponse.json(
-        { error: 'Erreur lors de l\'ajout du plein' },
+        { error: 'Erreur lors de l&apos;ajout du plein' },
         { status: 500 }
       );
     }

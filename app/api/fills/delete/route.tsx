@@ -61,7 +61,7 @@ export async function DELETE(request: Request) {
     
     if (existingFill.owner !== user.id) {
       return NextResponse.json(
-        { error: 'Vous n\'êtes pas autorisé à supprimer ce plein' },
+        { error: 'Vous n&apos;êtes pas autorisé à supprimer ce plein' },
         { status: 403 }
       );
     }

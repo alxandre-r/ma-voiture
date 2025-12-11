@@ -153,7 +153,7 @@ export default function FillForm({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'ajout du plein');
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l&apos;ajout du plein');
 
       // Add optimistic update - add the new fill to the list immediately
       const newFill = {
