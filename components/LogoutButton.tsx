@@ -1,8 +1,9 @@
 /**
- * LogoutButton.tsx
- * -----------------
- * Composant pour gérer la déconnexion de l'utilisateur.
- * Utilise le client Supabase côté navigateur pour se déconnecter.
+ * @file components/LogoutButton.tsx
+ * @fileoverview Logout button component for user authentication.
+ * 
+ * This component handles user logout by calling Supabase auth.signOut()
+ * and redirecting to the home page.
  */
 
 "use client";
@@ -10,11 +11,20 @@
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
-
+/**
+ * LogoutButton Component
+ * 
+ * Button that initiates user logout process.
+ * Clears session and redirects to home page.
+ */
 export default function LogoutButton() {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
+  /**
+   * Handle logout process.
+   * Signs out from Supabase and redirects to home.
+   */
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/");
@@ -24,6 +34,7 @@ export default function LogoutButton() {
     <button
       onClick={handleLogout}
       className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+      aria-label="Se déconnecter"
     >
       Se déconnecter
     </button>

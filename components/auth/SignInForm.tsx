@@ -1,13 +1,33 @@
+/**
+ * @file components/auth/SignInForm.tsx
+ * @fileoverview Sign-in form component for user authentication.
+ * 
+ * This component handles user login by collecting email and password,
+ * validating credentials with Supabase, and redirecting to dashboard on success.
+ */
+
 "use client";
 
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
+/**
+ * SignInForm Component
+ * 
+ * Handles user authentication via email/password.
+ * On successful login, redirects to dashboard.
+ * Displays error messages for failed login attempts.
+ */
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  /**
+   * Handles form submission for user login.
+   * 
+   * @param {React.FormEvent} e - Form submission event
+   */
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);

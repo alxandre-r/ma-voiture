@@ -1,10 +1,25 @@
+/**
+ * @file app/api/vehicles/get/route.tsx
+ * @fileoverview API route to fetch vehicles for authenticated user.
+ * 
+ * This endpoint returns all vehicles owned by the currently authenticated user,
+ * ordered by creation date (newest first).
+ */
+
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
+/**
+ * GET /api/vehicles/get
+ * 
+ * Fetch vehicles for authenticated user.
+ * 
+ * @returns {Promise<NextResponse>} JSON response with vehicles array or error
+ */
 export async function GET() {
   const supabase = await createSupabaseServerClient();
 
-  // Récupérer l'utilisateur connecté
+  // Get authenticated user
   const {
     data: { user },
     error: userError,
@@ -14,7 +29,7 @@ export async function GET() {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
   }
 
-  // Récupérer les véhicules liés à cet utilisateur
+  // Fetch vehicles owned by this user
   const { data: vehicles, error: vehiclesError } = await supabase
     .from('vehicles')
     .select('*')

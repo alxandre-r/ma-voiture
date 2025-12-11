@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
-export async function GET(request: Request) {
+export async function GET() {
   const supabase = await createSupabaseServerClient();
 
   // Récupérer l'utilisateur connecté
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   }
 
   // Vérifier si l'utilisateur a au moins un véhicule
-    const { data: vehicles, error } = await supabase
+    const { data: vehicles } = await supabase
         .from('vehicles')
         .select('id')
         .eq('owner', user.id)

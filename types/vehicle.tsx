@@ -12,5 +12,6 @@ export interface Vehicle {
   year: number;
   fuel_type: string;
   manufacturer_consumption: number;
+  odometer: number | null;
   created_at: string;
 }
