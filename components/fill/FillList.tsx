@@ -56,7 +56,6 @@ export default function FillList() {
   async function confirmDelete() {
     if (!deletingId) return;
     setShowDeleteConfirm(false);
-    setDeleteMessage(null);
 
     try {
       const res = await fetch('/api/fills/delete', {
