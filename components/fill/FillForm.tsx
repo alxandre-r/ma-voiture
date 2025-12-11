@@ -90,12 +90,12 @@ export default function FillForm({
    * Auto-fill odometer from selected vehicle
    */
   useEffect(() => {
-    if (formData.vehicle_id && vehicles) {
+      if (formData.vehicle_id && vehicles) {
       const selectedVehicle = vehicles.find(v => v.id.toString() === formData.vehicle_id);
-      if (selectedVehicle && selectedVehicle.odometer !== null && selectedVehicle.odometer !== undefined) {
+      if (selectedVehicle && selectedVehicle.odometer !== null) {
         setFormData(prev => ({
           ...prev,
-          odometer: selectedVehicle.odometer.toString()
+          odometer: selectedVehicle.odometer!.toString()
         }));
       }
     }
