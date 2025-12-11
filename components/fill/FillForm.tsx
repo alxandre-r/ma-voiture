@@ -92,7 +92,7 @@ export default function FillForm({
   useEffect(() => {
     if (formData.vehicle_id && vehicles) {
       const selectedVehicle = vehicles.find(v => v.id.toString() === formData.vehicle_id);
-      if (selectedVehicle && selectedVehicle.odometer) {
+      if (selectedVehicle && selectedVehicle.odometer !== null && selectedVehicle.odometer !== undefined) {
         setFormData(prev => ({
           ...prev,
           odometer: selectedVehicle.odometer.toString()
