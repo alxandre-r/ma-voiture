@@ -95,52 +95,52 @@ export default function FillListItem({ fill, onEdit, onDelete, isDeleting }: Fil
       </div>
 
       {/* Desktop layout - grid */}
-      <div className="hidden md:flex md:col-span-12">
-        <div className="col-span-2 flex items-center">
-          <span className="text-gray-400 dark:text-gray-500">{formatDate(fill.date)}</span>
+      <div className="hidden md:flex md:col-span-12 md:gap-4 px-6 items-center">
+        <div className="flex-1 flex items-center">
+          <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(fill.date)}</span>
         </div>
 
-        <div className="col-span-4 flex items-center">
-          <span className="font-medium mr-2 text-gray-800 dark:text-white">
-            {fill.vehicle_name || `Véhicule #${fill.vehicle_id}`}
+        <div className="flex-1 flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-800 dark:text-white">
+        {fill.vehicle_name || `Véhicule #${fill.vehicle_id}`}
           </span>
-          <span className="text-gray-400 dark:text-gray-500 text-xs">
-            {fill.odometer ? `${fill.odometer} km` : 'N/A'}
-          </span>
-        </div>
-
-        <div className="col-span-3 flex items-center">
-          <span className="mr-2 text-gray-800 dark:text-white">{fill.liters || 'N/A'} L</span>
-          <span className="text-gray-400 dark:text-gray-500">•</span>
-          <span className="ml-2 font-medium text-gray-800 dark:text-white">{formatCurrency(fill.amount)}</span>
-        </div>
-
-        <div className="col-span-2 flex items-center justify-end">
-          <span className="text-gray-300 dark:text-gray-500">
-            {fill.price_per_liter ? `${fill.price_per_liter.toFixed(3)} €/L` : 'N/A'}
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+        {fill.odometer ? `${fill.odometer} km` : 'N/A'}
           </span>
         </div>
 
-        <div className="col-span-1 flex items-center justify-end gap-2">
+        <div className="flex-1 flex items-center gap-2">
+          <span className="text-sm text-gray-800 dark:text-white">{fill.liters || 'N/A'} L</span>
+          <span className="text-gray-500 dark:text-gray-400">•</span>
+          <span className="text-sm font-medium text-gray-800 dark:text-white">{formatCurrency(fill.amount)}</span>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center">
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+        {fill.price_per_liter ? `${fill.price_per_liter.toFixed(3)} €/L` : 'N/A'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
           {onEdit && (
-            <button
-              onClick={onEdit}
-              disabled={isDeleting}
-              className="text-gray-400 hover:text-white disabled:opacity-50 dark:text-gray-500 dark:hover:text-white"
-              title="Modifier"
-              aria-label="Modifier"
-            >
-              <Icon name="edit" size={18} className="text-gray-400 hover:text-white sm:size-16 dark:text-gray-500 dark:hover:text-white" />
-            </button>
+        <button
+          onClick={onEdit}
+          disabled={isDeleting}
+          className="p-1 text-gray-400 hover:text-white hover:cursor-pointer disabled:opacity-50 dark:text-gray-500 dark:hover:text-white"
+          title="Modifier"
+          aria-label="Modifier"
+        >
+          <Icon name="edit" size={18} />
+        </button>
           )}
           <button
-            onClick={onDelete}
-            disabled={isDeleting}
-            className="text-red-400 hover:text-red-300 disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
-            title="Supprimer"
-            aria-label="Supprimer"
+        onClick={onDelete}
+        disabled={isDeleting}
+        className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 hover:cursor-pointer disabled:opacity-50 rounded dark:text-red-400 dark:hover:text-red-300"
+        title="Supprimer"
+        aria-label="Supprimer"
           >
-            <Icon name="delete" size={18} className="text-red-400 hover:text-red-300 sm:size-16 dark:text-red-400 dark:hover:text-red-300" />
+        <Icon name="delete" size={18} />
           </button>
         </div>
       </div>

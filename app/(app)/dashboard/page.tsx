@@ -10,6 +10,8 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { FillProvider } from '@/contexts/FillContext';
 import AddFillClient from './AddFillClient';
 import FillList from '@/components/fill/FillList';
+import VehicleSwitcher from '@/components/vehicle/VehicleSwitcher';
+import DashboardClient from './DashboardClient';
 
 /**
  * DashboardPage Component
@@ -44,11 +46,7 @@ export default async function DashboardPage() {
       <FillProvider>
         {/* Consumption Section with integrated add button */}
         <section className="bg-white dark:bg-gray-800 p-2 rounded-lg sm:p-3 lg:p-4">
-          <div className="flex justify-between items-center mb-6">
-            <AddFillClient vehicles={vehicles || []} />
-          </div>
-          
-          <FillList />
+          <DashboardClient vehicles={vehicles || []} />
         </section>
         
         {/* Vehicle Overview Section - With background */}

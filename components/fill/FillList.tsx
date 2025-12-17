@@ -29,8 +29,11 @@ export default function FillList() {
     loading,
     error,
     stats,
+    selectedVehicleId,
     refreshFills,
     deleteFillOptimistic,
+    getFilteredFills,
+    getFilteredStats,
   } = useFills();
 
   // UI state
@@ -120,29 +123,29 @@ export default function FillList() {
           <div className="grid grid-cols-2 gap-2 text-sm mb-4 sm:grid-cols-3 sm:gap-3 sm:mb-6">
             <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
               <div className="text-gray-500 dark:text-gray-400 text-xs">Consommation moyenne</div>
-              <div className="text-gray-800 dark:text-white font-medium text-lg sm:text-xl">{stats.avg_consumption.toFixed(1)} L/100km</div>
+              <div className="text-gray-800 dark:text-white font-medium text-lg sm:text-xl">{getFilteredStats(selectedVehicleId).avg_consumption.toFixed(1)} L/100km</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
               <div className="text-gray-400 dark:text-gray-500 text-xs">Coût total</div>
-              <div className="font-medium text-lg sm:text-xl">{formatCurrency(stats.total_cost)}</div>
+              <div className="font-medium text-lg sm:text-xl">{formatCurrency(getFilteredStats(selectedVehicleId).total_cost)}</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
               <div className="text-gray-400 dark:text-gray-500 text-xs">Prix moyen/L</div>
-              <div className="font-medium text-lg sm:text-xl">{formatCurrency(stats.avg_price_per_liter)}</div>
+              <div className="font-medium text-lg sm:text-xl">{formatCurrency(getFilteredStats(selectedVehicleId).avg_price_per_liter)}</div>
             </div>
           </div>
           
           {/* Monthly consumption chart - limit to 6 months on mobile */}
-          {stats.monthly_chart && stats.monthly_chart.length > 0 && (
+          {getFilteredStats(selectedVehicleId).monthly_chart && getFilteredStats(selectedVehicleId).monthly_chart.length > 0 && (
             <div className="mb-6">
-              <FillChart data={stats.monthly_chart.slice(-6)} />
+              <FillChart data={getFilteredStats(selectedVehicleId).monthly_chart.slice(-6)} />
             </div>
           )}
           
           {/* Monthly odometer chart - only show if we have odometer data, limit to 6 months on mobile */}
-          {stats.monthly_chart && stats.monthly_chart.filter(item => item.odometer !== null).length > 0 && (
+          {getFilteredStats(selectedVehicleId).monthly_chart && getFilteredStats(selectedVehicleId).monthly_chart.filter(item => item.odometer !== null).length > 0 && (
             <div className="mb-6">
-              <OdometerChart data={stats.monthly_chart.slice(-6).map(item => ({
+              <OdometerChart data={getFilteredStats(selectedVehicleId).monthly_chart.slice(-6).map(item => ({
                 month: item.month,
                 odometer: item.odometer || 0
               }))} />
@@ -172,9 +175,9 @@ export default function FillList() {
         </div>
       )}
 
-      {!loading && !error && fills && fills.length === 0 && (
+      {!loading && !error && getFilteredFills(selectedVehicleId).length === 0 && (
         <div className="text-center py-8 text-gray-500">
-          <p className="mb-2">Aucun plein enregistré pour le moment.</p>
+          <p className="mb-2">Aucun plein enregistré pour {selectedVehicleId ? 'ce véhicule' : 'le moment'}.</p>
           <p className="text-sm">Ajoutez votre premier plein en utilisant le bouton ci-dessus.</p>
         </div>
       )}
@@ -183,7 +186,7 @@ export default function FillList() {
       {fills && fills.length > 0 && (
         <div className="space-y-1">
           {/* Show only last 4 fills in dashboard */}
-          {fills.slice(0, 4).map((fill) => (
+          {getFilteredFills(selectedVehicleId).slice(0, 4).map((fill) => (
             <FillListItem
               key={fill.id}
               fill={fill}
@@ -193,13 +196,13 @@ export default function FillList() {
           ))}
           
           {/* Show history button if more than 4 fills */}
-          {fills.length > 4 && (
+          {getFilteredFills(selectedVehicleId).length > 4 && (
             <div className="mt-4 text-center">
               <Link
                 href="/historique"
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm transition-colors"
               >
-                Voir l&#39;historique complet ({fills.length} pleins)
+                Voir l&#39;historique complet ({getFilteredFills(selectedVehicleId).length} pleins)
               </Link>
             </div>
           )}

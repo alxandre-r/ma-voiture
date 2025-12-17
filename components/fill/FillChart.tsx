@@ -64,7 +64,7 @@ export default function FillChart({ data }: FillChartProps) {
               >
                 {/* Value label */}
                 <div
-                  className="absolute text-xs font-medium text-gray-700 whitespace-nowrap"
+                  className="absolute text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap"
                   style={{
                     bottom: `${barHeight + valueOffset}px`,
                     transform: "translateX(-50%)",

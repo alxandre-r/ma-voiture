@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, make, model, year, fuel_type, manufacturer_consumption } = body;
+    const { name, make, model, year, fuel_type, manufacturer_consumption, plate } = body;
 
     // Validation minimale
     if (!name) {
@@ -33,6 +33,12 @@ export async function POST(request: Request) {
     }
 
     // Insertion en base
+    // Note: last_fill is initialized as null for new vehicles
+    // For automatic last_fill updates, we would need to:
+    // 1. Query the fills table for the most recent fill for this vehicle
+    // 2. Set last_fill to the date of that fill
+    // 3. This requires additional database queries and should be implemented
+    //    when the fills functionality is fully integrated
     const { data, error } = await supabase
       .from('vehicles')
       .insert([{
@@ -42,7 +48,9 @@ export async function POST(request: Request) {
         model,
         year,
         fuel_type,
-        manufacturer_consumption
+        manufacturer_consumption,
+        plate,
+        last_fill: null // Initialize last_fill as null for new vehicles
       }])
       .select()
       .single<Vehicle>();

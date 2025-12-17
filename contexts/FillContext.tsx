@@ -16,10 +16,14 @@ interface FillContextType {
   loading: boolean;
   error: string | null;
   stats: FillStats | null;
+  selectedVehicleId: string | null;
   refreshFills: () => Promise<void>;
   addFillOptimistic: (fill: Fill) => void;
   updateFillOptimistic: (fillId: number, updatedData: Partial<Fill>) => void;
   deleteFillOptimistic: (fillId: number) => void;
+  setSelectedVehicleId: (vehicleId: string | null) => void;
+  getFilteredFills: (vehicleId: string | null) => Fill[];
+  getFilteredStats: (vehicleId: string | null) => FillStats;
 }
 
 const FillContext = createContext<FillContextType | undefined>(undefined);
@@ -35,7 +39,26 @@ export function FillProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<FillStats | null>(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+
+  /**
+   * Filter fills by vehicle ID
+   */
+  const getFilteredFills = (vehicleId: string | null): Fill[] => {
+    if (!fills || vehicleId === null) {
+      return fills || [];
+    }
+    return fills.filter(fill => fill.vehicle_id.toString() === vehicleId);
+  };
+
+  /**
+   * Get filtered statistics by vehicle ID
+   */
+  const getFilteredStats = (vehicleId: string | null): FillStats => {
+    const filteredFills = getFilteredFills(vehicleId);
+    return calculateStats(filteredFills);
+  };
 
   /**
    * Calculate statistics from fill data
@@ -304,10 +327,14 @@ export function FillProvider({ children }: { children: ReactNode }) {
       loading,
       error,
       stats,
+      selectedVehicleId,
       refreshFills,
       addFillOptimistic,
       updateFillOptimistic,
       deleteFillOptimistic,
+      setSelectedVehicleId,
+      getFilteredFills,
+      getFilteredStats,
     }}>
       {children}
     </FillContext.Provider>

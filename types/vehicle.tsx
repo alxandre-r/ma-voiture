@@ -13,5 +13,7 @@ export interface Vehicle {
   fuel_type: string;
   manufacturer_consumption: number;
   odometer: number | null;
+  plate: string | null;
+  last_fill: string | null; // timestamptz format
   created_at: string;
 }
