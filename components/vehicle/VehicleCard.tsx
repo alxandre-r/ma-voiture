@@ -182,7 +182,7 @@ export default function VehicleCard({
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Dernier plein</span>
                   <span className="text-gray-800 dark:text-white font-medium">
-                    {vehicle.last_fill ? new Date(vehicle.last_fill).toLocaleDateString() : '—'}
+                    {vehicle.last_fill && typeof vehicle.last_fill === 'string' ? new Date(vehicle.last_fill).toLocaleDateString() : '—'}
                   </span>
                 </div>
               </div>
