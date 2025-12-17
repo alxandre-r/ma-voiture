@@ -40,10 +40,10 @@ export default async function DashboardPage() {
     .order('name', { ascending: true });
 
   return (
-    <main className="px-6 pb-24 space-y-6">
+    <main className="px-1 pb-24 space-y-3 sm:px-2 sm:space-y-4 lg:px-4 lg:space-y-6">
       <FillProvider>
         {/* Consumption Section with integrated add button */}
-        <section className="bg-gray-800/30 p-6 rounded-lg">
+        <section className="bg-white dark:bg-gray-800 p-2 rounded-lg sm:p-3 lg:p-4">
           <div className="flex justify-between items-center mb-6">
             <AddFillClient vehicles={vehicles || []} />
           </div>
@@ -52,23 +52,23 @@ export default async function DashboardPage() {
         </section>
         
         {/* Vehicle Overview Section - With background */}
-        <section className="bg-gray-800/30 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Vos véhicules</h2>
+        <section className="bg-white dark:bg-gray-800 p-2 rounded-lg sm:p-3 lg:p-4 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Vos véhicules</h2>
           
           {vehicles && vehicles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {vehicles.map((vehicle) => (
-                <div key={vehicle.id} className="bg-gray-800 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">{vehicle.name || `${vehicle.make} ${vehicle.model}`}</h3>
-                  <p className="text-sm text-gray-400">
+                <div key={vehicle.id} className="bg-white dark:bg-gray-800 p-2 rounded-lg sm:p-3 border border-gray-200 dark:border-gray-700">
+                  <h3 className="font-medium mb-1 text-base sm:text-lg text-gray-800 dark:text-white">{vehicle.name || `${vehicle.make} ${vehicle.model}`}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 sm:text-base">
                     {vehicle.make} {vehicle.model}
                   </p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-400">
-              Vous n&#39;avez pas encore ajouté de véhicules. <a href="/garage" className="text-blue-400 hover:underline">Ajoutez un véhicule</a> pour commencer à suivre votre consommation.
+            <p className="text-gray-500 dark:text-gray-400">
+              Vous n&#39;avez pas encore ajouté de véhicules. <a href="/garage" className="text-blue-600 hover:underline">Ajoutez un véhicule</a> pour commencer à suivre votre consommation.
             </p>
           )}
         </section>

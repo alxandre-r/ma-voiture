@@ -11,6 +11,7 @@
 import { useState } from 'react';
 import VehicleEditForm from './VehicleEditForm';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import Icon from '@/components/ui/Icon';
 
 interface Vehicle {
   id: string;
@@ -87,21 +88,22 @@ export default function VehicleCard({
 
   return (
     <li key={vehicle.id}>
-      <div className="bg-gray-800/50 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-700/50">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
         {/* Show vehicle data only when not editing this specific vehicle */}
         {editingId !== vehicle.id && (
           <>
             {/* Vehicle Header with icon and main info */}
             <div className="flex items-start justify-between gap-4 mb-6">
               <div className="flex items-center gap-4 min-w-0">
-                <div className="h-16 w-16 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 font-bold text-xl border border-blue-600/30">
+                {/* Removed identifier letter to save space on mobile */}
+                <div className="h-16 w-16 rounded-xl bg-blue-600/20 dark:bg-blue-900/20 flex items-center justify-center text-blue-400 dark:text-blue-400 font-bold text-xl border border-blue-600/30 dark:border-blue-400/30 lg:flex hidden">
                   {((vehicle.make ?? vehicle.name ?? '') as string).charAt(0).toUpperCase() || 'V'}
                 </div>
-                <div className="min-w-0">
-                  <h3 className="text-white text-2xl font-bold truncate">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-gray-800 dark:text-white text-lg font-bold break-words sm:text-xl sm:break-normal lg:text-2xl lg:truncate">
                     {vehicle.name ?? `${vehicle.make ?? 'Marque inconnue'} ${vehicle.model ?? ''}`}
                   </h3>
-                  <p className="text-gray-400 text-sm truncate mt-1">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm break-words sm:truncate sm:mt-1">
                     {vehicle.make ? `${vehicle.make} ${vehicle.model}` : 'Détails indisponibles'}
                   </p>
                 </div>
@@ -112,18 +114,20 @@ export default function VehicleCard({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEditStart(vehicle)}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition sm:px-4"
                     aria-label={`Modifier ${vehicle.name ?? vehicle.id}`}
                   >
-                    ✏️ Modifier
+                    <Icon name="edit" size={18} className="text-white sm:size-16" />
+                    <span className="hidden sm:inline">Modifier</span>
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={deletingId === vehicle.id}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition disabled:opacity-50 sm:px-4"
                     aria-label={`Supprimer ${vehicle.name ?? vehicle.id}`}
                   >
-                    🗑️ {deletingId === vehicle.id ? 'Suppression...' : 'Supprimer'}
+                    <Icon name="delete" size={18} className="text-white sm:size-16" />
+                    <span className="hidden sm:inline">{deletingId === vehicle.id ? 'Suppression...' : 'Supprimer'}</span>
                   </button>
                 </div>
                 <div className="text-xs text-gray-500">ID: <span className="text-gray-400 break-all">{vehicle.id}</span></div>
@@ -132,36 +136,36 @@ export default function VehicleCard({
 
             {/* Main Vehicle Stats - Grid layout */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white/5 p-4 rounded-lg">
-                <div className="text-gray-400 text-xs font-medium">KILOMÉTRAGE</div>
-                <div className="text-white text-xl font-bold mt-1">
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div className="text-gray-400 dark:text-gray-500 text-xs font-medium">KILOMÉTRAGE</div>
+                <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">
                   {vehicle.odometer != null ? `${vehicle.odometer.toLocaleString()} km` : '—'}
                 </div>
               </div>
-              <div className="bg-white/5 p-4 rounded-lg">
-                <div className="text-gray-400 text-xs font-medium">ANNÉE</div>
-                <div className="text-white text-xl font-bold mt-1">{formatValue(vehicle.year)}</div>
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">ANNÉE</div>
+                <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">{formatValue(vehicle.year)}</div>
               </div>
-              <div className="bg-white/5 p-4 rounded-lg">
-                <div className="text-gray-400 text-xs font-medium">CARBURANT</div>
-                <div className="text-white text-xl font-bold mt-1">{formatValue(vehicle.fuel_type)}</div>
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">CARBURANT</div>
+                <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">{formatValue(vehicle.fuel_type)}</div>
               </div>
-              <div className="bg-white/5 p-4 rounded-lg">
-                <div className="text-gray-400 text-xs font-medium">CONSOMMATION</div>
-                <div className="text-white text-xl font-bold mt-1">
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">CONSOMMATION</div>
+                <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">
                   {vehicle.manufacturer_consumption != null ? `${vehicle.manufacturer_consumption} L/100km` : '—'}
                 </div>
               </div>
             </div>
 
             {/* Additional Info Section */}
-            <div className="border-t border-gray-700/50 pt-4">
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-gray-300 text-sm font-medium">INFORMATIONS COMPLÉMENTAIRES</h4>
+                <h4 className="text-gray-600 dark:text-gray-400 text-sm font-medium">INFORMATIONS COMPLÉMENTAIRES</h4>
                 {extraFields.length > 0 && (
                   <button
                     onClick={() => setExpanded(!expanded)}
-                    className="text-xs text-blue-400 hover:text-blue-300 transition font-medium"
+                    className="text-xs text-blue-600 hover:text-blue-500 transition font-medium"
                     aria-expanded={expanded}
                   >
                     {expanded ? 'Masquer' : 'Afficher'}
@@ -172,29 +176,29 @@ export default function VehicleCard({
               {/* Basic additional info always visible */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4">
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">Plaque d&apos;immatriculation</span>
-                  <span className="text-white font-medium">{formatValue(vehicle.plate)}</span>
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Plaque d&apos;immatriculation</span>
+                  <span className="text-gray-800 dark:text-white font-medium">{formatValue(vehicle.plate)}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">Propriétaire</span>
-                  <span className="text-white font-medium">{formatValue(vehicle.owner)}</span>
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Propriétaire</span>
+                  <span className="text-gray-800 dark:text-white font-medium">{formatValue(vehicle.owner)}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">Date d&apos;ajout</span>
-                  <span className="text-white font-medium">
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Date d&apos;ajout</span>
+                  <span className="text-gray-800 dark:text-white font-medium">
                     {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString() : '—'}
                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">Dernier plein</span>
-                  <span className="text-white font-medium">—</span> {/* Will be populated with actual data */}
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Dernier plein</span>
+                  <span className="text-gray-800 dark:text-white font-medium">—</span> {/* Will be populated with actual data */}
                 </div>
               </div>
 
               {/* Extra fields section - expandable */}
               {expanded && extraFields.length > 0 && (
-                <div className="mt-4 bg-white/5 p-4 rounded-lg">
-                  <pre className="text-xs text-gray-300 overflow-auto">
+                <div className="mt-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                  <pre className="text-xs text-gray-300 dark:text-gray-400 overflow-auto">
                     {JSON.stringify(
                       Object.fromEntries(
                         Object.entries(vehicle).filter(([k]) => extraFields.includes(k))
@@ -211,8 +215,8 @@ export default function VehicleCard({
 
         {/* Edit Form Section - shown when editing, replaces the card content */}
         {editingId === vehicle.id && editData && (
-          <div className="mt-6 bg-gray-800/80 p-4 rounded-lg border border-gray-600/50">
-            <h4 className="text-white font-medium mb-4">MODIFIER LE VÉHICULE</h4>
+          <div className="mt-6 bg-gray-100 p-4 rounded-lg border border-gray-200">
+            <h4 className="text-gray-800 font-medium mb-4">MODIFIER LE VÉHICULE</h4>
             <VehicleEditForm
               editData={editData}
               onChangeField={onChangeField}

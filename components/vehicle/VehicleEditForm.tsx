@@ -42,7 +42,7 @@ export default function VehicleEditForm({
   }
 
   return (
-    <div className="mt-5 bg-white/3 p-4 rounded-lg">
+    <div className="mt-5 bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Name Field */}
         <label className="flex flex-col text-sm">

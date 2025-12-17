@@ -24,7 +24,7 @@ export default function AddVehicleClient() {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 hover:cursor-pointer"
+                className="px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 hover:cursor-pointer sm:px-6 sm:py-3"
                 aria-label="Ajouter un véhicule"
             >
                 Ajouter un véhicule

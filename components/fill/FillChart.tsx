@@ -42,13 +42,13 @@ export default function FillChart({ data }: FillChartProps) {
 
   return (
     <div className="w-full">
-      <h4 className="text-sm font-medium mb-3">Évolution du prix de l&apos;essence</h4>
+      <h4 className="text-sm font-medium mb-3">Dépenses mensuelles en carburant</h4>
 
       {/* CHART CONTAINER */}
-      <div className="relative w-full" style={{ paddingBottom: 24, paddingTop: 46 }}>
+      <div className="relative w-full overflow-x-auto pl-1" style={{ paddingBottom: 24, paddingTop: 46 }}>
         {/* Bars row */}
         <div
-          className="flex items-end gap-4 px-2"
+          className="flex items-end gap-1 min-w-[350px]"
           style={{ height: `${containerHeight}px` }}
         >
           {data.map((item, idx) => {
@@ -64,7 +64,7 @@ export default function FillChart({ data }: FillChartProps) {
               >
                 {/* Value label */}
                 <div
-                  className="absolute text-xs font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap"
+                  className="absolute text-xs font-medium text-gray-700 whitespace-nowrap"
                   style={{
                     bottom: `${barHeight + valueOffset}px`,
                     transform: "translateX(-50%)",
@@ -91,11 +91,11 @@ export default function FillChart({ data }: FillChartProps) {
           })}
         </div>
 
-        {/* Month labels */}
-        <div className="mt-2 px-2 flex gap-4">
+        {/* Month labels - aligned with bars */}
+        <div className="mt-2 flex gap-1 pl-1">
           {data.map((item, idx) => (
-            <div key={idx} className="flex-1 min-w-0 text-center">
-              <span className="text-xs text-gray-400 truncate">
+            <div key={idx} className="flex-1 min-w-[60px] text-center">
+              <span className="text-xs text-gray-400 truncate block">
                 {formatMonth(item.month)}
               </span>
             </div>

@@ -46,28 +46,28 @@ export default function SignInForm() {
   };
 
   return (
-    <form onSubmit={handleSignIn} className="space-y-4 bg-transparent p-6 border-t border-gray-300 w-full max-w-md">
-      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Connexion</h2>
-      {errorMsg && <p className="text-center text-red-400 font-semibold">{errorMsg}</p>}
+    <form onSubmit={handleSignIn} className="space-y-4 bg-white dark:bg-gray-800 p-6 border-t border-gray-300 dark:border-gray-700 w-full max-w-md shadow-lg rounded-lg">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-white">Connexion</h2>
+      {errorMsg && <p className="text-center text-red-500 dark:text-red-400 font-semibold">{errorMsg}</p>}
 
       <input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-500"
+        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
       />
       <input
         type="password"
         placeholder="Mot de passe"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-500"
+        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
       />
 
       <button
         type="submit"
-        className="w-full py-2 bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors"
+        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50"
       >
         Se connecter
       </button>

@@ -25,16 +25,16 @@ export default async function HistoriquePage() {
   
   if (!user) {
     return (
-      <main className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Historique</h1>
+      <main className="px-4 py-3 sm:p-6">
+        <h1 className="text-2xl font-bold mb-4 sm:text-3xl">Historique</h1>
         <p>Veuillez vous connecter pour accéder à votre historique.</p>
       </main>
     );
   }
 
   return (
-    <main className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Historique des pleins</h1>
+    <main className="px-1 py-2 space-y-3 sm:px-2 sm:py-3 sm:space-y-4 lg:px-4 lg:py-6 lg:space-y-6">
+      <h1 className="text-xl font-bold text-gray-800 dark:text-white sm:text-2xl lg:text-3xl">Historique des pleins</h1>
       
       <FillProvider>
         <FillHistoryList />

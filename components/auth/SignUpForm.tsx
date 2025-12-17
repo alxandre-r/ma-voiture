@@ -60,11 +60,11 @@ export default function SignUpForm() {
   return (
     <form
       onSubmit={handleSignUp}
-      className="space-y-4 bg-transparent p-6 border-t border-gray-300 w-full max-w-md"
+      className="space-y-4 bg-white dark:bg-gray-800 p-6 border-t border-gray-300 dark:border-gray-700 w-full max-w-md shadow-lg rounded-lg"
     >
-      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">S&apos;inscrire</h2>
+      <h2 className="text-xl font-bold text-gray-800 dark:text-white">S&apos;inscrire</h2>
       {message && (
-        <p className={`text-center font-semibold ${isError ? "text-red-400" : "text-green-600"}`}>
+        <p className={`text-center font-semibold ${isError ? "text-red-500 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
           {message}
         </p>
       )}
@@ -75,7 +75,7 @@ export default function SignUpForm() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value.toLowerCase())}
-        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-500"
+        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
       />
       <input
         type="password"
@@ -83,13 +83,13 @@ export default function SignUpForm() {
         placeholder="Mot de passe"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring focus:ring-indigo-500"
+        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 bg-blue-700 hover:bg-blue-600 text-white rounded transition-colors disabled:opacity-60"
+        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-60"
       >
         {loading ? "Inscription…" : "S'inscrire"}
       </button>

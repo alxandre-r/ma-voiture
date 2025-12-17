@@ -213,18 +213,18 @@ export default function FillForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 max-w-md p-6 rounded-lg bg-gray-800 text-white"
+      className="space-y-2 max-w-md p-3 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 sm:space-y-3 sm:p-4 lg:space-y-4 lg:p-6"
     >
       {/* Vehicle Selection - Only show if multiple vehicles */}
       {vehicles && vehicles.length > 1 ? (
         <div>
-          <label className="block text-sm font-medium mb-1">Véhicule</label>
+          <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Véhicule</label>
           <select
             name="vehicle_id"
             value={formData.vehicle_id}
             onChange={handleChange}
             required
-            className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
           >
             <option value="">Sélectionnez un véhicule</option>
             {vehicles?.map((vehicle) => (
@@ -236,12 +236,12 @@ export default function FillForm({
         </div>
       ) : vehicles && vehicles.length === 1 ? (
         <div>
-          <label className="block text-sm font-medium mb-1">Véhicule</label>
+          <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Véhicule</label>
           <input
             type="text"
             value={vehicles[0].name || `${vehicles[0].make} ${vehicles[0].model}`}
             readOnly
-            className="w-full bg-white/10 text-white px-3 py-2 rounded outline-none cursor-not-allowed"
+            className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-3 py-2 rounded outline-none cursor-not-allowed border border-gray-300 dark:border-gray-700"
           />
           <input type="hidden" name="vehicle_id" value={vehicles[0].id} />
         </div>
@@ -256,7 +256,7 @@ export default function FillForm({
           value={formData.date}
           onChange={handleChange}
           required
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -269,7 +269,7 @@ export default function FillForm({
           placeholder="Kilomètres"
           value={formData.odometer}
           onChange={handleChange}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -283,13 +283,13 @@ export default function FillForm({
           placeholder="Litres"
           value={formData.liters}
           onChange={handleChange}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
       {/* Amount */}
       <div>
-        <label className="block text-sm font-medium mb-1">Montant (€)</label>
+        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Montant (€)</label>
         <input
           type="number"
           step="0.01"
@@ -297,13 +297,13 @@ export default function FillForm({
           placeholder="Montant total"
           value={formData.amount}
           onChange={handleChange}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
       {/* Price per Liter (read-only, calculated) */}
       <div>
-        <label className="block text-sm font-medium mb-1">Prix au litre (€)</label>
+        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Prix au litre (€)</label>
         <input
           type="number"
           step="0.001"
@@ -312,7 +312,7 @@ export default function FillForm({
           value={formData.price_per_liter}
           onChange={handleChange}
           readOnly
-          className="w-full bg-white/10 text-white px-3 py-2 rounded outline-none cursor-not-allowed"
+          className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-3 py-2 rounded outline-none cursor-not-allowed border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -325,18 +325,18 @@ export default function FillForm({
           value={formData.notes}
           onChange={handleChange}
           rows={3}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500 resize-none"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 resize-none border border-gray-300 dark:border-gray-700"
         />
       </div>
 
       {/* Form Actions */}
-      <div className="flex gap-3 pt-4">
+      <div className="flex gap-2 pt-3 sm:gap-3 sm:pt-4">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-3 py-2 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
           >
             Annuler
           </button>
@@ -345,7 +345,7 @@ export default function FillForm({
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
         >
           {loading ? 'Enregistrement...' : 'Enregistrer le plein'}
         </button>

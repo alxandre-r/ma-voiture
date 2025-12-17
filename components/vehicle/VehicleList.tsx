@@ -181,7 +181,7 @@ export default function VehicleList(): React.ReactElement {
     <div className="vehicle-list">
       {/* Edit operation error */}
       {editError && (
-        <div className="mb-4 p-3 bg-red-500/20 rounded text-center text-red-400">
+        <div className="mb-4 p-3 bg-red-500/20 dark:bg-red-900/30 rounded text-center text-red-400 dark:text-red-300">
           {editError}
         </div>
       )}

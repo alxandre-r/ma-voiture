@@ -115,34 +115,34 @@ export default function FillList() {
 
       {/* Statistics Summary - Focused on consumption */}
       {stats && fills && fills.length > 0 && (
-        <div className="bg-gray-800/50 p-4 rounded-lg">
+        <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 sm:p-3 lg:p-4">
           {/* Key metrics - consumption focused - moved to top */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm mb-6">
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Consommation moyenne</div>
-              <div className="font-medium text-xl">{stats.avg_consumption.toFixed(1)} L/100km</div>
+          <div className="grid grid-cols-2 gap-2 text-sm mb-4 sm:grid-cols-3 sm:gap-3 sm:mb-6">
+            <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Consommation moyenne</div>
+              <div className="text-gray-800 dark:text-white font-medium text-lg sm:text-xl">{stats.avg_consumption.toFixed(1)} L/100km</div>
             </div>
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Coût total</div>
-              <div className="font-medium text-xl">{formatCurrency(stats.total_cost)}</div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
+              <div className="text-gray-400 dark:text-gray-500 text-xs">Coût total</div>
+              <div className="font-medium text-lg sm:text-xl">{formatCurrency(stats.total_cost)}</div>
             </div>
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Prix moyen/L</div>
-              <div className="font-medium text-xl">{formatCurrency(stats.avg_price_per_liter)}</div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
+              <div className="text-gray-400 dark:text-gray-500 text-xs">Prix moyen/L</div>
+              <div className="font-medium text-lg sm:text-xl">{formatCurrency(stats.avg_price_per_liter)}</div>
             </div>
           </div>
           
-          {/* Monthly consumption chart */}
+          {/* Monthly consumption chart - limit to 6 months on mobile */}
           {stats.monthly_chart && stats.monthly_chart.length > 0 && (
             <div className="mb-6">
-              <FillChart data={stats.monthly_chart} />
+              <FillChart data={stats.monthly_chart.slice(-6)} />
             </div>
           )}
           
-          {/* Monthly odometer chart - only show if we have odometer data */}
+          {/* Monthly odometer chart - only show if we have odometer data, limit to 6 months on mobile */}
           {stats.monthly_chart && stats.monthly_chart.filter(item => item.odometer !== null).length > 0 && (
             <div className="mb-6">
-              <OdometerChart data={stats.monthly_chart.map(item => ({
+              <OdometerChart data={stats.monthly_chart.slice(-6).map(item => ({
                 month: item.month,
                 odometer: item.odometer || 0
               }))} />
@@ -154,18 +154,18 @@ export default function FillList() {
       {/* State handling */}
       {loading && (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-3"></div>
-          <p>Chargement des pleins...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+          <p className="text-gray-600">Chargement des pleins...</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-500/20 p-4 rounded-lg text-red-400">
+        <div className="bg-red-100 dark:bg-red-900/30 p-4 rounded-lg text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800">
           <p className="font-medium">Erreur de chargement</p>
           <p className="text-sm">{error}</p>
           <button
             onClick={refreshFills}
-            className="mt-3 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500"
+            className="mt-3 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
           >
             Réessayer
           </button>
@@ -173,7 +173,7 @@ export default function FillList() {
       )}
 
       {!loading && !error && fills && fills.length === 0 && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-gray-500">
           <p className="mb-2">Aucun plein enregistré pour le moment.</p>
           <p className="text-sm">Ajoutez votre premier plein en utilisant le bouton ci-dessus.</p>
         </div>
@@ -197,7 +197,7 @@ export default function FillList() {
             <div className="mt-4 text-center">
               <Link
                 href="/historique"
-                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 text-sm"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm transition-colors"
               >
                 Voir l&#39;historique complet ({fills.length} pleins)
               </Link>

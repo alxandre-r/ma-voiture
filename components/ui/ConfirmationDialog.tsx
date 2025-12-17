@@ -74,7 +74,7 @@ export default function ConfirmationDialog({
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md transition-colors disabled:opacity-50 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
+            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded-md transition-colors disabled:opacity-50"
           >
             {cancelText}
           </button>

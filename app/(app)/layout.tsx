@@ -56,10 +56,10 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
    */
   if (isMobile) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col transition-colors duration-300">
         <NavBar />
         <div className="flex-1 flex flex-col">
-          <main className="p-6">{children}</main>
+          <main className="px-2 py-3 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
         </div>
       </div>
     );
@@ -69,11 +69,11 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
    * Desktop layout: Sidebar on left, Header + content on right
    */
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen transition-colors duration-300">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="p-6">{children}</main>
+        <main className="px-2 py-3 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
       </div>
     </div>
   );

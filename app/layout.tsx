@@ -47,8 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* Theme provider with system preference support */}
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+        {/* Theme provider with proper configuration */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+        >
           {/* Notification provider for global notifications */}
           <NotificationProvider>
             {/* Main content container with gradient background */}

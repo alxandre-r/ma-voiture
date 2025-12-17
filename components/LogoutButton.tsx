@@ -17,7 +17,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
  * Button that initiates user logout process.
  * Clears session and redirects to home page.
  */
-export default function LogoutButton() {
+export default function LogoutButton({ className = "" }: { className?: string }) {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
@@ -33,7 +33,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+      className={`bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded w-full sm:px-6 sm:py-3 ${className}`}
       aria-label="Se déconnecter"
     >
       Se déconnecter

@@ -146,7 +146,7 @@ export default function VehicleForm({ onCancel, onSuccess, autoCloseOnSuccess }:
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 max-w-md p-6 rounded-lg bg-gray-800 text-white"
+      className="space-y-2 max-w-md p-3 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 sm:space-y-3 sm:p-4 lg:space-y-4 lg:p-6"
     >
       {/* Vehicle Name Field */}
       <VehicleFormField

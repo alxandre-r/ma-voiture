@@ -44,7 +44,7 @@ export default function VehicleFormField({
       onChange={onChange}
       required={required}
       step={step}
-      className={`w-full bg-gray-900 text-white border border-gray-700 hover:border-gray-600 placeholder-gray-400 p-2 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${className}`}
+      className={`w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500 p-3 rounded-md transition-colors focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:p-2 ${className}`}
     />
   );
 }

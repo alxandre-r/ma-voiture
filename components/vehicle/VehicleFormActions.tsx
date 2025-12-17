@@ -26,12 +26,12 @@ export default function VehicleFormActions({
   submitText = 'Ajouter le véhicule',
 }: VehicleFormActionsProps) {
   return (
-    <div className="flex justify-end gap-3">
+    <div className="flex justify-end gap-2 sm:gap-3">
       {onCancel && (
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors"
+          className="px-3 py-2 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors sm:px-4 sm:py-2 sm:text-base"
         >
           Annuler
         </button>
@@ -39,7 +39,7 @@ export default function VehicleFormActions({
       <button
         type="submit"
         disabled={loading}
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 cursor-pointer transition-colors"
+        className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 cursor-pointer transition-colors sm:px-4 sm:py-2 sm:text-base"
       >
         {loading ? 'Enregistrement...' : submitText}
       </button>

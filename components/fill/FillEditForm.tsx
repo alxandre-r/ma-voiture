@@ -69,7 +69,7 @@ export default function FillEditForm({
           name="date"
           value={editData.date || fill.date}
           onChange={handleChange}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -82,7 +82,7 @@ export default function FillEditForm({
           placeholder="Kilomètres"
           value={editData.odometer || fill.odometer || ''}
           onChange={handleChange}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -99,7 +99,7 @@ export default function FillEditForm({
             handleChange(e);
             calculatePricePerLiter();
           }}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -116,7 +116,7 @@ export default function FillEditForm({
             handleChange(e);
             calculatePricePerLiter();
           }}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -131,7 +131,7 @@ export default function FillEditForm({
           value={editData.price_per_liter || fill.price_per_liter || ''}
           onChange={handleChange}
           readOnly
-          className="w-full bg-white/10 text-white px-3 py-2 rounded outline-none cursor-not-allowed"
+          className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-3 py-2 rounded outline-none cursor-not-allowed border border-gray-300 dark:border-gray-600"
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function FillEditForm({
           value={editData.notes || fill.notes || ''}
           onChange={handleChange}
           rows={3}
-          className="w-full bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500 resize-none"
+          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 resize-none border border-gray-300 dark:border-gray-700"
         />
       </div>
 

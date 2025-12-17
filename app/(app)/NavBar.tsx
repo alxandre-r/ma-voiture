@@ -54,7 +54,7 @@ export default function NavBar() {
                             key={item.path}
                             href={item.path}
                             aria-current={active ? "page" : undefined}
-                            className={`flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-md transition-colors
+                            className={`flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-md transition-colors
                                 ${active ? "bg-white text-gray-900 dark:bg-gray-800 dark:text-white" : "dark:text-gray-400 hover:text-white hover:bg-gray-800"}`}
                         >
                             <Image

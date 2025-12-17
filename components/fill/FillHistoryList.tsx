@@ -13,6 +13,7 @@ import { useFills } from '@/contexts/FillContext';
 import { Fill } from '@/types/fill';
 import FillEditForm from './FillEditForm';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import Icon from '@/components/ui/Icon';
 
 /**
  * FillHistoryList Component
@@ -230,58 +231,58 @@ export default function FillHistoryList() {
 
       {/* Delete operation feedback */}
       {deleteMessage && (
-        <div className="mb-4 p-3 bg-white/5 rounded text-center">
+        <div className="mb-4 p-3 bg-white/5 dark:bg-gray-800/5 rounded text-center">
           {deleteMessage}
         </div>
       )}
 
       {/* Edit operation error */}
       {editError && (
-        <div className="mb-4 p-3 bg-red-500/20 rounded text-center text-red-400">
+        <div className="mb-4 p-3 bg-red-500/20 dark:bg-red-900/30 rounded text-center text-red-400 dark:text-red-300">
           {editError}
         </div>
       )}
 
       {/* Statistics Summary */}
       {stats && fills && fills.length > 0 && (
-        <div className="bg-gray-800/50 p-4 rounded-lg">
-          <h3 className="text-lg font-semibold mb-3">Statistiques globales</h3>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Statistiques globales</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Pleins totaux</div>
-              <div className="font-medium">{stats.total_fills}</div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Pleins totaux</div>
+              <div className="font-medium text-gray-800 dark:text-white">{stats.total_fills}</div>
             </div>
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Litres totaux</div>
-              <div className="font-medium">{stats.total_liters} L</div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Litres totaux</div>
+              <div className="font-medium text-gray-800 dark:text-white">{stats.total_liters} L</div>
             </div>
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Coût total</div>
-              <div className="font-medium">{formatCurrency(stats.total_cost)}</div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Coût total</div>
+              <div className="font-medium text-gray-800 dark:text-white">{formatCurrency(stats.total_cost)}</div>
             </div>
-            <div className="bg-white/5 p-3 rounded">
-              <div className="text-gray-400 text-xs">Consommation moy.</div>
-              <div className="font-medium">{stats.avg_consumption.toFixed(1)} L/100km</div>
+            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Consommation moy.</div>
+              <div className="font-medium text-gray-800 dark:text-white">{stats.avg_consumption.toFixed(1)} L/100km</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Filters and Search */}
-      <div className="bg-gray-800/50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-3">Filtres</h3>
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Filtres</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <input
             type="text"
             placeholder="Rechercher..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
           />
           <select
             value={vehicleFilter}
             onChange={(e) => setVehicleFilter(e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="bg-white/5 dark:bg-gray-800/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
           >
             <option value="all">Tous les véhicules</option>
             {uniqueVehicles.map((vehicle) => (
@@ -291,7 +292,7 @@ export default function FillHistoryList() {
           <select
             value={yearFilter}
             onChange={(e) => setYearFilter(e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="bg-white/5 dark:bg-gray-800/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
           >
             <option value="all">Toutes les années</option>
             {uniqueYears.map((year) => (
@@ -340,7 +341,7 @@ export default function FillHistoryList() {
       {filteredFills.length > 0 && (
         <div className="space-y-4">
           {filteredFills.map((fill) => (
-            <div key={fill.id} className="bg-gray-800/50 p-4 rounded-lg relative">
+            <div key={fill.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg relative border border-gray-200 dark:border-gray-700">
               {/* Edit form (if editing) */}
               {editingId === fill.id && editData && (
                 <FillEditForm
@@ -370,18 +371,18 @@ export default function FillHistoryList() {
                       <button
                         onClick={() => startEdit(fill)}
                         disabled={saving || deletingId === fill.id}
-                        className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500 disabled:opacity-50"
+                        className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500 disabled:opacity-50 flex items-center"
                         title="Modifier"
                       >
-                        ✏️ Modifier
+                        <Icon name="edit" size={14} className="mr-1" /> Modifier
                       </button>
                       <button
                         onClick={() => handleDelete(fill.id || 0)}
                         disabled={saving || deletingId === fill.id}
-                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500 disabled:opacity-50"
+                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500 disabled:opacity-50 flex items-center"
                         title="Supprimer"
                       >
-                        🗑️ Supprimer
+                        <Icon name="delete" size={14} className="mr-1" /> Supprimer
                       </button>
                     </div>
                   </div>

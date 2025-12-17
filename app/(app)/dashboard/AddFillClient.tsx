@@ -10,6 +10,7 @@
 
 import { useState } from 'react';
 import FillModal from '@/components/fill/FillModal';
+import Icon from '@/components/ui/Icon';
 
 interface AddFillClientProps {
   vehicles: Array<{
@@ -33,10 +34,10 @@ export default function AddFillClient({ vehicles }: AddFillClientProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 hover:cursor-pointer flex items-center gap-2 transition-all duration-200 md:py-2 md:px-4 md:rounded"
+        className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 hover:cursor-pointer flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3"
         aria-label="Ajouter un plein"
       >
-        <span className="text-lg md:text-base">➕</span>
+        <Icon name="add" size={20} className="text-white" />
         <span className="font-medium">Ajouter un plein</span>
       </button>
 

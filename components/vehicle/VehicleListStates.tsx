@@ -26,11 +26,11 @@ export default function VehicleListStates({
   vehicles,
 }: VehicleListStatesProps) {
   if (loading) {
-    return <div className="text-white">Chargement...</div>;
+    return <div className="text-gray-800 dark:text-white">Chargement...</div>;
   }
 
   if (error) {
-    return <div className="text-red-300">Erreur : {error}</div>;
+    return <div className="text-red-500 dark:text-red-400">Erreur : {error}</div>;
   }
 
   if (!vehicles || vehicles.length === 0) {
