@@ -1,5 +1,5 @@
 // Test setup file for Vitest
-import { afterEach } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import matchers from '@testing-library/jest-dom/matchers';
 import { expect } from 'vitest';
