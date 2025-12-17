@@ -191,7 +191,9 @@ export default function VehicleCard({
                 </div>
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Dernier plein</span>
-                  <span className="text-gray-800 dark:text-white font-medium">—</span> {/* Will be populated with actual data */}
+                  <span className="text-gray-800 dark:text-white font-medium">
+                    {vehicle.last_fill ? new Date(vehicle.last_fill).toLocaleDateString() : '—'}
+                  </span>
                 </div>
               </div>
 

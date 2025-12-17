@@ -119,6 +119,18 @@ export async function POST(request: Request) {
         // Don't fail the entire operation if odometer update fails
       }
     }
+
+    // Update vehicle last_fill with the date of this new fill
+    const { error: lastFillError } = await supabase
+      .from('vehicles')
+      .update({ last_fill: body.date })
+      .eq('id', body.vehicle_id)
+      .eq('owner', user.id);
+      
+    if (lastFillError) {
+      console.error('Error updating vehicle last_fill:', lastFillError);
+      // Don't fail the entire operation if last_fill update fails
+    }
     
     // Add vehicle info to response for UI
     const responseFill = {
