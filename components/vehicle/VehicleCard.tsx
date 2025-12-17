@@ -130,7 +130,6 @@ export default function VehicleCard({
                     <span className="hidden sm:inline">{deletingId === vehicle.id ? 'Suppression...' : 'Supprimer'}</span>
                   </button>
                 </div>
-                <div className="text-xs text-gray-500">ID: <span className="text-gray-400 break-all">{vehicle.id}</span></div>
               </div>
             </div>
 
@@ -162,15 +161,6 @@ export default function VehicleCard({
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-gray-600 dark:text-gray-400 text-sm font-medium">INFORMATIONS COMPLÉMENTAIRES</h4>
-                {extraFields.length > 0 && (
-                  <button
-                    onClick={() => setExpanded(!expanded)}
-                    className="text-xs text-blue-600 hover:text-blue-500 transition font-medium"
-                    aria-expanded={expanded}
-                  >
-                    {expanded ? 'Masquer' : 'Afficher'}
-                  </button>
-                )}
               </div>
 
               {/* Basic additional info always visible */}
@@ -196,29 +186,14 @@ export default function VehicleCard({
                   </span>
                 </div>
               </div>
-
-              {/* Extra fields section - expandable */}
-              {expanded && extraFields.length > 0 && (
-                <div className="mt-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <pre className="text-xs text-gray-300 dark:text-gray-400 overflow-auto">
-                    {JSON.stringify(
-                      Object.fromEntries(
-                        Object.entries(vehicle).filter(([k]) => extraFields.includes(k))
-                      ),
-                      null,
-                      2
-                    )}
-                  </pre>
-                </div>
-              )}
             </div>
           </>
         )}
 
         {/* Edit Form Section - shown when editing, replaces the card content */}
         {editingId === vehicle.id && editData && (
-          <div className="mt-6 bg-gray-100 p-4 rounded-lg border border-gray-200">
-            <h4 className="text-gray-800 font-medium mb-4">MODIFIER LE VÉHICULE</h4>
+          <div className="mt-6 bg-gray-100 p-4 rounded-lg dark:bg-gray-800">
+            <h4 className="text-gray-800 font-medium mb-4 dark:text-white">MODIFIER LE VÉHICULE</h4>
             <VehicleEditForm
               editData={editData}
               onChangeField={onChangeField}
