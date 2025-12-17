@@ -48,7 +48,7 @@ export async function DELETE(request: Request) {
     // Verify fill ownership
     const { data: existingFill, error: fillError } = await supabase
       .from('fills')
-      .select('id, owner')
+      .select('id, owner, vehicle_id, date')
       .eq('id', body.fillId)
       .single();
     
@@ -66,6 +66,9 @@ export async function DELETE(request: Request) {
       );
     }
     
+    // Use the vehicle_id and date from the existing fill verification
+    const vehicleId = existingFill.vehicle_id;
+    
     // Delete fill record
     const { error } = await supabase
       .from('fills')
@@ -79,6 +82,35 @@ export async function DELETE(request: Request) {
         { error: 'Erreur lors de la suppression du plein' },
         { status: 500 }
       );
+    }
+    
+    // After deleting the fill, find the most recent remaining fill for this vehicle
+    const { data: mostRecentFill, error: recentFillError } = await supabase
+      .from('fills')
+      .select('date')
+      .eq('vehicle_id', vehicleId)
+      .eq('owner', user.id)
+      .order('date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    if (recentFillError) {
+      console.error('Error finding most recent fill after deletion:', recentFillError);
+      // Don't fail the entire operation if we can't find the most recent fill
+    }
+    
+    // Update the vehicle's last_fill field
+    const newLastFillDate = mostRecentFill ? mostRecentFill.date : null;
+    
+    const { error: updateError } = await supabase
+      .from('vehicles')
+      .update({ last_fill: newLastFillDate })
+      .eq('id', vehicleId)
+      .eq('owner', user.id);
+      
+    if (updateError) {
+      console.error('Error updating vehicle last_fill after fill deletion:', updateError);
+      // Don't fail the entire operation if last_fill update fails
     }
     
     return NextResponse.json(
