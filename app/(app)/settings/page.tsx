@@ -292,7 +292,7 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 {/* Distance */}
                 <div>
-                  <label className="font-medium block mb-2 text-gray-700">Distance</label>
+                  <label className="font-medium block mb-2 text-gray-700 dark:text-gray-300">Distance</label>
                   <select
                     value={units.distance}
                     onChange={(e) =>
@@ -563,7 +563,7 @@ export default function SettingsPage() {
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                       <h4 className="font-semibold text-gray-800 dark:text-white mb-3">Confirmation de suppression</h4>
                       <p className="text-gray-600 dark:text-gray-400 mb-4">
-                        Pour confirmer la suppression de votre compte, veuillez taper : <strong>"SUPPRIMER MON COMPTE"</strong>
+                        Pour confirmer la suppression de votre compte, veuillez taper : <strong>&quot;SUPPRIMER MON COMPTE&quot;</strong>
                       </p>
                       <input
                         type="text"
@@ -603,7 +603,7 @@ export default function SettingsPage() {
                   </h3>
 
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    Le responsable du traitement des données personnelles collectées via l'application
+                    Le responsable du traitement des données personnelles collectées via l&apos;application
                     <strong> Ma Voiture Sandy</strong> est :
                   </p>
 
@@ -620,15 +620,15 @@ export default function SettingsPage() {
                   </div>
 
                   <p className="text-gray-600 dark:text-gray-400 mt-4">
-                    L'application est hébergée par des prestataires techniques respectant le RGPD :
+                    L&apos;application est hébergée par des prestataires techniques respectant le RGPD :
                   </p>
 
                   <ul className="list-disc list-inside mt-2 text-gray-600 dark:text-gray-400 space-y-1">
                     <li>
-                      <strong>Vercel Inc.</strong> – Hébergement du site web et gestion du nom de domaine
+                      <strong>Vercel Inc.</strong> - Hébergement du site web et gestion du nom de domaine
                     </li>
                     <li>
-                      <strong>Supabase Inc.</strong> – Authentification et stockage sécurisé des données
+                      <strong>Supabase Inc.</strong> - Authentification et stockage sécurisé des données
                     </li>
                   </ul>
 
