@@ -50,16 +50,7 @@ export default function VehicleModal({ open, onClose }: VehicleModalProps) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-gray-800 rounded-lg shadow-lg p-6"
       >
-        {/* Close button in top right */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center text-gray-200 text-2xl hover:text-white hover:cursor-pointer"
-          aria-label="Fermer"
-        >
-          ✕
-        </button>
 
         <VehicleForm 
           onCancel={onClose} 

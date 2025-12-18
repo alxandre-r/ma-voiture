@@ -12,8 +12,10 @@ import { useState } from 'react';
 import { useFills } from '@/contexts/FillContext';
 import { Fill } from '@/types/fill';
 import FillEditForm from './FillEditForm';
+import FillFilters from './FillFilters';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import Icon from '@/components/ui/Icon';
+import { processFills } from '@/lib/fillUtils';
 
 /**
  * FillHistoryList Component
@@ -29,6 +31,7 @@ export default function FillHistoryList() {
     refreshFills,
     updateFillOptimistic,
     deleteFillOptimistic,
+    getVehicleName,
   } = useFills();
 
   // UI state
@@ -40,10 +43,14 @@ export default function FillHistoryList() {
   const [deleteMessage, setDeleteMessage] = useState<string | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
   
-  // Filter and search state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [vehicleFilter, setVehicleFilter] = useState('all');
-  const [yearFilter, setYearFilter] = useState('all');
+  // Filter and sort state
+  const [filters, setFilters] = useState({
+    vehicleFilter: 'all' as string | number,
+    yearFilter: 'all',
+    monthFilter: 'all',
+    sortBy: 'date',
+    sortDirection: 'desc' as 'asc' | 'desc'
+  });
 
   /**
    * Initialize editing for a fill
@@ -180,41 +187,20 @@ export default function FillHistoryList() {
   };
 
   /**
-   * Filter fills based on search and filters
+   * Calculate average price per liter for filtered fills
    */
-  const filteredFills = fills ? fills.filter((fill) => {
-    // Search term filter
-    const searchMatch = searchTerm.toLowerCase() === '' ||
-      (fill.vehicle_name && fill.vehicle_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (fill.notes && fill.notes.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (fill.date && fill.date.includes(searchTerm));
-    
-    // Vehicle filter
-    const vehicleMatch = vehicleFilter === 'all' || 
-      (fill.vehicle_name && fill.vehicle_name === vehicleFilter);
-    
-    // Year filter
-    const yearMatch = yearFilter === 'all' || 
-      (fill.date && new Date(fill.date).getFullYear().toString() === yearFilter);
-    
-    return searchMatch && vehicleMatch && yearMatch;
-  }) : [];
+  const calculateAvgPricePerLiter = (fills: Fill[]) => {
+    const totalAmount = fills.reduce((sum, fill) => sum + (fill.amount ?? 0), 0);
+    const totalLiters = fills.reduce((sum, fill) => sum + (fill.liters ?? 0), 0);
+    return totalLiters > 0 ? totalAmount / totalLiters : 0;
+  };
 
   /**
-   * Get unique vehicles for filter
+   * Process fills with filtering and sorting
    */
-  const uniqueVehicles = fills ? Array.from(new Set(fills
-    .map(fill => fill.vehicle_name)
-    .filter((name): name is string => !!name)
-  )) : [];
+  const processedFills = fills ? processFills(fills, filters) : [];
 
-  /**
-   * Get unique years for filter
-   */
-  const uniqueYears = fills ? Array.from(new Set(fills
-    .map(fill => fill.date ? new Date(fill.date).getFullYear().toString() : null)
-    .filter((year): year is string => !!year)
-  )).sort((a, b) => b.localeCompare(a)) : [];
+
 
   return (
     <div className="fill-history space-y-6">
@@ -243,64 +229,45 @@ export default function FillHistoryList() {
         </div>
       )}
 
-      {/* Statistics Summary */}
-      {stats && fills && fills.length > 0 && (
+      {/* Statistics Summary - based on filtered data */}
+      {processedFills && processedFills.length > 0 && (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Statistiques globales</h3>
+          <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
+            Statistiques {filters.vehicleFilter !== 'all' ? `pour ${filters.vehicleFilter}` : 'globales'}
+          </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
               <div className="text-gray-500 dark:text-gray-400 text-xs">Pleins totaux</div>
-              <div className="font-medium text-gray-800 dark:text-white">{stats.total_fills}</div>
+              <div className="font-medium text-gray-800 dark:text-white">{processedFills.length}</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
               <div className="text-gray-500 dark:text-gray-400 text-xs">Litres totaux</div>
-              <div className="font-medium text-gray-800 dark:text-white">{stats.total_liters} L</div>
+              <div className="font-medium text-gray-800 dark:text-white">
+                {processedFills.reduce((sum, fill) => sum + (fill.liters ?? 0), 0).toFixed(1)} L
+              </div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
               <div className="text-gray-500 dark:text-gray-400 text-xs">Coût total</div>
-              <div className="font-medium text-gray-800 dark:text-white">{formatCurrency(stats.total_cost)}</div>
+              <div className="font-medium text-gray-800 dark:text-white">
+                {formatCurrency(processedFills.reduce((sum, fill) => sum + (fill.amount ?? 0), 0))}
+              </div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-              <div className="text-gray-500 dark:text-gray-400 text-xs">Consommation moy.</div>
-              <div className="font-medium text-gray-800 dark:text-white">{stats.avg_consumption.toFixed(1)} L/100km</div>
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Prix moyen/L</div>
+              <div className="font-medium text-gray-800 dark:text-white">
+                {calculateAvgPricePerLiter(processedFills).toFixed(3)} €/L
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Filters and Search */}
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Filtres</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input
-            type="text"
-            placeholder="Rechercher..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
-          />
-          <select
-            value={vehicleFilter}
-            onChange={(e) => setVehicleFilter(e.target.value)}
-            className="bg-white/5 dark:bg-gray-800/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
-          >
-            <option value="all">Tous les véhicules</option>
-            {uniqueVehicles.map((vehicle) => (
-              <option key={vehicle} value={vehicle}>{vehicle}</option>
-            ))}
-          </select>
-          <select
-            value={yearFilter}
-            onChange={(e) => setYearFilter(e.target.value)}
-            className="bg-white/5 dark:bg-gray-800/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
-          >
-            <option value="all">Toutes les années</option>
-            {uniqueYears.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+      {/* Advanced Filters and Sorting */}
+      <FillFilters
+        fills={fills}
+        onFilterChange={setFilters}
+        loading={loading}
+      />
 
       {/* State handling */}
       {loading && (
@@ -311,36 +278,69 @@ export default function FillHistoryList() {
       )}
 
       {error && (
-        <div className="bg-red-500/20 p-4 rounded-lg text-red-400">
-          <p className="font-medium">Erreur de chargement</p>
-          <p className="text-sm">{error}</p>
-          <button
-            onClick={refreshFills}
-            className="mt-3 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500"
-          >
-            Réessayer
-          </button>
+        <div className="bg-red-500/20 p-4 rounded-lg text-red-400 border border-red-500/30">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="font-medium text-lg">⚠️ Erreur de chargement</h3>
+          </div>
+          <p className="text-sm mb-3">{error}</p>
+          <div className="flex gap-2">
+            <button
+              onClick={refreshFills}
+              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500 flex-1"
+            >
+              Réessayer
+            </button>
+            {error.includes('session') || error.includes('connecter') ? (
+              <button
+                onClick={() => window.location.reload()}
+                className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500 flex-1"
+              >
+                Recharger
+              </button>
+            ) : null}
+          </div>
         </div>
       )}
 
-      {!loading && !error && fills && fills.length === 0 && (
+      {!loading && !error && processedFills && processedFills.length === 0 && (
         <div className="text-center py-8 text-gray-400">
-          <p className="mb-2">Aucun plein enregistré pour le moment.</p>
-          <p className="text-sm">Ajoutez votre premier plein en utilisant le bouton sur le tableau de bord.</p>
+          {filters.vehicleFilter !== 'all' || filters.yearFilter !== 'all' || filters.monthFilter !== 'all' ? (
+            <>
+              <p className="mb-2">Aucun plein trouvé avec les filtres actuels.</p>
+              <p className="text-sm mb-4">Essayez de modifier vos critères de recherche.</p>
+              <button
+                onClick={() => setFilters({
+                  vehicleFilter: 'all',
+                  yearFilter: 'all',
+                  monthFilter: 'all',
+                  sortBy: 'date',
+                  sortDirection: 'desc'
+                })}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 text-sm"
+              >
+                Réinitialiser les filtres
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="mb-2">Aucun plein enregistré pour le moment.</p>
+              <p className="text-sm">Ajoutez votre premier plein en utilisant le bouton sur le tableau de bord.</p>
+            </>
+          )}
         </div>
       )}
 
       {/* Results count */}
-      {filteredFills.length > 0 && (
+      {processedFills.length > 0 && (
         <div className="text-sm text-gray-400">
-          {filteredFills.length} plein{filteredFills.length > 1 ? 's' : ''} trouvé{filteredFills.length > 1 ? 's' : ''}
+          {processedFills.length} plein{processedFills.length > 1 ? 's' : ''} trouvé{processedFills.length > 1 ? 's' : ''}
         </div>
       )}
 
       {/* Fill list - Detailed view */}
-      {filteredFills.length > 0 && (
+      {processedFills.length > 0 && (
         <div className="space-y-4">
-          {filteredFills.map((fill) => (
+          {processedFills.map((fill) => (
             <div key={fill.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg relative border border-gray-200 dark:border-gray-700">
               {/* Edit form (if editing) */}
               {editingId === fill.id && editData && (
@@ -357,61 +357,68 @@ export default function FillHistoryList() {
               {/* Display mode */}
               {!editingId || editingId !== fill.id ? (
                 <>
-                  {/* Fill header */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="font-medium">
-                        {fill.vehicle_name || `Véhicule #${fill.vehicle_id}`}
-                      </h4>
-                      <p className="text-sm text-gray-400">
-                        {formatDate(fill.date)}
-                      </p>
+                  {/* Compact fill display with highlighted date and amount */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center py-2">
+                    {/* Vehicle and Date (highlighted) */}
+                    <div className="lg:col-span-4">
+                      <div className="font-medium text-gray-800 dark:text-white">
+                      {getVehicleName(fill.vehicle_id)}
+                      </div>
+                      <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                      {formatDate(fill.date)}
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+
+                    {/* Amount (highlighted) */}
+                    <div className="lg:col-span-2 text-center">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">MONTANT</div>
+                      <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                      {formatCurrency(fill.amount)}
+                      </div>
+                    </div>
+
+                    {/* Price per liter */}
+                    <div className="lg:col-span-2 text-center">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">PRIX/LITRE</div>
+                      <div className="font-medium">
+                      {formatCurrency(fill.price_per_liter)}
+                      </div>
+                    </div>
+
+                    {/* Liters and Odometer */}
+                    <div className="lg:col-span-2 text-center">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">LITRES / KM</div>
+                      <div className="text-sm">
+                      {fill.liters || 'N/A'} L • {fill.odometer || 'N/A'} km
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="lg:col-span-2 flex justify-end gap-2">
                       <button
-                        onClick={() => startEdit(fill)}
-                        disabled={saving || deletingId === fill.id}
-                        className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500 disabled:opacity-50 flex items-center"
-                        title="Modifier"
+                      onClick={() => startEdit(fill)}
+                      disabled={saving || deletingId === fill.id}
+                      className="p-1.5 bg-gray-400 hover:bg-gray-300 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+                      title="Modifier"
                       >
-                        <Icon name="edit" size={14} className="mr-1" /> Modifier
+                      <Icon name="edit" size={16} className='invert dark:invert-0' />
                       </button>
                       <button
-                        onClick={() => handleDelete(fill.id || 0)}
-                        disabled={saving || deletingId === fill.id}
-                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-500 disabled:opacity-50 flex items-center"
-                        title="Supprimer"
+                      onClick={() => handleDelete(fill.id || 0)}
+                      disabled={saving || deletingId === fill.id}
+                      className="p-1.5 bg-red-600 hover:bg-red-500 text-red-800 dark:bg-red-600 dark:hover:bg-red-500 dark:text-white rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+                      title="Supprimer"
                       >
-                        <Icon name="delete" size={14} className="mr-1" /> Supprimer
+                      <Icon name="delete" size={16} className='invert dark:invert-0' />
                       </button>
                     </div>
-                  </div>
+                    </div>
 
-                  {/* Fill details */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
-                    <div>
-                      <div className="text-gray-400 text-xs">Kilométrage</div>
-                      <div className="font-medium">{fill.odometer || 'N/A'} km</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-xs">Litres</div>
-                      <div className="font-medium">{fill.liters || 'N/A'} L</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-xs">Montant</div>
-                      <div className="font-medium">{formatCurrency(fill.amount)}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-400 text-xs">Prix/L</div>
-                      <div className="font-medium">{formatCurrency(fill.price_per_liter)}</div>
-                    </div>
-                  </div>
-
-                  {/* Notes */}
+                  {/* Notes (compact) */}
                   {fill.notes && (
-                    <div className="p-3 bg-white/5 rounded text-sm">
-                      <div className="text-gray-400 text-xs mb-1">Notes</div>
-                      <div>{fill.notes}</div>
+                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm">
+                      <span className="text-gray-500 dark:text-gray-400">📝 </span>
+                      <span>{fill.notes}</span>
                     </div>
                   )}
                 </>

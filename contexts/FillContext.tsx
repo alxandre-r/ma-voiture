@@ -17,13 +17,28 @@ interface FillContextType {
   error: string | null;
   stats: FillStats | null;
   selectedVehicleId: string | null;
+  vehicles: Array<{
+    id: number;
+    name: string | null;
+    make: string | null;
+    model: string | null;
+    odometer: number | null;
+  }> | null;
   refreshFills: () => Promise<void>;
   addFillOptimistic: (fill: Fill) => void;
   updateFillOptimistic: (fillId: number, updatedData: Partial<Fill>) => void;
   deleteFillOptimistic: (fillId: number) => void;
   setSelectedVehicleId: (vehicleId: string | null) => void;
+  setVehicles: (vehicles: Array<{
+    id: number;
+    name: string | null;
+    make: string | null;
+    model: string | null;
+    odometer: number | null;
+  }> | null) => void;
   getFilteredFills: (vehicleId: string | null) => Fill[];
   getFilteredStats: (vehicleId: string | null) => FillStats;
+  getVehicleName: (vehicleId: number) => string;
 }
 
 const FillContext = createContext<FillContextType | undefined>(undefined);
@@ -40,7 +55,23 @@ export function FillProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<FillStats | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+  const [vehicles, setVehicles] = useState<Array<{
+    id: number;
+    name: string | null;
+    make: string | null;
+    model: string | null;
+    odometer: number | null;
+  }> | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+
+  /**
+   * Get vehicle name by ID
+   */
+  const getVehicleName = (vehicleId: number): string => {
+    if (!vehicles) return `Véhicule #${vehicleId}`;
+    const vehicle = vehicles.find(v => v.id === vehicleId);
+    return vehicle?.name || `Véhicule #${vehicleId}`;
+  };
 
   /**
    * Filter fills by vehicle ID
@@ -238,7 +269,18 @@ export function FillProvider({ children }: { children: ReactNode }) {
       const body = await res.json().catch(() => ({}));
       
       if (!res.ok) {
-        setError(body?.error ?? `Request failed (${res.status})`);
+        let errorMessage = body?.error ?? `Erreur de requête (${res.status})`;
+        
+        // Messages d'erreur plus spécifiques
+        if (res.status === 401) {
+          errorMessage = 'Veuillez vous connecter pour accéder à vos données.';
+        } else if (res.status === 500) {
+          errorMessage = 'Erreur serveur lors de la récupération des pleins. Veuillez réessayer plus tard.';
+        } else if (body?.error?.includes('non autorisé')) {
+          errorMessage = 'Session expirée. Veuillez vous reconnecter.';
+        }
+        
+        setError(errorMessage);
         setFills([]);
         setStats(null);
         return;
@@ -248,7 +290,17 @@ export function FillProvider({ children }: { children: ReactNode }) {
       setFills(fillData);
       setStats(calculateStats(fillData));
     } catch (err) {
-      setError((err as Error).message || 'Unknown error');
+      let errorMessage = 'Impossible de se connecter au serveur.';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('Failed to fetch')) {
+          errorMessage = 'Problème de connexion réseau. Vérifiez votre connexion internet.';
+        } else if (err.message.includes('timeout')) {
+          errorMessage = 'Le serveur met trop de temps à répondre.';
+        }
+      }
+      
+      setError(errorMessage);
       setFills([]);
       setStats(null);
     } finally {
@@ -328,13 +380,16 @@ export function FillProvider({ children }: { children: ReactNode }) {
       error,
       stats,
       selectedVehicleId,
+      vehicles,
       refreshFills,
       addFillOptimistic,
       updateFillOptimistic,
       deleteFillOptimistic,
       setSelectedVehicleId,
+      setVehicles,
       getFilteredFills,
       getFilteredStats,
+      getVehicleName,
     }}>
       {children}
     </FillContext.Provider>

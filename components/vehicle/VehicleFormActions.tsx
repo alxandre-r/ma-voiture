@@ -31,7 +31,7 @@ export default function VehicleFormActions({
         <button
           type="button"
           onClick={onCancel}
-          className="px-3 py-2 text-sm bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors sm:px-4 sm:py-2 sm:text-base"
+          className="px-3 py-2 text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white rounded transition-colors sm:px-4 sm:py-2 sm:text-base"
         >
           Annuler
         </button>

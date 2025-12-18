@@ -16,6 +16,7 @@ interface FillListItemProps {
   onEdit?: () => void;
   onDelete: () => void;
   isDeleting: boolean;
+  showVehicleName?: boolean;
 }
 
 /**
@@ -24,7 +25,7 @@ interface FillListItemProps {
  * Compact display for a single fuel fill-up record.
  * Shows key information in a minimal space.
  */
-export default function FillListItem({ fill, onEdit, onDelete, isDeleting }: FillListItemProps) {
+export default function FillListItem({ fill, onEdit, onDelete, isDeleting, showVehicleName = true }: FillListItemProps) {
   /**
    * Format date for compact display
    */
@@ -49,14 +50,16 @@ export default function FillListItem({ fill, onEdit, onDelete, isDeleting }: Fil
   };
 
   return (
-    <div className="fill-list-item grid grid-cols-1 md:grid-cols-12 gap-2 py-3 border-b border-gray-700/50 dark:border-gray-600 text-sm">
-      {/* Mobile layout - stacked */}
-      <div className="md:hidden space-y-1">
-        <div className="flex justify-between items-center">
+    <div className="fill-list-item w-full grid grid-cols-1 md:grid-cols-12 gap-2 py-3 border-b border-gray-200 dark:border-gray-700 text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+      {/* Mobile layout - stacked (similar to history but compact) */}
+      <div className="md:hidden w-full space-y-2">
+        <div className="flex justify-between items-start w-full">
           <div className="flex items-center gap-2">
-            <span className="text-gray-400 dark:text-gray-500">{formatDate(fill.date)}</span>
             <span className="font-medium text-gray-800 dark:text-white">
-              {fill.vehicle_name || `Véhicule #${fill.vehicle_id}`}
+              {showVehicleName ? fill.vehicle_name || `Véhicule #${fill.vehicle_id}` : `Véhicule #${fill.vehicle_id}`}
+            </span>
+            <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+              {formatDate(fill.date)}
             </span>
           </div>
           <div className="flex gap-2">
@@ -80,67 +83,88 @@ export default function FillListItem({ fill, onEdit, onDelete, isDeleting }: Fil
             </button>
           </div>
         </div>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <span className="text-gray-800 dark:text-white">{fill.liters || 'N/A'} L</span>
-            <span className="font-medium text-gray-800 dark:text-white">{formatCurrency(fill.amount)}</span>
-            <span className="text-gray-300 dark:text-gray-500 text-xs">
-              {fill.price_per_liter ? `${fill.price_per_liter.toFixed(3)} €/L` : 'N/A'}
-            </span>
+        <div className="grid grid-cols-3 gap-2 text-xs w-full">
+          <div className="text-center">
+            <div className="text-gray-500 dark:text-gray-400">MONTANT</div>
+            <div className="font-bold text-green-600 dark:text-green-400">
+              {formatCurrency(fill.amount)}
+            </div>
           </div>
-          <span className="text-gray-400 dark:text-gray-500 text-xs">
-            {fill.odometer ? `${fill.odometer} km` : 'N/A'}
-          </span>
+          <div className="text-center">
+            <div className="text-gray-500 dark:text-gray-400">PRIX/L</div>
+            <div className="font-medium">
+              {fill.price_per_liter ? `${fill.price_per_liter.toFixed(3)} €` : 'N/A'}
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-gray-500 dark:text-gray-400">LITRES</div>
+            <div className="text-gray-800 dark:text-white">
+              {fill.liters || 'N/A'} L
+            </div>
+          </div>
+        </div>
+        <div className="text-xs text-gray-400 dark:text-gray-500 w-full">
+          {fill.odometer ? `${fill.odometer} km` : 'N/A'}
         </div>
       </div>
 
-      {/* Desktop layout - grid */}
-      <div className="hidden md:flex md:col-span-12 md:gap-4 px-6 items-center">
-        <div className="flex-1 flex items-center">
-          <span className="text-sm text-gray-500 dark:text-gray-400">{formatDate(fill.date)}</span>
-        </div>
+      {/* Desktop layout - grid (similar to history but compact) */}
+      <div className="hidden md:grid md:col-span-12 md:grid-cols-12 md:gap-3 md:items-center md:py-1 md:w-full">
 
-        <div className="flex-1 flex items-center gap-2">
+        {/* Vehicle and Date (highlighted) */}
+        <div className="md:col-span-4 flex items-center gap-2 w-full">
           <span className="text-sm font-medium text-gray-800 dark:text-white">
-        {fill.vehicle_name || `Véhicule #${fill.vehicle_id}`}
+            {showVehicleName ? fill.vehicle_name || `Véhicule #${fill.vehicle_id}` : `Véhicule #${fill.vehicle_id}`}
           </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-        {fill.odometer ? `${fill.odometer} km` : 'N/A'}
-          </span>
-        </div>
-
-        <div className="flex-1 flex items-center gap-2">
-          <span className="text-sm text-gray-800 dark:text-white">{fill.liters || 'N/A'} L</span>
-          <span className="text-gray-500 dark:text-gray-400">•</span>
-          <span className="text-sm font-medium text-gray-800 dark:text-white">{formatCurrency(fill.amount)}</span>
-        </div>
-
-        <div className="flex-1 flex items-center justify-center">
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-        {fill.price_per_liter ? `${fill.price_per_liter.toFixed(3)} €/L` : 'N/A'}
+          <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+            {formatDate(fill.date)}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Amount (highlighted) */}
+        <div className="md:col-span-2 text-center w-full">
+          <span className="text-sm font-bold text-green-600 dark:text-green-400">
+            {formatCurrency(fill.amount)}
+          </span>
+        </div>
+
+        {/* Price per liter */}
+        <div className="md:col-span-2 text-center w-full">
+          <span className="text-xs text-gray-500 dark:text-gray-400">PRIX/LITRE</span>
+          <div className="text-sm font-medium">
+            {fill.price_per_liter ? `${fill.price_per_liter.toFixed(3)} €` : 'N/A'}
+          </div>
+        </div>
+
+        {/* Liters and Odometer */}
+        <div className="md:col-span-2 text-center w-full">
+          <span className="text-xs text-gray-500 dark:text-gray-400">LITRES / KM</span>
+          <div className="text-xs">
+            {fill.liters || 'N/A'} L • {fill.odometer ? `${fill.odometer} km` : 'N/A'}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="md:col-span-2 flex justify-end gap-2 w-full">
           {onEdit && (
-        <button
-          onClick={onEdit}
-          disabled={isDeleting}
-          className="p-1 text-gray-400 hover:text-white hover:cursor-pointer disabled:opacity-50 dark:text-gray-500 dark:hover:text-white"
-          title="Modifier"
-          aria-label="Modifier"
-        >
-          <Icon name="edit" size={18} />
-        </button>
+            <button
+              onClick={onEdit}
+              disabled={isDeleting}
+              className="p-1 text-gray-400 hover:text-white hover:cursor-pointer disabled:opacity-50 dark:text-gray-500 dark:hover:text-white"
+              title="Modifier"
+              aria-label="Modifier"
+            >
+              <Icon name="edit" size={18} />
+            </button>
           )}
           <button
-        onClick={onDelete}
-        disabled={isDeleting}
-        className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 hover:cursor-pointer disabled:opacity-50 rounded dark:text-red-400 dark:hover:text-red-300"
-        title="Supprimer"
-        aria-label="Supprimer"
+            onClick={onDelete}
+            disabled={isDeleting}
+            className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 hover:cursor-pointer disabled:opacity-50 rounded dark:text-red-400 dark:hover:text-red-300"
+            title="Supprimer"
+            aria-label="Supprimer"
           >
-        <Icon name="delete" size={18} />
+            <Icon name="delete" size={18} />
           </button>
         </div>
       </div>

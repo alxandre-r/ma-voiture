@@ -114,19 +114,19 @@ export default function VehicleCard({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEditStart(vehicle)}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition sm:px-4"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
                     aria-label={`Modifier ${vehicle.name ?? vehicle.id}`}
                   >
-                    <Icon name="edit" size={18} className="text-white sm:size-16" />
+                    <Icon name="edit" size={18} className="invert dark:invert-0 sm:size-16" />
                     <span className="hidden sm:inline">Modifier</span>
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={deletingId === vehicle.id}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition disabled:opacity-50 sm:px-4"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium transition disabled:opacity-50 sm:px-4 hover:cursor-pointer"
                     aria-label={`Supprimer ${vehicle.name ?? vehicle.id}`}
                   >
-                    <Icon name="delete" size={18} className="text-white sm:size-16" />
+                    <Icon name="delete" size={18} className="invert dark:invert-0 sm:size-16" />
                     <span className="hidden sm:inline">{deletingId === vehicle.id ? 'Suppression...' : 'Supprimer'}</span>
                   </button>
                 </div>
@@ -192,8 +192,6 @@ export default function VehicleCard({
 
         {/* Edit Form Section - shown when editing, replaces the card content */}
         {editingId === vehicle.id && editData && (
-          <div className="mt-6 bg-gray-100 p-4 rounded-lg dark:bg-gray-800">
-            <h4 className="text-gray-800 font-medium mb-4 dark:text-white">MODIFIER LE VÉHICULE</h4>
             <VehicleEditForm
               editData={editData}
               onChangeField={onChangeField}
@@ -201,7 +199,6 @@ export default function VehicleCard({
               onCancelEdit={onCancelEdit}
               saving={saving}
             />
-          </div>
         )}
 
         {/* Delete Confirmation Dialog */}

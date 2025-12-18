@@ -223,8 +223,8 @@ export default function SettingsPage() {
                     ? "bg-blue-600 text-white shadow-sm"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                 >
-                  <Icon name={item.icon} size={20} className={`flex-shrink-0 dark:invert
-                  ${activeSection === item.id ? "invert" : ""}`} />
+                  <Icon name={item.icon} size={20} className={`flex-shrink-0
+                  ${activeSection === item.id ? "invert dark:invert-0" : ""}`} />
                   <span className="text-xs font-medium text-center">{item.label}</span>
                 </button>
               ))}

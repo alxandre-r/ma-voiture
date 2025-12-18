@@ -47,6 +47,13 @@ export default function DashboardClient({ vehicles }: DashboardClientProps) {
    */
   const isSwitcherDisabled = vehicles.length <= 1;
   
+  // Set vehicles in context
+  const { setVehicles } = useFills();
+
+  useEffect(() => {
+    setVehicles(vehicles);
+  }, [vehicles, setVehicles]);
+
   /**
    * Initialize with single vehicle selected if only one exists
    */

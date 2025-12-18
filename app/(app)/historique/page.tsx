@@ -8,7 +8,7 @@
 
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { FillProvider } from '@/contexts/FillContext';
-import FillHistoryList from '@/components/fill/FillHistoryList';
+import HistoriqueClient from './HistoriqueClient';
 
 /**
  * HistoriquePage Component
@@ -32,12 +32,19 @@ export default async function HistoriquePage() {
     );
   }
 
+  // Fetch user's vehicles for display
+  const { data: vehicles } = await supabase
+    .from('vehicles')
+    .select('id, name, make, model, odometer')
+    .eq('owner', user.id)
+    .order('name', { ascending: true });
+
   return (
     <main className="px-1 py-2 space-y-3 sm:px-2 sm:py-3 sm:space-y-4 lg:px-4 lg:py-6 lg:space-y-6">
       <h1 className="text-xl font-bold text-gray-800 dark:text-white sm:text-2xl lg:text-3xl">Historique des pleins</h1>
       
       <FillProvider>
-        <FillHistoryList />
+        <HistoriqueClient vehicles={vehicles || []} />
       </FillProvider>
     </main>
   );

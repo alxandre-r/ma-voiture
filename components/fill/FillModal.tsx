@@ -51,18 +51,7 @@ export default function FillModal({ open, onClose, vehicles = null }: FillModalP
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4"
       >
-        {/* Close button in top right */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 w-12 h-12 flex items-center justify-center text-gray-200 text-2xl hover:text-white hover:cursor-pointer"
-          aria-label="Fermer"
-        >
-          ✕
-        </button>
-
-        <h3 className="text-xl font-semibold mb-4">Ajouter un plein</h3>
 
         <FillForm
           onCancel={onClose}

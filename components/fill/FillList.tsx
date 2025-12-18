@@ -34,6 +34,7 @@ export default function FillList() {
     deleteFillOptimistic,
     getFilteredFills,
     getFilteredStats,
+    getVehicleName,
   } = useFills();
 
   // UI state
@@ -126,12 +127,12 @@ export default function FillList() {
               <div className="text-gray-800 dark:text-white font-medium text-lg sm:text-xl">{getFilteredStats(selectedVehicleId).avg_consumption.toFixed(1)} L/100km</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
-              <div className="text-gray-400 dark:text-gray-500 text-xs">Coût total</div>
-              <div className="font-medium text-lg sm:text-xl">{formatCurrency(getFilteredStats(selectedVehicleId).total_cost)}</div>
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Coût total</div>
+              <div className="text-gray-800 dark:text-white font-medium text-lg sm:text-xl">{formatCurrency(getFilteredStats(selectedVehicleId).total_cost)}</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700 p-2 rounded sm:p-3">
-              <div className="text-gray-400 dark:text-gray-500 text-xs">Prix moyen/L</div>
-              <div className="font-medium text-lg sm:text-xl">{formatCurrency(getFilteredStats(selectedVehicleId).avg_price_per_liter)}</div>
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Prix moyen/L</div>
+              <div className="text-gray-800 dark:text-white font-medium text-lg sm:text-xl">{formatCurrency(getFilteredStats(selectedVehicleId).avg_price_per_liter)}</div>
             </div>
           </div>
           
@@ -184,14 +185,15 @@ export default function FillList() {
 
       {/* Fill list - Compact view (max 4 items) */}
       {fills && fills.length > 0 && (
-        <div className="space-y-1">
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2">
           {/* Show only last 4 fills in dashboard */}
           {getFilteredFills(selectedVehicleId).slice(0, 4).map((fill) => (
             <FillListItem
               key={fill.id}
-              fill={fill}
+              fill={{ ...fill, vehicle_name: getVehicleName(fill.vehicle_id) }}
               onDelete={() => handleDelete(fill.id || 0)}
               isDeleting={deletingId === fill.id}
+              showVehicleName={true}
             />
           ))}
           
@@ -200,7 +202,7 @@ export default function FillList() {
             <div className="mt-4 text-center">
               <Link
                 href="/historique"
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm transition-colors"
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white rounded text-sm transition-colors"
               >
                 Voir l&#39;historique complet ({getFilteredFills(selectedVehicleId).length} pleins)
               </Link>

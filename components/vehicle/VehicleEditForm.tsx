@@ -46,68 +46,68 @@ export default function VehicleEditForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Name Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Nom</span>
+          <span className="text-gray-600 dark:text-gray-300 text-xs mb-1">Nom</span>
           <input
             value={editData.name ?? ''}
             onChange={(e) => onChangeField('name', e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Owner Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Propriétaire</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Propriétaire</span>
           <input
             value={editData.owner ?? ''}
             onChange={(e) => onChangeField('owner', e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Make Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Marque</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Marque</span>
           <input
             value={editData.make ?? ''}
             onChange={(e) => onChangeField('make', e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Model Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Modèle</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Modèle</span>
           <input
             value={editData.model ?? ''}
             onChange={(e) => onChangeField('model', e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Year Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Année</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Année</span>
           <input
             type="number"
             value={editData.year ?? ''}
             onChange={(e) => onChangeField('year', e.target.value ? Number(e.target.value) : undefined)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Fuel Type Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Carburant</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Carburant</span>
           <input
             value={editData.fuel_type ?? ''}
             onChange={(e) => onChangeField('fuel_type', e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Consumption Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Consommation (L/100km)</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Consommation (L/100km)</span>
           <input
             type="number"
             step="0.1"
@@ -118,13 +118,13 @@ export default function VehicleEditForm({
                 e.target.value ? Number(e.target.value) : undefined
               )
             }
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Odometer Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Kilométrage (km)</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Kilométrage (km)</span>
           <input
             type="number"
             value={editData.odometer ?? ''}
@@ -134,17 +134,17 @@ export default function VehicleEditForm({
                 e.target.value ? Number(e.target.value) : undefined
               )
             }
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
 
         {/* Plate Field */}
         <label className="flex flex-col text-sm">
-          <span className="text-gray-300 text-xs mb-1">Plaque</span>
+          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Plaque</span>
           <input
             value={editData.plate ?? ''}
             onChange={(e) => onChangeField('plate', e.target.value)}
-            className="bg-white/5 text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-gray-500"
+            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>
       </div>
@@ -154,14 +154,14 @@ export default function VehicleEditForm({
         <button
           onClick={onCancelEdit}
           disabled={saving}
-          className="px-4 py-2 rounded-md bg-transparent border border-white/10 text-gray-300 hover:text-white text-sm transition"
+          className="px-4 py-2 rounded-md bg-transparent border border-white/10 dark:text-gray-300 hover:text-gray-300 dark:hover:text-white text-sm transition hover:cursor-pointer"
         >
           Annuler
         </button>
         <button
           onClick={onSaveEdit}
           disabled={saving}
-          className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white text-sm transition"
+          className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm transition hover:cursor-pointer"
         >
           {saving ? 'Enregistrement...' : 'Enregistrer'}
         </button>

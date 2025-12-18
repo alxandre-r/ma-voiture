@@ -31,7 +31,7 @@ export async function GET() {
   }
   
   try {
-    // Fetch fills with vehicle information
+    // First, check if fills table exists by trying a simple query
     const { data: fills, error } = await supabase
       .from('fills')
       .select(`
@@ -46,15 +46,73 @@ export async function GET() {
         is_full,
         notes,
         created_at,
-        vehicles:vehicles (name, make, model, fuel_type)
+        vehicles:vehicles (name, fuel_type)
       `)
       .eq('owner', user.id)
       .order('date', { ascending: false });
     
     if (error) {
-      console.error('Error fetching fills:', error);
+      console.error('Detailed Supabase error:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      
+      // Try fallback query without vehicle join if the error is related to vehicles table
+      if (error.message.includes('relation') || error.message.includes('vehicles')) {
+        console.log('Attempting fallback query without vehicle join...');
+        
+        const { data: fallbackFills, error: fallbackError } = await supabase
+          .from('fills')
+          .select('id, vehicle_id, owner, date, odometer, liters, amount, price_per_liter, is_full, notes, created_at')
+          .eq('owner', user.id)
+          .order('date', { ascending: false });
+        
+        if (!fallbackError && fallbackFills) {
+          console.log('Fallback query successful, returning fills without vehicle info');
+          const transformedFallbackFills = fallbackFills.map((fill) => ({
+            ...fill,
+            vehicle_name: `Véhicule #${fill.vehicle_id}`,
+            fuel_type: null,
+          }));
+          
+          return NextResponse.json(
+            { 
+              fills: transformedFallbackFills,
+              count: transformedFallbackFills.length,
+              warning: 'Les informations sur les véhicules ne sont pas disponibles'
+            },
+            { status: 200 }
+          );
+        }
+      }
+      
+      // Provide more specific error messages based on error type
+      let errorMessage = 'Erreur lors de la récupération des pleins';
+      
+      if (error.code === '42P01') { // Table doesn't exist
+        errorMessage = 'La table des pleins n\'existe pas dans la base de données.';
+      } else if (error.code === '42703') { // Column doesn't exist
+        errorMessage = 'Structure de base de données incompatible.';
+      } else if (error.code === '42883') { // Function doesn't exist
+        errorMessage = 'Fonction de base de données manquante.';
+      } else if (error.message.includes('permission')) {
+        errorMessage = 'Problème de permissions sur la base de données.';
+      } else if (error.message.includes('relation')) {
+        errorMessage = 'La table des véhicules n\'existe pas ou est inaccessible.';
+      }
+      
+      console.error('Error fetching fills:', errorMessage, 'Original error:', error);
       return NextResponse.json(
-        { error: 'Erreur lors de la récupération des pleins' },
+        { 
+          error: errorMessage,
+          debug: process.env.NODE_ENV === 'development' ? {
+            code: error.code,
+            message: error.message,
+            hint: error.hint
+          } : undefined
+        },
         { status: 500 }
       );
     }
@@ -62,9 +120,11 @@ export async function GET() {
     // Transform data to include vehicle info at top level
     const transformedFills = fills.map((fill) => {
       const vehicles = fill.vehicles as Array<{ name: string; fuel_type: string }> | null;
+      const vehicleName = vehicles?.[0]?.name || `Véhicule #${fill.vehicle_id}`;
+      
       return {
         ...fill,
-        vehicle_name: vehicles?.[0]?.name || null,
+        vehicle_name: vehicleName,
         fuel_type: vehicles?.[0]?.fuel_type || null,
       };
     });

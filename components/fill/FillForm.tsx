@@ -51,7 +51,7 @@ export default function FillForm({
   const [message, setMessage] = useState<string | null>(null);
 
   /**
-   * Handle form field changes
+   * Handle form field changes with auto-calculation
    */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -63,28 +63,49 @@ export default function FillForm({
         [name]: checkbox.checked
       });
     } else {
-      setFormData({
+      // Update the field value
+      const newFormData = {
         ...formData,
         [name]: value
-      });
+      };
+      
+      // Perform auto-calculation based on what field was changed
+      if (name === 'liters' && newFormData.amount) {
+        // If liters changed and we have amount, calculate price per liter
+        const liters = parseFloat(value);
+        const amount = parseFloat(newFormData.amount);
+        if (liters > 0 && amount > 0) {
+          newFormData.price_per_liter = (amount / liters).toFixed(3);
+        }
+      } else if (name === 'price_per_liter' && newFormData.amount) {
+        // If price per liter changed and we have amount, calculate liters
+        const pricePerLiter = parseFloat(value);
+        const amount = parseFloat(newFormData.amount);
+        if (pricePerLiter > 0 && amount > 0) {
+          newFormData.liters = (amount / pricePerLiter).toFixed(2);
+        }
+      } else if (name === 'amount') {
+        // If amount changed, try to calculate the missing field
+        if (newFormData.liters) {
+          const liters = parseFloat(newFormData.liters);
+          const amount = parseFloat(value);
+          if (liters > 0 && amount > 0) {
+            newFormData.price_per_liter = (amount / liters).toFixed(3);
+          }
+        } else if (newFormData.price_per_liter) {
+          const pricePerLiter = parseFloat(newFormData.price_per_liter);
+          const amount = parseFloat(value);
+          if (pricePerLiter > 0 && amount > 0) {
+            newFormData.liters = (amount / pricePerLiter).toFixed(2);
+          }
+        }
+      }
+      
+      setFormData(newFormData);
     }
   };
 
-  /**
-   * Calculate price per liter automatically
-   */
-  const calculatePricePerLiter = useCallback(() => {
-    const liters = parseFloat(formData.liters);
-    const amount = parseFloat(formData.amount);
-    
-    if (liters > 0 && amount > 0) {
-      const pricePerLiter = amount / liters;
-      setFormData(prev => ({
-        ...prev,
-        price_per_liter: pricePerLiter.toFixed(3)
-      }));
-    }
-  }, [formData.liters, formData.amount]);
+
 
   /**
    * Auto-fill odometer from selected vehicle
@@ -101,14 +122,7 @@ export default function FillForm({
     }
   }, [formData.vehicle_id, vehicles]);
 
-  /**
-   * Auto-calculate price per liter when liters or amount changes
-   */
-  useEffect(() => {
-    if (formData.liters && formData.amount) {
-      calculatePricePerLiter();
-    }
-  }, [formData.liters, formData.amount, calculatePricePerLiter]);
+
 
   /**
    * Handle form submission
@@ -128,8 +142,13 @@ export default function FillForm({
         throw new Error('Veuillez entrer une date');
       }
       
-      if (!formData.liters && !formData.amount) {
-        throw new Error('Veuillez entrer au moins les litres ou le montant');
+      if (!formData.amount) {
+        throw new Error('Veuillez entrer le montant total');
+      }
+      
+      // At least one of liters or price_per_liter should be provided
+      if (!formData.liters && !formData.price_per_liter) {
+        throw new Error('Veuillez entrer soit les litres, soit le prix au litre');
       }
 
       // Create fill data with proper types
@@ -273,23 +292,9 @@ export default function FillForm({
         />
       </div>
 
-      {/* Liters */}
+      {/* Amount (always required) */}
       <div>
-        <label className="block text-sm font-medium mb-1">Litres</label>
-        <input
-          type="number"
-          step="0.01"
-          name="liters"
-          placeholder="Litres"
-          value={formData.liters}
-          onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
-        />
-      </div>
-
-      {/* Amount */}
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Montant (€)</label>
+        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Montant total (€) *</label>
         <input
           type="number"
           step="0.01"
@@ -297,23 +302,46 @@ export default function FillForm({
           placeholder="Montant total"
           value={formData.amount}
           onChange={handleChange}
+          required
           className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
-      {/* Price per Liter (read-only, calculated) */}
-      <div>
-        <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Prix au litre (€)</label>
-        <input
-          type="number"
-          step="0.001"
-          name="price_per_liter"
-          placeholder="Prix/litre"
-          value={formData.price_per_liter}
-          onChange={handleChange}
-          readOnly
-          className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-3 py-2 rounded outline-none cursor-not-allowed border border-gray-300 dark:border-gray-700"
-        />
+      {/* Liters and Price per Liter - both editable, one will auto-calculate */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Liters Input */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Litres</label>
+          <input
+            type="number"
+            step="0.01"
+            name="liters"
+            placeholder="Litres"
+            value={formData.liters}
+            onChange={handleChange}
+            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          />
+        </div>
+
+        {/* Price per Liter Input */}
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Prix au litre (€)</label>
+          <input
+            type="number"
+            step="0.001"
+            name="price_per_liter"
+            placeholder="Prix/litre"
+            value={formData.price_per_liter}
+            onChange={handleChange}
+            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          />
+        </div>
+      </div>
+
+      {/* Help text explaining auto-calculation */}
+      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded text-sm text-blue-700 dark:text-blue-300">
+        💡 <strong>Calcul automatique :</strong> Remplissez soit les litres, soit le prix au litre + le montant. 
+        L&apos;autre valeur sera calculée automatiquement.
       </div>
 
       {/* Notes */}
@@ -336,7 +364,7 @@ export default function FillForm({
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-3 py-2 text-sm bg-gray-600 hover:bg-gray-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
+            className="flex-1 px-3 py-2 text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
           >
             Annuler
           </button>

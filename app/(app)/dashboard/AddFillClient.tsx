@@ -37,7 +37,7 @@ export default function AddFillClient({ vehicles }: AddFillClientProps) {
         className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 hover:cursor-pointer flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3"
         aria-label="Ajouter un plein"
       >
-        <Icon name="add" size={20} className="text-white" />
+        <Icon name="add" size={20} className="invert dark:invert-0" />
         <span className="font-medium">Ajouter un plein</span>
       </button>
 
