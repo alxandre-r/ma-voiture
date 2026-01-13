@@ -179,13 +179,13 @@ export default function OdometerChart({ data }: OdometerChartProps) {
           {pathD && (
             <path
               d={`${pathD} L ${points[points.length - 1].x.toFixed(2)} ${padding.top + innerHeight} L ${points[0].x.toFixed(2)} ${padding.top + innerHeight} Z`}
-              fill="rgba(59,130,246,0.08)"
+              fill="rgba(242,110,82,0.08)"
               stroke="none"
             />
           )}
 
           {/* main smooth line */}
-          <path d={pathD} fill="none" stroke="#3B82F6" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+          <path d={pathD} fill="none" stroke="#F26E52" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
 
           {/* invisible thicker stroke to increase hover/touch target */}
           <path d={pathD} fill="none" stroke="transparent" strokeWidth={20} strokeLinecap="round" />
@@ -214,8 +214,7 @@ export default function OdometerChart({ data }: OdometerChartProps) {
               transform: "translate(0,0)",
             }}
           >
-            <div className="w-full h-full rounded-full bg-white border-2 border-blue-500 flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
+            <div className="w-full h-full rounded-full bg-white border-2 border-custom-2 flex items-center justify-center">
             </div>
           </div>
         ))}

@@ -58,11 +58,8 @@ export default function SignUpForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSignUp}
-      className="space-y-4 bg-white dark:bg-gray-800 p-6 border-t border-gray-300 dark:border-gray-700 w-full max-w-md shadow-lg rounded-lg"
-    >
-      <h2 className="text-xl font-bold text-gray-800 dark:text-white">S&apos;inscrire</h2>
+    <form onSubmit={handleSignUp} className="space-y-4 px-6 w-full max-w-md">
+      <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">Créer un compte</h2>
       {message && (
         <p className={`text-center font-semibold ${isError ? "text-red-500 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
           {message}
@@ -75,7 +72,7 @@ export default function SignUpForm() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value.toLowerCase())}
-        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
+        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
       />
       <input
         type="password"
@@ -83,15 +80,21 @@ export default function SignUpForm() {
         placeholder="Mot de passe"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:outline-none focus:ring focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
+        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-60"
+        className="w-full py-2 bg-violet-600 hover:bg-violet-700 text-white rounded transition-colors disabled:opacity-60 hover:cursor-pointer"
       >
-        {loading ? "Inscription…" : "S'inscrire"}
+        {loading ? (
+          <span className="inline-block bg-gradient-to-r from-white via-gray-200 to-white bg-[length:200%_100%] bg-clip-text text-transparent animate-shiny">
+            Inscription en cours...
+          </span>
+        ) : (
+          "Confirmer l'inscription"
+        )}
       </button>
     </form>
   );

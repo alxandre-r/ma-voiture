@@ -11,7 +11,7 @@ import React from 'react';
 import Image from 'next/image';
 
 interface IconProps {
-  name: 'add' | 'edit' | 'delete' | 'dashboard' | 'garage' | 'secure' | 'responsive' | 'conso' | 'settings';
+  name: 'add' | 'edit' | 'delete' | 'dashboard' | 'garage' | 'secure' | 'responsive' | 'conso' | 'settings' | 'car';
   className?: string;
   size?: number | string;
   color?: string;

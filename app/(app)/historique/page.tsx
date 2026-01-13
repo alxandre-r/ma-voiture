@@ -1,19 +1,20 @@
 /**
  * @file app/(app)/historique/page.tsx
- * @fileoverview Dedicated history page for all fuel fill-up records.
+ * @fileoverview Dedicated history page for all fuel fill-up records with family support.
  * 
  * This page provides a comprehensive view of all fuel fill-ups with
  * detailed information, filtering, and search capabilities.
+ * Supports both user and family contexts.
  */
 
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { FillProvider } from '@/contexts/FillContext';
-import HistoriqueClient from './HistoriqueClient';
+import HistoriqueClientWithFamily from './HistoriqueClientWithFamily';
 
 /**
  * HistoriquePage Component
  * 
- * Dedicated page for viewing complete fuel fill-up history.
+ * Dedicated page for viewing complete fuel fill-up history with family support.
  */
 export default async function HistoriquePage() {
   const supabase = await createSupabaseServerClient();
@@ -44,7 +45,7 @@ export default async function HistoriquePage() {
       <h1 className="text-xl font-bold text-gray-800 dark:text-white sm:text-2xl lg:text-3xl">Historique des pleins</h1>
       
       <FillProvider>
-        <HistoriqueClient vehicles={vehicles || []} />
+        <HistoriqueClientWithFamily vehicles={vehicles || []} />
       </FillProvider>
     </main>
   );

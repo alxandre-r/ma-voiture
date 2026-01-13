@@ -101,7 +101,7 @@ export default function VehicleSwitcher({
                 selectedVehicleId === null ? 'bg-blue-50 dark:bg-blue-900/20 font-medium' : ''
               }`}
             >
-              <Icon name="dashboard" size={18} className="text-blue-600" />
+              <Icon name="car" size={18} className="text-blue-600" />
               <span>Tous les véhicules</span>
             </button>
             
@@ -115,7 +115,7 @@ export default function VehicleSwitcher({
                     selectedVehicleId === vehicle.id.toString() ? 'bg-blue-50 dark:bg-blue-900/20 font-medium' : ''
                   }`}
                 >
-                  <Icon name="garage" size={18} className="text-gray-600 dark:text-gray-300" />
+                  <Icon name="car" size={18} className="text-gray-600 dark:text-gray-300" />
                   <div className="flex flex-col">
                     <span className="font-medium">{vehicle.name || `${vehicle.make} ${vehicle.model}`}</span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">{vehicle.make} {vehicle.model}</span>

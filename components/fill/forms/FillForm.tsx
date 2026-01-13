@@ -243,7 +243,7 @@ export default function FillForm({
             value={formData.vehicle_id}
             onChange={handleChange}
             required
-            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
           >
             <option value="">Sélectionnez un véhicule</option>
             {vehicles?.map((vehicle) => (
@@ -275,7 +275,7 @@ export default function FillForm({
           value={formData.date}
           onChange={handleChange}
           required
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -288,7 +288,7 @@ export default function FillForm({
           placeholder="Kilomètres"
           value={formData.odometer}
           onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -319,7 +319,7 @@ export default function FillForm({
             placeholder="Litres"
             value={formData.liters}
             onChange={handleChange}
-            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
           />
         </div>
 
@@ -339,7 +339,7 @@ export default function FillForm({
       </div>
 
       {/* Help text explaining auto-calculation */}
-      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded text-sm text-blue-700 dark:text-blue-300">
+      <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded text-sm text-indigo-700 dark:text-indigo-300">
         💡 <strong>Calcul automatique :</strong> Remplissez soit les litres, soit le prix au litre + le montant. 
         L&apos;autre valeur sera calculée automatiquement.
       </div>
@@ -353,7 +353,7 @@ export default function FillForm({
           value={formData.notes}
           onChange={handleChange}
           rows={3}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 resize-none border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 resize-none border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -373,7 +373,7 @@ export default function FillForm({
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 px-3 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
+          className="flex-1 px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
         >
           {loading ? 'Enregistrement...' : 'Enregistrer le plein'}
         </button>

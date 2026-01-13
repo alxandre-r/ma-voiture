@@ -8,7 +8,7 @@
 
 'use client';
 
-import VehicleList from './vehicle/VehicleList';
+import VehicleList from './vehicle/old_VehicleList';
 
 /**
  * VehicleList Wrapper Component
@@ -21,4 +21,4 @@ export default function VehicleListWrapper() {
 }
 
 // Export the new VehicleList as default for direct imports
-export { default as VehicleList } from './vehicle/VehicleList';
+export { default as VehicleList } from './vehicle/old_VehicleList';

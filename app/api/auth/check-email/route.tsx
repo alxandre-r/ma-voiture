@@ -1,6 +1,6 @@
 /**
  * @file app/api/auth/check-email/route.ts
- * @fileoverview Vérifie côté serveur si un email est déjà présent (vue 'users').
+ * @fileoverview Vérifie côté serveur si un email est déjà présent (table 'users_profile').
  *              Cette route utilise la clé service_role (côté serveur uniquement).
  *
  * POST body: { email: string }
@@ -27,10 +27,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email requis" }, { status: 400 });
     }
 
-    // On interroge ta vue publique 'users' (ou la table que tu as créée qui expose email + confirmed)
+    // On interroge la table users_profile pour vérifier si l'email existe
     const { data, error } = await supabaseAdmin
-      .from("users") // ta vue
-      .select("id, email_confirmed_at")
+      .from("users_profile") // table users_profile
+      .select("id")
       .eq("email", email)
       .maybeSingle();
 
@@ -43,7 +43,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ exists: false }, { status: 200 });
     }
 
-    const confirmed = Boolean(data.email_confirmed_at);
+    // For email confirmation status, we need to check the auth.users table
+    // Since we're using the service role, we can access auth.users directly
+    const { data: authUser, error: authError } = await supabaseAdmin
+      .from("auth.users")
+      .select("email_confirmed_at")
+      .eq("id", data.id)
+      .maybeSingle();
+
+    if (authError) {
+      console.error("Erreur vérification confirmation email:", authError);
+      // If we can't get confirmation status, assume not confirmed for safety
+      return NextResponse.json({ exists: true, confirmed: false }, { status: 200 });
+    }
+
+    const confirmed = Boolean(authUser?.email_confirmed_at);
     return NextResponse.json({ exists: true, confirmed }, { status: 200 });
   } catch (err) {
     console.error("Erreur /check-email:", err);

@@ -25,7 +25,7 @@ export default function AddVehicleClient() {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 hover:cursor-pointer flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3"
+                className="px-4 py-3 bg-custom-1 text-white rounded-lg hover:bg-custom-1-hover hover:cursor-pointer flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3"
                 aria-label="Ajouter un véhicule"
             >
                 <Icon name="add" size={20} className="invert dark:invert-0" />

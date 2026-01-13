@@ -10,12 +10,13 @@
 
 import { useState } from 'react';
 import VehicleEditForm from './VehicleEditForm';
-import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import Icon from '@/components/ui/Icon';
 
 interface Vehicle {
   id: string;
   owner?: string | null;
+  owner_name?: string | null;
   name?: string | null;
   make?: string | null;
   model?: string | null;
@@ -24,7 +25,6 @@ interface Vehicle {
   manufacturer_consumption?: number | null;
   odometer?: number | null;
   plate?: string | null;
-  created_at?: string | null;
   [key: string]: unknown; // Allow for additional fields from API
 }
 
@@ -59,7 +59,6 @@ export default function VehicleCard({
   deletingId,
   onDelete,
 }: VehicleCardProps) {
-  const [expanded, setExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   /**
@@ -76,45 +75,41 @@ export default function VehicleCard({
     }
   };
 
-  /**
-   * Get extra fields that aren't part of the main vehicle interface
-   */
-  const getExtraFields = () => {
-    const standardFields = ['id', 'owner', 'name', 'make', 'model', 'year', 'fuel_type', 'manufacturer_consumption', 'plate', 'created_at'];
-    return Object.keys(vehicle).filter(key => !standardFields.includes(key));
-  };
-
-  const extraFields = getExtraFields();
-
   return (
-    <li key={vehicle.id}>
+    <div className="vehicle-card">
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
         {/* Show vehicle data only when not editing this specific vehicle */}
         {editingId !== vehicle.id && (
           <>
-            {/* Vehicle Header with icon and main info */}
+            {/* Vehicle Header with main info */}
             <div className="flex items-start justify-between gap-4 mb-6">
               <div className="flex items-center gap-4 min-w-0">
-                {/* Removed identifier letter to save space on mobile */}
-                <div className="h-16 w-16 rounded-xl bg-blue-600/20 dark:bg-blue-900/20 flex items-center justify-center text-blue-400 dark:text-blue-400 font-bold text-xl border border-blue-600/30 dark:border-blue-400/30 lg:flex hidden">
-                  {((vehicle.make ?? vehicle.name ?? '') as string).charAt(0).toUpperCase() || 'V'}
-                </div>
+
+                {/* Vehicle Name and Make/Model */}
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-gray-800 dark:text-white text-lg font-bold break-words sm:text-xl sm:break-normal lg:text-2xl lg:truncate">
-                    {vehicle.name ?? `${vehicle.make ?? 'Marque inconnue'} ${vehicle.model ?? ''}`}
+                  {vehicle.name ? (
+                  <>
+                    <h3 className="text-custom-1 dark:text-white text-lg font-bold break-words sm:text-xl sm:break-normal lg:text-2xl lg:truncate">
+                    {vehicle.name}
+                    </h3>
+                    <p className="text-custom-1 dark:text-gray-400 text-sm break-words sm:truncate sm:mt-1">
+                    {vehicle.make ?? 'Marque inconnue'} {vehicle.model ?? ''}
+                    </p>
+                  </>
+                  ) : (
+                  <h3 className="text-custom-1 dark:text-white text-lg font-bold break-words sm:text-xl sm:break-normal lg:text-2xl lg:truncate">
+                    {vehicle.make ?? 'Marque inconnue'} {vehicle.model ?? ''}
                   </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm break-words sm:truncate sm:mt-1">
-                    {vehicle.make ? `${vehicle.make} ${vehicle.model}` : 'Détails indisponibles'}
-                  </p>
+                  )}
                 </div>
               </div>
 
-              {/* Action Buttons - moved to top right */}
+              {/* Action Buttons */}
               <div className="flex flex-col items-end gap-3">
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEditStart(vehicle)}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-custom-3 hover:bg-custom-3-hover text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
                     aria-label={`Modifier ${vehicle.name ?? vehicle.id}`}
                   >
                     <Icon name="edit" size={18} className="invert dark:invert-0 sm:size-16" />
@@ -136,7 +131,7 @@ export default function VehicleCard({
             {/* Main Vehicle Stats - Grid layout */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="text-gray-400 dark:text-gray-500 text-xs font-medium">KILOMÉTRAGE</div>
+                <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">KILOMÉTRAGE</div>
                 <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">
                   {vehicle.odometer != null ? `${vehicle.odometer.toLocaleString()} km` : '—'}
                 </div>
@@ -150,7 +145,7 @@ export default function VehicleCard({
                 <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">{formatValue(vehicle.fuel_type)}</div>
               </div>
               <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">CONSOMMATION</div>
+                <div className="text-gray-500 dark:text-gray-400 text-xs font-medium">CONSOMMATION CALCULE</div>
                 <div className="text-gray-800 dark:text-white text-xl font-bold mt-1">
                   {vehicle.manufacturer_consumption != null ? `${vehicle.manufacturer_consumption} L/100km` : '—'}
                 </div>
@@ -171,13 +166,7 @@ export default function VehicleCard({
                 </div>
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Propriétaire</span>
-                  <span className="text-gray-800 dark:text-white font-medium">{formatValue(vehicle.owner)}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-gray-500 dark:text-gray-400 text-xs">Date d&apos;ajout</span>
-                  <span className="text-gray-800 dark:text-white font-medium">
-                    {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString() : '—'}
-                  </span>
+                  <span className="text-gray-800 dark:text-white font-medium">{formatValue(vehicle.owner_name)}</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Dernier plein</span>
@@ -216,6 +205,6 @@ export default function VehicleCard({
           loading={deletingId === vehicle.id}
         />
       </div>
-    </li>
+    </div>
   );
 }

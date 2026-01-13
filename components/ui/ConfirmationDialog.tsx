@@ -27,7 +27,7 @@ interface ConfirmationDialogProps {
  * Modal dialog for confirming actions with customizable content.
  * Handles keyboard escape to close and click-outside-to-close.
  */
-export default function ConfirmationDialog({
+export function ConfirmationDialog({
   isOpen,
   onClose,
   onConfirm,

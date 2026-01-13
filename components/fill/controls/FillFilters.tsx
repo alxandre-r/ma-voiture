@@ -126,7 +126,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
       <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Filtres & Tri</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -139,7 +139,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
             value={vehicleFilter}
             onChange={(e) => setVehicleFilter(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Tous les véhicules</option>
             {uniqueVehicles.length === 0 && (
@@ -165,7 +165,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
               setMonthFilter('all'); // Reset month when year changes
             }}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Toutes les années</option>
             {uniqueYears.length === 0 && (
@@ -188,7 +188,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
             value={monthFilter}
             onChange={(e) => setMonthFilter(e.target.value)}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Tous les mois</option>
             {monthsToDisplay.length === 0 && (
@@ -212,7 +212,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               disabled={loading || !fills || fills.length === 0}
-              className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50 flex-1"
+              className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50 flex-1"
             >
               <option value="date">Date</option>
               <option value="amount">Montant (€)</option>
@@ -221,10 +221,14 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
             <button
               onClick={toggleSortDirection}
               disabled={loading || !fills || fills.length === 0}
-              className="px-3 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 bg-custom-2 hover:bg-custom-2-hover rounded"
               title={sortDirection === 'desc' ? 'Tri décroissant' : 'Tri croissant'}
             >
-              {sortDirection === 'desc' ? '↓' : '↑'}
+              <img
+              src={sortDirection === 'desc' ? '/icons/sort-descending.svg' : '/icons/sort-ascending.svg'}
+              alt={sortDirection === 'desc' ? 'Tri décroissant' : 'Tri croissant'}
+              className="w-6 h-6 invert"
+              />
             </button>
           </div>
         </div>
@@ -232,13 +236,13 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
 
       {/* Filter Summary */}
       {(vehicleFilter !== 'all' || yearFilter !== 'all' || monthFilter !== 'all') && (
-        <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded text-sm">
+        <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded text-sm">
           <span className="font-medium">Filtres actifs : </span>
-          {vehicleFilter !== 'all' && <span className="text-blue-600 dark:text-blue-400">Véhicule: {getVehicleDisplayName(vehicleFilter)}</span>}
+          {vehicleFilter !== 'all' && <span className="text-indigo-600 dark:text-indigo-400">Véhicule: {getVehicleDisplayName(vehicleFilter)}</span>}
           {(vehicleFilter !== 'all' && (yearFilter !== 'all' || monthFilter !== 'all')) && <span className="mx-1">•</span>}
-          {yearFilter !== 'all' && <span className="text-blue-600 dark:text-blue-400">Année: {yearFilter}</span>}
+          {yearFilter !== 'all' && <span className="text-indigo-600 dark:text-indigo-400">Année: {yearFilter}</span>}
           {(yearFilter !== 'all' && monthFilter !== 'all') && <span className="mx-1">•</span>}
-          {monthFilter !== 'all' && <span className="text-blue-600 dark:text-blue-400">Mois: {formatMonth(parseInt(monthFilter))}</span>}
+          {monthFilter !== 'all' && <span className="text-indigo-600 dark:text-indigo-400">Mois: {formatMonth(parseInt(monthFilter))}</span>}
           <button
             onClick={() => {
               setVehicleFilter('all');

@@ -55,10 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           {/* Notification provider for global notifications */}
           <NotificationProvider>
-            {/* Main content container with gradient background */}
-            <div className="bg-fixed bg-gradient-to-b from-blue-200 to-white text-gray-800 
-              dark:bg-gradient-to-b dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 dark:text-white">
-
+            {/* Main content container */}
+            <div className="text-gray-800 dark:text-white bg-white dark:bg-gray-950 min-h-screen">
               {children}
             </div>
           </NotificationProvider>

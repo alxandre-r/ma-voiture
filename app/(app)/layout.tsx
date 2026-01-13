@@ -11,9 +11,10 @@
 
 import Sidebar from "./Sidebar";
 import NavBar from "./NavBar";
-import Header from "./Topbar";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { FamilyProvider } from '@/contexts/FamilyContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 
 /**
  * PrivateLayout Component
@@ -56,12 +57,16 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
    */
   if (isMobile) {
     return (
-      <div className="min-h-screen flex flex-col transition-colors duration-300">
-        <NavBar />
-        <div className="flex-1 flex flex-col">
-          <main className="px-2 py-3 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
-        </div>
-      </div>
+      <NotificationProvider>
+        <FamilyProvider>
+          <div className="min-h-screen flex flex-col transition-colors duration-300 bg-white dark:bg-gray-950" style={{ position: 'relative' }}>
+            <NavBar />
+            <div className="flex-1 flex flex-col">
+              <main className="px-2 py-3 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
+            </div>
+          </div>
+        </FamilyProvider>
+      </NotificationProvider>
     );
   }
 
@@ -69,12 +74,15 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
    * Desktop layout: Sidebar on left, Header + content on right
    */
   return (
-    <div className="flex min-h-screen transition-colors duration-300">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="px-2 py-3 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
-      </div>
-    </div>
+    <NotificationProvider>
+      <FamilyProvider>
+        <div className="flex min-h-screen transition-colors duration-300 bg-white dark:bg-gray-950" style={{ position: 'relative' }}>
+          <Sidebar />
+          <div className="flex-1 flex flex-col">
+            <main className="px-2 py-3 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
+          </div>
+        </div>
+      </FamilyProvider>
+    </NotificationProvider>
   );
 }

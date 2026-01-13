@@ -11,10 +11,9 @@
 import { useState } from 'react';
 import { useFills } from '@/contexts/FillContext';
 import { Fill } from '@/types/fill';
-import FillEditForm from './FillEditForm';
-import FillFilters from './FillFilters';
-import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import Icon from '@/components/ui/Icon';
+import { FillRow } from '.';
+import { FillFilters } from '../controls';
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { processFills } from '@/lib/fillUtils';
 
 /**
@@ -27,11 +26,9 @@ export default function FillHistoryList() {
     fills,
     loading,
     error,
-    stats,
     refreshFills,
     updateFillOptimistic,
     deleteFillOptimistic,
-    getVehicleName,
   } = useFills();
 
   // UI state
@@ -63,7 +60,6 @@ export default function FillHistoryList() {
       liters: fill.liters || undefined,
       amount: fill.amount || undefined,
       price_per_liter: fill.price_per_liter || undefined,
-      is_full: fill.is_full,
       notes: fill.notes || '',
     });
   }
@@ -162,21 +158,7 @@ export default function FillHistoryList() {
     }
   }
 
-  /**
-   * Format date for display
-   */
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  };
+
 
   /**
    * Format currency
@@ -229,45 +211,43 @@ export default function FillHistoryList() {
         </div>
       )}
 
-      {/* Statistics Summary - based on filtered data */}
-      {processedFills && processedFills.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
-            Statistiques {filters.vehicleFilter !== 'all' ? `pour ${filters.vehicleFilter}` : 'globales'}
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-              <div className="text-gray-500 dark:text-gray-400 text-xs">Pleins totaux</div>
-              <div className="font-medium text-gray-800 dark:text-white">{processedFills.length}</div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-              <div className="text-gray-500 dark:text-gray-400 text-xs">Litres totaux</div>
-              <div className="font-medium text-gray-800 dark:text-white">
-                {processedFills.reduce((sum, fill) => sum + (fill.liters ?? 0), 0).toFixed(1)} L
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-              <div className="text-gray-500 dark:text-gray-400 text-xs">Coût total</div>
-              <div className="font-medium text-gray-800 dark:text-white">
-                {formatCurrency(processedFills.reduce((sum, fill) => sum + (fill.amount ?? 0), 0))}
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-              <div className="text-gray-500 dark:text-gray-400 text-xs">Prix moyen/L</div>
-              <div className="font-medium text-gray-800 dark:text-white">
-                {calculateAvgPricePerLiter(processedFills).toFixed(3)} €/L
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Advanced Filters and Sorting */}
+      {/* Filters */}
       <FillFilters
         fills={fills}
         onFilterChange={setFilters}
         loading={loading}
       />
+
+      {/* Statistics Summary - based on filtered data */}
+      {processedFills && processedFills.length > 0 && (
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+        <div className="bg-custom-1 p-3 rounded">
+          <div className="text-gray-100 text-sm">Pleins totaux</div>
+          <div className="font-medium text-gray-100">{processedFills.length}</div>
+        </div>
+        <div className="bg-custom-1 p-3 rounded">
+          <div className="text-gray-100 text-sm">Litres totaux</div>
+          <div className="font-medium text-gray-100">
+            {processedFills.reduce((sum, fill) => sum + (fill.liters ?? 0), 0).toFixed(1)} L
+          </div>
+        </div>
+        <div className="bg-custom-1 p-3 rounded">
+          <div className="text-gray-100 text-sm">Coût total</div>
+          <div className="font-medium text-gray-100">
+            {formatCurrency(processedFills.reduce((sum, fill) => sum + (fill.amount ?? 0), 0))}
+          </div>
+        </div>
+        <div className="bg-custom-1 p-3 rounded">
+          <div className="text-gray-100 text-sm">Prix moyen/L</div>
+          <div className="font-medium text-gray-100">
+            {calculateAvgPricePerLiter(processedFills).toFixed(3)} €/L
+          </div>
+        </div>
+      </div>
+      )}
+
+
 
       {/* State handling */}
       {loading && (
@@ -330,98 +310,34 @@ export default function FillHistoryList() {
         </div>
       )}
 
-      {/* Results count */}
-      {processedFills.length > 0 && (
-        <div className="text-sm text-gray-400">
-          {processedFills.length} plein{processedFills.length > 1 ? 's' : ''} trouvé{processedFills.length > 1 ? 's' : ''}
-        </div>
-      )}
-
       {/* Fill list - Detailed view */}
       {processedFills.length > 0 && (
         <div className="space-y-4">
           {processedFills.map((fill) => (
-            <div key={fill.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg relative border border-gray-200 dark:border-gray-700">
+            <div key={fill.id}>
               {/* Edit form (if editing) */}
               {editingId === fill.id && editData && (
-                <FillEditForm
+                <FillRow
                   fill={fill}
                   editData={editData}
                   onChangeField={onChangeField}
                   onSaveEdit={() => saveEdit(fill.id || 0)}
                   onCancelEdit={cancelEdit}
                   saving={saving}
+                  isEditing={true}
+                  onDelete={() => handleDelete(fill.id || 0)}
+                  isDeleting={deletingId === fill.id}
                 />
               )}
 
               {/* Display mode */}
               {!editingId || editingId !== fill.id ? (
-                <>
-                  {/* Compact fill display with highlighted date and amount */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center py-2">
-                    {/* Vehicle and Date (highlighted) */}
-                    <div className="lg:col-span-4">
-                      <div className="font-medium text-gray-800 dark:text-white">
-                      {getVehicleName(fill.vehicle_id)}
-                      </div>
-                      <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                      {formatDate(fill.date)}
-                      </div>
-                    </div>
-
-                    {/* Amount (highlighted) */}
-                    <div className="lg:col-span-2 text-center">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">MONTANT</div>
-                      <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                      {formatCurrency(fill.amount)}
-                      </div>
-                    </div>
-
-                    {/* Price per liter */}
-                    <div className="lg:col-span-2 text-center">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">PRIX/LITRE</div>
-                      <div className="font-medium">
-                      {formatCurrency(fill.price_per_liter)}
-                      </div>
-                    </div>
-
-                    {/* Liters and Odometer */}
-                    <div className="lg:col-span-2 text-center">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">LITRES / KM</div>
-                      <div className="text-sm">
-                      {fill.liters || 'N/A'} L • {fill.odometer || 'N/A'} km
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="lg:col-span-2 flex justify-end gap-2">
-                      <button
-                      onClick={() => startEdit(fill)}
-                      disabled={saving || deletingId === fill.id}
-                      className="p-1.5 bg-gray-400 hover:bg-gray-300 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
-                      title="Modifier"
-                      >
-                      <Icon name="edit" size={16} className='invert dark:invert-0' />
-                      </button>
-                      <button
-                      onClick={() => handleDelete(fill.id || 0)}
-                      disabled={saving || deletingId === fill.id}
-                      className="p-1.5 bg-red-600 hover:bg-red-500 text-red-800 dark:bg-red-600 dark:hover:bg-red-500 dark:text-white rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
-                      title="Supprimer"
-                      >
-                      <Icon name="delete" size={16} className='invert dark:invert-0' />
-                      </button>
-                    </div>
-                    </div>
-
-                  {/* Notes (compact) */}
-                  {fill.notes && (
-                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700 rounded text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">📝 </span>
-                      <span>{fill.notes}</span>
-                    </div>
-                  )}
-                </>
+                <FillRow
+                  fill={fill}
+                  onEdit={() => startEdit(fill)}
+                  onDelete={() => handleDelete(fill.id || 0)}
+                  isDeleting={deletingId === fill.id}
+                />
               ) : null}
             </div>
           ))}

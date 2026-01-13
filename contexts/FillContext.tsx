@@ -37,6 +37,7 @@ interface FillContextType {
     odometer: number | null;
   }> | null) => void;
   getFilteredFills: (vehicleId: string | null) => Fill[];
+  getFillsByVehicleId: (vehicleId: number) => Fill[];
   getFilteredStats: (vehicleId: string | null) => FillStats;
   getVehicleName: (vehicleId: number) => string;
 }
@@ -65,12 +66,21 @@ export function FillProvider({ children }: { children: ReactNode }) {
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
   /**
-   * Get vehicle name by ID
+   * Get vehicle information by ID
+   * Note: This is kept for backward compatibility but the API now uses vehicle_fills view
    */
   const getVehicleName = (vehicleId: number): string => {
     if (!vehicles) return `Véhicule #${vehicleId}`;
-    const vehicle = vehicles.find(v => v.id === vehicleId);
+    const vehicle = vehicles.find(v => v.id === vehicleId.toString());
     return vehicle?.name || `Véhicule #${vehicleId}`;
+  };
+
+  /**
+   * Get fills by vehicle ID
+   */
+  const getFillsByVehicleId = (vehicleId: number) => {
+    if (!fills) return [];
+    return fills.filter(fill => fill.vehicle_id?.toString() === vehicleId.toString());
   };
 
   /**
@@ -80,7 +90,7 @@ export function FillProvider({ children }: { children: ReactNode }) {
     if (!fills || vehicleId === null) {
       return fills || [];
     }
-    return fills.filter(fill => fill.vehicle_id.toString() === vehicleId);
+    return fills.filter(fill => fill.vehicle_id?.toString() === vehicleId);
   };
 
   /**
@@ -388,6 +398,7 @@ export function FillProvider({ children }: { children: ReactNode }) {
       setSelectedVehicleId,
       setVehicles,
       getFilteredFills,
+      getFillsByVehicleId,
       getFilteredStats,
       getVehicleName,
     }}>

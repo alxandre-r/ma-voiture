@@ -211,7 +211,7 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-8">
         {/* SIDEBAR MENU - Grid on mobile, list on desktop */}
         <aside className="lg:col-span-1">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sticky top-6 lg:p-4">
+          <div className="bg-white dark:bg-gray-950 rounded-lg shadow p-3 sticky top-6 lg:p-4">
             {/* Mobile grid layout */}
             <nav className="lg:hidden grid grid-cols-2 gap-2">
               {menuItems.map((item) => (
@@ -220,7 +220,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveSection(item.id)}
                   className={`flex flex-col items-center gap-2 p-3 rounded-lg transition-colors 
                     ${activeSection === item.id
-                    ? "bg-blue-600 text-white shadow-sm"
+                    ? "bg-indigo-600 text-white shadow-sm"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                 >
                   <Icon name={item.icon} size={20} className={`flex-shrink-0
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveSection(item.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors 
                   ${activeSection === item.id
-                  ? "bg-blue-600 text-white shadow-sm"
+                  ? "bg-indigo-600 text-white shadow-sm"
                   : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                 >
                   <Icon name={item.icon} size={18} className={`flex-shrink-0 
@@ -254,7 +254,7 @@ export default function SettingsPage() {
         <div className="lg:col-span-3">
           {/* APPEARANCE SECTION */}
           {activeSection === "appearance" && (
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow">
               <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
                 <Icon name="settings" size={24} />
                 Apparence
@@ -266,8 +266,8 @@ export default function SettingsPage() {
                   <select
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
-                    className="p-4 rounded-lg border w-full bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:cursor-pointer
-                    focus:ring-2 focus:ring-blue-500 focus:outline-none sm:p-3"
+                    className="p-4 rounded-lg border w-full bg-gray-50 dark:bg-gray-950 border-gray-300 dark:border-gray-600 hover:cursor-pointer
+                    focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                   >
                     <option value="light">Clair</option>
                     <option value="dark">Sombre</option>
@@ -283,7 +283,7 @@ export default function SettingsPage() {
 
           {/* UNITS SECTION */}
           {activeSection === "units" && (
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow">
               <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
                 <Icon name="conso" size={24} />
                 Unités de mesure
@@ -299,7 +299,7 @@ export default function SettingsPage() {
                       setUnits({ ...units, distance: e.target.value })
                     }
                     className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:p-3"
+                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                   >
                     <option value="km">Kilomètres (km)</option>
                     <option value="miles">Miles (mi)</option>
@@ -315,7 +315,7 @@ export default function SettingsPage() {
                       setUnits({ ...units, fuel: e.target.value })
                     }
                     className="p-3 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   >
                     <option value="L">Litres (L)</option>
                     <option value="gal">Gallons (gal)</option>
@@ -331,15 +331,15 @@ export default function SettingsPage() {
                       setUnits({ ...units, consumption: e.target.value })
                     }
                     className="p-3 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   >
                     <option value="L/100km">Litres par 100km (L/100km)</option>
                     <option value="MPG">Miles par gallon (MPG)</option>
                   </select>
                 </div>
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                  <p className="text-sm text-indigo-700 dark:text-indigo-300">
                     <strong>Note :</strong> Les changements d&apos;unités seront appliqués à tous vos véhicules et historiques de consommation.
                   </p>
                 </div>
@@ -349,7 +349,7 @@ export default function SettingsPage() {
 
           {/* ACCOUNT SECTION */}
           {activeSection === "account" && (
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-8">
+            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow space-y-8">
               <div>
                 <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white flex items-center gap-3">
                   <Icon name="secure" size={24} />
@@ -368,7 +368,7 @@ export default function SettingsPage() {
                     <input
                       type="email"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:p-3"
+                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                       placeholder="Nouvelle adresse email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -378,18 +378,18 @@ export default function SettingsPage() {
                       disabled={isLoading.email}
                       className={`px-4 py-3 rounded-lg font-medium transition-colors 
                         ${isLoading.email
-                        ? "bg-blue-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white"} sm:px-6`}
+                        ? "bg-indigo-400 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-700 text-white"} sm:px-6`}
                     >
                       {isLoading.email ? "Mise à jour..." : "Mettre à jour"}
                     </button>
                     {formStatus.email.success && (
-                      <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-700 dark:text-green-300 text-sm">
+                      <div className="p-3 bg-sky-100 dark:bg-sky-900/30 rounded-lg text-sky-700 dark:text-sky-300 text-sm">
                         {formStatus.email.success}
                       </div>
                     )}
                     {formStatus.email.error && (
-                      <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-700 dark:text-red-300 text-sm">
+                      <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-700 dark:text-orange-300 text-sm">
                         {formStatus.email.error}
                       </div>
                     )}
@@ -403,7 +403,7 @@ export default function SettingsPage() {
                       type="password"
                       placeholder="Ancien mot de passe"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:p-3"
+                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                       value={passwords.oldPassword}
                       onChange={(e) =>
                         setPasswords({ ...passwords, oldPassword: e.target.value })
@@ -413,7 +413,7 @@ export default function SettingsPage() {
                       type="password"
                       placeholder="Nouveau mot de passe (min. 6 caractères)"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-700 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none sm:p-3"
+                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                       value={passwords.newPassword}
                       onChange={(e) =>
                         setPasswords({ ...passwords, newPassword: e.target.value })
@@ -424,18 +424,18 @@ export default function SettingsPage() {
                       disabled={isLoading.password}
                       className={`px-4 py-3 rounded-lg font-medium transition-colors 
                         ${isLoading.password
-                        ? "bg-blue-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white"} sm:px-6`}
+                        ? "bg-indigo-400 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-700 text-white"} sm:px-6`}
                     >
                       {isLoading.password ? "Mise à jour..." : "Mettre à jour"}
                     </button>
                     {formStatus.password.success && (
-                      <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-700 dark:text-green-300 text-sm">
+                      <div className="p-3 bg-sky-100 dark:bg-sky-900/30 rounded-lg text-sky-700 dark:text-sky-300 text-sm">
                         {formStatus.password.success}
                       </div>
                     )}
                     {formStatus.password.error && (
-                      <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-700 dark:text-red-300 text-sm">
+                      <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-700 dark:text-orange-300 text-sm">
                         {formStatus.password.error}
                       </div>
                     )}
@@ -447,7 +447,7 @@ export default function SettingsPage() {
 
           {/* PRIVACY SECTION - RGPD Compliance */}
           {activeSection === "privacy" && (
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-8">
+            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow space-y-8">
               <div>
                 <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white flex items-center gap-3">
                   <Icon name="secure" size={24} />
@@ -517,8 +517,8 @@ export default function SettingsPage() {
                     disabled={exportingData}
                     className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2  
                       ${exportingData
-                      ? "bg-blue-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+                      ? "bg-indigo-400 cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
                   >
                     <Icon name="add" size={18} />
                     {exportingData ? "Export en cours..." : "Exporter mes données"}
@@ -536,8 +536,8 @@ export default function SettingsPage() {
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
                     Vous pouvez supprimer définitivement votre compte et toutes vos données associées. Cette action est irréversible.
                   </p>
-                  <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 mb-4 flex items-start gap-3">
-                    <p className="text-sm text-red-700 dark:text-red-300 font-medium">
+                  <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg border border-orange-200 dark:border-orange-800 mb-4 flex items-start gap-3">
+                    <p className="text-sm text-orange-700 dark:text-orange-300 font-medium">
                       La suppression de votre compte entraînera la perte définitive de toutes vos données (véhicules, historique de consommation, etc.). Cette action ne peut pas être annulée.
                     </p>
                   </div>
@@ -546,8 +546,8 @@ export default function SettingsPage() {
                     disabled={deletingAccount}
                     className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2  
                       ${deletingAccount
-                      ? "bg-red-400 cursor-not-allowed"
-                      : "bg-red-600 hover:bg-red-700 text-white"}`}
+                      ? "bg-orange-400 cursor-not-allowed"
+                      : "bg-orange-600 hover:bg-orange-700 text-white"}`}
                   >
                     <Icon name="delete" size={18} />
                     {deletingAccount ? "Suppression en cours..." : "Supprimer mon compte"}
@@ -577,7 +577,7 @@ export default function SettingsPage() {
                           onClick={handleAccountDeletion}
                           disabled={deletingAccount}
                           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors text-white  
-                            ${deletingAccount ? "bg-red-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"}`}
+                            ${deletingAccount ? "bg-orange-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}`}
                         >
                           Confirmer la suppression
                         </button>
@@ -587,7 +587,7 @@ export default function SettingsPage() {
                             setDeleteConfirmation("");
                           }}
                           disabled={deletingAccount}
-                          className="flex-1 px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200  dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
+                          className="flex-1 px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200  dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"
                         >
                           Annuler
                         </button>
@@ -607,7 +607,7 @@ export default function SettingsPage() {
                     <strong> Ma Voiture Sandy</strong> est :
                   </p>
 
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg space-y-1">
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-1">
                     <p className="text-gray-700 dark:text-gray-300 font-medium">
                       Alexandre Robert — Projet « Ma Voiture Sandy »
                     </p>
@@ -654,7 +654,7 @@ export default function SettingsPage() {
 
           {/* LOGOUT SECTION */}
           {activeSection === "logout" && (
-            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow">
               <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white flex items-center gap-3">
                 <Icon name="garage" size={24} />
                 Déconnexion

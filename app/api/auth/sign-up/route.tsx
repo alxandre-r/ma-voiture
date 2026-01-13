@@ -23,10 +23,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email et mot de passe requis" }, { status: 400 });
     }
 
-    // -- Optional: check your view 'users' to avoid duplicates (you already had that) --
+    // -- Optional: check your table 'users_profile' to avoid duplicates --
     const { data: existingUsers, error: checkError } = await supabaseAdmin
-      .from("users") // ta vue qui expose email / confirmed
-      .select("id, email_confirmed_at")
+      .from("users_profile") // table qui expose email
+      .select("id")
       .eq("email", email)
       .maybeSingle();
 

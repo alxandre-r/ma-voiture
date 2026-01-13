@@ -31,24 +31,11 @@ export async function GET() {
   }
   
   try {
-    // First, check if fills table exists by trying a simple query
+    // Use the vehicle_fills view which already includes proper vehicle name fallback
     const { data: fills, error } = await supabase
-      .from('fills')
-      .select(`
-        id,
-        vehicle_id,
-        owner,
-        date,
-        odometer,
-        liters,
-        amount,
-        price_per_liter,
-        is_full,
-        notes,
-        created_at,
-        vehicles:vehicles (name, fuel_type)
-      `)
-      .eq('owner', user.id)
+      .from('vehicle_fills')
+      .select('fill_id, vehicle_id, vehicle_name, user_id, owner_name, date, odometer, liters, amount, price_per_liter, notes, created_at')
+      .eq('user_id', user.id)
       .order('date', { ascending: false });
     
     if (error) {
@@ -65,7 +52,7 @@ export async function GET() {
         
         const { data: fallbackFills, error: fallbackError } = await supabase
           .from('fills')
-          .select('id, vehicle_id, owner, date, odometer, liters, amount, price_per_liter, is_full, notes, created_at')
+          .select('id, vehicle_id, owner, date, odometer, liters, amount, price_per_liter, notes, created_at')
           .eq('owner', user.id)
           .order('date', { ascending: false });
         
@@ -74,7 +61,7 @@ export async function GET() {
           const transformedFallbackFills = fallbackFills.map((fill) => ({
             ...fill,
             vehicle_name: `Véhicule #${fill.vehicle_id}`,
-            fuel_type: null,
+            owner_name: null,  // Add owner_name for consistency
           }));
           
           return NextResponse.json(
@@ -117,17 +104,22 @@ export async function GET() {
       );
     }
     
-    // Transform data to include vehicle info at top level
-    const transformedFills = fills.map((fill) => {
-      const vehicles = fill.vehicles as Array<{ name: string; fuel_type: string }> | null;
-      const vehicleName = vehicles?.[0]?.name || `Véhicule #${fill.vehicle_id}`;
-      
-      return {
-        ...fill,
-        vehicle_name: vehicleName,
-        fuel_type: vehicles?.[0]?.fuel_type || null,
-      };
-    });
+    // The vehicle_fills view already includes the proper vehicle_name with fallback logic
+    // Transform to match the expected API response format
+    const transformedFills = fills.map((fill) => ({
+      id: fill.fill_id,
+      vehicle_id: fill.vehicle_id, 
+      owner: fill.user_id,
+      date: fill.date,
+      odometer: fill.odometer,
+      liters: fill.liters,
+      amount: fill.amount,
+      price_per_liter: fill.price_per_liter,
+      notes: fill.notes,
+      created_at: fill.created_at,
+      vehicle_name: fill.vehicle_name,
+      owner_name: fill.owner_name
+    }));
     
     return NextResponse.json(
       { 

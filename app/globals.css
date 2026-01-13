@@ -1,17 +1,39 @@
 @import "tailwindcss";
 
-/* 🔑 OBLIGATOIRE pour next-themes */
 @custom-variant dark (&:where(.dark &));
 
 /* Optionnel : variables si tu veux */
 :root {
-  --background: white;
+  --background: rgb(182, 153, 153);
   --foreground: black;
 }
 
 .dark {
-  --background: black;
+  --background: rgb(22, 22, 22);
   --foreground: white;
+}
+
+/* Custom color variables for themes */
+@theme {
+  /* First color : indigo */
+  --color-custom-1: #7E47FF; /* indigo-600 */
+  --color-custom-1-hover: #6B3EDC; /* indigo-700 */
+  --color-custom-1-dark: #9A7FFF; /* indigo-400 */
+  --color-custom-1-dark-hover: #7E47FF; /* indigo-500 */
+
+  /* Second color : orange */
+  --color-custom-2: #F26E52;
+  --color-custom-2-hover: #D6553A; 
+  --color-custom-2-dark: #F57D65; 
+  --color-custom-2-dark-hover: #F26E52;
+
+  /* Third color : light blue */
+  --color-custom-3: #47BFFF;
+  --color-custom-3-hover: #339FE6;
+  --color-custom-3-dark: #6FCFFF;
+  --color-custom-3-dark-hover: #47BFFF;
+
+  /* INFO : backgrounds are : white for light theme and dark gray for dark theme */
 }
 
 /* Smooth theme transitions for key elements */
@@ -64,4 +86,14 @@ textarea {
   opacity: 0;
   transform: translateY(8px);
   transition: all 200ms ease-in;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
 }

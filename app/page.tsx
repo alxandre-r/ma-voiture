@@ -5,27 +5,53 @@
 
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import SignInForm from "@/components/auth/SignInForm";
 import SignUpForm from "@/components/auth/SignUpForm";
 
+// UI Effects
+import Aurora from '../components/ui/AuroraBackground';
+import ShinyText from '../components/ui/effects/ShinyText';
+
+
 
 export default function LandingPage() {
-    const [formType, setFormType] = useState<"signin" | "signup" | null>(null);
+    const [formType, setFormType] = useState<"signin" | "signup">("signin");
+    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+
+    useEffect(() => {
+      // Check if user has a theme preference in localStorage
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        setTheme(savedTheme);
+      } else {
+        // Fall back to system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(prefersDark ? 'dark' : 'light');
+      }
+    }, []);
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col relative">
+      <Aurora
+        colorStops={["#F54927","#47BFFF","#5227FF"]}
+        blend={0.5}
+        amplitude={1}
+        speed={0.5}
+        theme={theme}
+      />
+      
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center text-center pt-20 pb-10 px-6 ">
+      <section className="flex flex-col items-center justify-center text-center pb-10 px-6 ">
         <motion.h1
           className="text-4xl sm:text-6xl font-bold mb-6"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
         >
-          Gérez vos véhicules facilement
+          Ma voiture Sandy
         </motion.h1>
 
         <motion.p
@@ -36,76 +62,45 @@ export default function LandingPage() {
         >
           Une solution simple, rapide et intuitive pour suivre et gérer vos véhicules.
         </motion.p>
-
-        <motion.div
-          className="flex gap-4"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={() => setFormType(formType === "signin" ? null : "signin")}
-            className="px-6 py-2 bg-blue-700 text-white rounded hover:bg-blue-600 transition"
-          >
-            Connexion
-          </button>
-          <button
-            onClick={() => setFormType(formType === "signup" ? null : "signup")}
-            className="px-6 py-2 bg-transparent border border-blue-700 text-blue-700 rounded hover:bg-blue-50 dark:hover:bg-blue-950 transition"
-          >
-            Inscription
-          </button>
-        </div>
-        </motion.div>
       </section>
 
-      <AnimatePresence mode="wait">
-        {formType && (
-            <motion.div
-            key={formType}
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={{
-              open: {
-              height: "auto",
-              opacity: 1,
-              transition: {
-                height: { duration: 0.45, delay: 0.15 },
-                opacity: { duration: 0.25, delay: 0.15 },
-              },
-              },
-              collapsed: {
-              height: 0,
-              opacity: 0,
-              transition: {
-                // fade out first
-                opacity: { duration: 0.2 },
-                // then collapse height so content below moves up after a delay
-                height: { duration: 0.35, delay: 0.2 },
-              },
-              },
-            }}
-            className="w-full flex justify-center overflow-hidden"
-            >
-              <motion.div
-                key={formType}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ duration: 0.2, delay: 0.15 }}
-                className="w-full flex justify-center"
-              >
-                {formType === "signin" && <SignInForm />}
-                {formType === "signup" && <SignUpForm />}
-              </motion.div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Form Section - Always visible */}
+      <section className="w-full flex justify-center px-6 pb-10">
+        <div className="w-full max-w-md">
+          {formType === "signin" && (
+            <div className="space-y-4">
+              <SignInForm />
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                <span>Pas encore de compte ? </span>
+                <button
+                  onClick={() => setFormType("signup")}
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium hover:cursor-pointer"
+                >
+                  Créez-en un !
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {formType === "signup" && (
+            <div className="space-y-4">
+              <SignUpForm />
+              <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                <span>Déjà un compte ? </span>
+                <button
+                  onClick={() => setFormType("signin")}
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium hover:cursor-pointer"
+                >
+                  Connectez-vous !
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6">
+      <section className="py-14 px-6">
         <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {[
             {
@@ -141,15 +136,25 @@ export default function LandingPage() {
                 />
               </div>
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600 dark:text-gray-400">{feature.desc}</p>
+              <ShinyText 
+                text={feature.desc}
+                speed={5}
+                delay={0}
+                color="#b5b5b5"
+                shineColor="#ffffff"
+                spread={120}
+                direction="left"
+                yoyo={false}
+                pauseOnHover={false}
+              />
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-gray-500 text-sm mt-auto">
-        © {new Date().getFullYear()} ma-voiture-sandy. Tous droits réservés.
+      <footer className="text-center text-gray-500 text-sm mt-auto">
+        <p className="text-sm">© {new Date().getFullYear()} ma-voiture-sandy. Tous droits réservés.</p>
       </footer>
     </main>
   );

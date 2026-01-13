@@ -69,7 +69,7 @@ export default function FillEditForm({
           name="date"
           value={editData.date || fill.date}
           onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -82,7 +82,7 @@ export default function FillEditForm({
           placeholder="Kilomètres"
           value={editData.odometer || fill.odometer || ''}
           onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -99,7 +99,7 @@ export default function FillEditForm({
             handleChange(e);
             calculatePricePerLiter();
           }}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -144,7 +144,7 @@ export default function FillEditForm({
           value={editData.notes || fill.notes || ''}
           onChange={handleChange}
           rows={3}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 resize-none border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 resize-none border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -163,7 +163,7 @@ export default function FillEditForm({
           type="button"
           onClick={onSaveEdit}
           disabled={saving}
-          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
+          className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
         >
           {saving ? 'Enregistrement...' : 'Enregistrer'}
         </button>

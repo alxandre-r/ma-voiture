@@ -1,91 +1,92 @@
-/**
- * @file app/(app)/Sidebar.tsx
- * @fileoverview Desktop sidebar navigation component.
- * 
- * This component provides the main navigation for desktop users.
- * Shows application logo and navigation links with active state highlighting.
- */
-
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-/**
- * Navigation menu items configuration.
- * 
- * @property {string} name - Display name
- * @property {string} path - URL path
- * @property {string} icon - Icon path
- */
-const menuItems = [
+// ----- Types -----
+type MenuItem = {
+  name: string;
+  path: string;
+  icon: string;
+};
+
+// ----- Configuration -----
+const MENU_ITEMS: MenuItem[] = [
   { name: "Tableau de bord", path: "/dashboard", icon: "/icons/dashboard.svg" },
-  { name: "Mon garage", path: "/garage", icon: "/icons/garage.svg" },
-  { name: "Mes consommations", path: "/historique", icon: "/icons/conso.svg" },
+  { name: "Garage", path: "/garage", icon: "/icons/garage.svg" },
+  { name: "Consommations", path: "/historique", icon: "/icons/conso.svg" },
+  { name: "Familles", path: "/families", icon: "/icons/responsive.svg" },
 ];
 
-/**
- * Sidebar Component
- * 
- * Desktop navigation sidebar with logo and menu items.
- * Highlights active route and provides visual feedback on hover.
- */
+const BOTTOM_ITEM: MenuItem = {
+  name: "Paramètres",
+  path: "/settings",
+  icon: "/icons/settings.svg",
+};
+
+// ----- Reusable item component -----
+function SidebarItem({
+  item,
+  active,
+  rotateOnActive = false,
+}: {
+  item: MenuItem;
+  active: boolean;
+  rotateOnActive?: boolean;
+}) {
+  return (
+    <Link
+      href={item.path}
+      className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 focus:outline-none ${
+        active ? "bg-custom-2" : "hover:bg-gray-800"
+      }`}
+      aria-current={active ? "page" : undefined}
+    >
+      <Image
+        src={item.icon}
+        width={22}
+        height={22}
+        alt={item.name}
+        className={`invert transition-transform duration-200 ease-in-out ${
+          rotateOnActive
+            ? active
+              ? "rotate-90"
+              : "group-hover:rotate-90"
+            : ""
+        }`}
+      />
+      <span className="truncate">{item.name}</span>
+    </Link>
+  );
+}
+
+// ----- Sidebar -----
 export default function Sidebar() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
+
+  const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <aside className="sticky top-0 z-50 h-screen w-64 flex-shrink-0 bg-white dark:bg-gray-900 text-gray-800 dark:text-white flex flex-col py-6 px-4">
-      {/* Application logo/title */}
-      <div className="flex items-center text-2xl font-bold pb-8">
-      Ma voiture sandy
-      </div>
+    <aside className="sticky top-0 z-50 h-screen w-64 flex-shrink-0 bg-gray-900 text-gray-100 flex flex-col pb-6 pt-8 px-4">
+      {/* Logo / Title */}
+      <div className="flex items-center text-2xl font-bold pb-8">Ma voiture sandy</div>
 
-      {/* Navigation menu */}
-      <nav className="flex flex-col mt-6 gap-2">
-      {menuItems.map(item => {
-        const active = pathname.startsWith(item.path);
-
-        return (
-        <Link key={item.path} href={item.path}>
-          <div
-          className={`
-            flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer
-            ${active ? "bg-blue-100 dark:bg-gray-700" : "hover:bg-gray-100 dark:hover:bg-gray-800"}
-          `}
-          >
-          <Image
-            src={item.icon}
-            width={22}
-            height={22}
-            alt={item.name}
-            className="dark:invert"
-          />
-          <span>{item.name}</span>
-          </div>
-        </Link>
-        );
-      })}
+      {/* Main navigation */}
+      <nav className="flex flex-col mt-2 gap-2" aria-label="Primary">
+        {MENU_ITEMS.map((item) => (
+          <SidebarItem key={item.path} item={item} active={isActive(item.path)} />
+        ))}
       </nav>
 
+      {/* Bottom-aligned settings (always at bottom thanks to mt-auto) */}
       <div className="mt-auto">
-      {/* Settings button with animation */}
-      <button
-        onClick={() => window.location.href = '/settings'}
-        className="group w-full p-3 rounded-lg border transition-all duration-300 hover:cursor-pointer border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-        aria-label="Paramètres"
-      >
-        <div className="flex items-center">
-        <Image
-          src="/icons/settings.svg"
-          alt="Paramètres"
-          className="dark:invert transition-transform duration-200 ease-in-out group-hover:rotate-90"
-          width={26}
-          height={26}
+        <SidebarItem
+          item={BOTTOM_ITEM}
+          active={isActive(BOTTOM_ITEM.path)}
+          rotateOnActive
         />
-        <span className="ml-3">Paramètres</span>
-        </div>
-      </button>
       </div>
     </aside>
   );

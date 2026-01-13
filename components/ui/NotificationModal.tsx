@@ -40,17 +40,17 @@ export default function NotificationModal({
   // Colors / icons mapping
   const palette = {
     success: {
-      bg: "bg-green-600/95",
-      border: "border-green-500",
+      bg: "bg-sky-600/95",
+      border: "border-sky-500",
       text: "text-white",
-      progress: "bg-green-400",
+      progress: "bg-sky-400",
       icon: "✅",
     },
     error: {
-      bg: "bg-red-600/95",
-      border: "border-red-500",
+      bg: "bg-orange-600/95",
+      border: "border-orange-500",
       text: "text-white",
-      progress: "bg-red-400",
+      progress: "bg-orange-400",
       icon: "❌",
     },
     warning: {
@@ -61,10 +61,10 @@ export default function NotificationModal({
       icon: "⚠️",
     },
     info: {
-      bg: "bg-blue-600/95",
-      border: "border-blue-500",
+      bg: "bg-indigo-600/95",
+      border: "border-indigo-500",
       text: "text-white",
-      progress: "bg-blue-400",
+      progress: "bg-indigo-400",
       icon: "ℹ️",
     },
   } as const;

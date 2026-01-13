@@ -24,7 +24,7 @@ export default function FillChart({ data }: FillChartProps) {
 
   const containerHeight = 160;
   const minBarHeight = 6;
-  const valueOffset = 8;
+  const valueOffset = 24;
 
   const formatMonth = (monthString: string) => {
     const parts = monthString.split("-");
@@ -42,10 +42,10 @@ export default function FillChart({ data }: FillChartProps) {
 
   return (
     <div className="w-full">
-      <h4 className="text-sm font-medium mb-3">Dépenses mensuelles en carburant</h4>
+      <h4 className="text-sm font-medium">Dépenses mensuelles en carburant</h4>
 
       {/* CHART CONTAINER */}
-      <div className="relative w-full overflow-x-auto pl-1" style={{ paddingBottom: 24, paddingTop: 46 }}>
+      <div className="relative w-full overflow-x-auto" style={{ paddingBottom: 24, paddingTop: 24 }}>
         {/* Bars row */}
         <div
           className="flex items-end gap-1 min-w-[350px]"
@@ -64,9 +64,9 @@ export default function FillChart({ data }: FillChartProps) {
               >
                 {/* Value label */}
                 <div
-                  className="absolute text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap"
+                  className="absolute text-sm font-medium text-gray-100 dark:text-gray-300 whitespace-nowrap"
                   style={{
-                    bottom: `${barHeight + valueOffset}px`,
+                    bottom: `${barHeight - valueOffset}px`,
                     transform: "translateX(-50%)",
                     left: "50%",
                   }}
@@ -82,7 +82,7 @@ export default function FillChart({ data }: FillChartProps) {
                   className="flex items-end justify-center h-full w-full"
                 >
                   <div
-                    className="bg-blue-500 rounded-t-md w-full"
+                    className="bg-custom-1 rounded-t-md w-full"
                     style={{ height: `${barHeight}px` }}
                   />
                 </div>
@@ -92,7 +92,7 @@ export default function FillChart({ data }: FillChartProps) {
         </div>
 
         {/* Month labels - aligned with bars */}
-        <div className="mt-2 flex gap-1 pl-1">
+        <div className="mt-2 flex gap-1">
           {data.map((item, idx) => (
             <div key={idx} className="flex-1 min-w-[60px] text-center">
               <span className="text-xs text-gray-400 truncate block">
