@@ -46,6 +46,7 @@ export const FamilyPageContent: React.FC = () => {
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [newFamilyName, setNewFamilyName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
+  const [showJoinFamilyDialog, setShowJoinFamilyDialog] = useState(false);
   const [confirmationDialog, setConfirmationDialog] = useState<{
     open: boolean;
     title: string;
