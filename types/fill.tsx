@@ -21,6 +21,7 @@ export interface Fill {
   liters: number | null; // Liters of fuel added
   amount: number | null; // Total cost of fill-up
   price_per_liter: number | null; // Price per liter (calculated or entered)
+  is_full?: boolean; // Whether this was a full tank fill
   notes: string | null; // Additional notes
   created_at?: string; // Timestamp when record was created
   

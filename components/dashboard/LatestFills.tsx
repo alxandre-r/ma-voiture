@@ -6,30 +6,37 @@ import { useFills } from "@/contexts/FillContext";
 import { FillRow } from "../fill";
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { Fill } from "@/types/fill";
 import Link from "next/link";
 
 export default function LatestFills() {
   const {
-    fills,
     loading,
     error,
     selectedVehicleId,
     refreshFills,
     deleteFillOptimistic,
     getFilteredFills,
-    getVehicleName,
   } = useFills();
 
   const { showSuccess, showError } = useNotifications();
 
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<Partial<any> | null>(null);
+  const [editData, setEditData] = useState<Partial<{
+    date: string;
+    odometer: number | undefined;
+    liters: number | undefined;
+    amount: number | undefined;
+    price_per_liter: number | undefined;
+    is_full: boolean;
+    notes: string;
+  }> | null>(null);
   const [saving, setSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  function startEdit(fill: any) {
-    setEditingId(fill.id);
+  function startEdit(fill: Fill) {
+    setEditingId(fill.id || 0);
     setEditData({
       date: fill.date,
       odometer: fill.odometer || undefined,
@@ -153,7 +160,7 @@ export default function LatestFills() {
 
       {filtered.length > 0 && (
         <div className="bg-white pb-5 rounded-lg space-y-2">
-          {filtered.slice(0, 4).map((fill: any) => (
+          {filtered.slice(0, 4).map((fill: Fill) => (
             <div key={fill.id}>
               {editingId === fill.id && editData ? (
                 <FillRow
@@ -163,7 +170,7 @@ export default function LatestFills() {
                   onSaveEdit={() => saveEdit(fill.id || 0)}
                   onCancelEdit={cancelEdit}
                   onDelete={() => handleDelete(fill.id || 0)}
-                  isDeleting={deletingId === fill.id}
+                  isDeleting={deletingId === (fill.id || 0)}
                   saving={saving}
                   isEditing={true}
                   showVehicleName={true}
@@ -173,7 +180,7 @@ export default function LatestFills() {
                   fill={fill}
                   onEdit={() => startEdit(fill)}
                   onDelete={() => handleDelete(fill.id || 0)}
-                  isDeleting={deletingId === fill.id}
+                  isDeleting={deletingId === (fill.id || 0)}
                   showVehicleName={true}
                 />
               )}
@@ -186,7 +193,7 @@ export default function LatestFills() {
                 href="/historique"
                 className="px-5 py-3 bg-custom-2 hover:bg-custom-3-hover text-white rounded-lg transition-colors"
               >
-                Voir l'historique complet ({filtered.length} pleins)
+                Voir l&apos;historique complet ({filtered.length} pleins)
               </Link>
             </div>
           )}

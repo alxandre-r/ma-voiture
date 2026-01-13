@@ -20,7 +20,7 @@ export default function FillCharts() {
     return value.toFixed(2) + " €";
   };
 
-  const hasOdometer = monthlyChart.filter((m: any) => m.odometer !== null).length > 0;
+  const hasOdometer = monthlyChart.filter((m: { odometer: number | null }) => m.odometer !== null).length > 0;
 
   return (
     <div className="space-y-4">
@@ -62,7 +62,7 @@ export default function FillCharts() {
               <OdometerChart
                 data={monthlyChart
                   .slice(-6)
-                  .map((item: any) => ({ month: item.month, odometer: item.odometer || 0 }))}
+                  .map((item: { month: string; odometer: number | null }) => ({ month: item.month, odometer: item.odometer || 0 }))}
               />
             </div>
           )}
