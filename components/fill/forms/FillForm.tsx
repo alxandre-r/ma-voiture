@@ -45,7 +45,6 @@ export default function FillForm({
     liters: '',
     amount: '',
     price_per_liter: '',
-    is_full: false, // Removed the checkbox, default to false
     notes: ''
   });
   const [message, setMessage] = useState<string | null>(null);
@@ -160,7 +159,6 @@ export default function FillForm({
         liters: formData.liters ? parseFloat(formData.liters) : null,
         amount: formData.amount ? parseFloat(formData.amount) : null,
         price_per_liter: formData.price_per_liter ? parseFloat(formData.price_per_liter) : null,
-        is_full: formData.is_full,
         notes: formData.notes || null,
         created_at: new Date().toISOString()
       };
@@ -184,7 +182,6 @@ export default function FillForm({
         liters: fillData.liters,
         amount: fillData.amount,
         price_per_liter: fillData.price_per_liter,
-        is_full: fillData.is_full,
         notes: fillData.notes,
         created_at: fillData.created_at
       };
