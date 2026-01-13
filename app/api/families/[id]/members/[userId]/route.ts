@@ -4,13 +4,12 @@ import { getUser } from '@/lib/authUtils'
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string; userId: string } }
+  { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
   try {
     const supabase = await createSupabaseServerClient()
     const user = await getUser()
-    const familyId = params.id
-    const targetUserId = params.userId
+    const { id: familyId, userId: targetUserId } = await params
     
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -73,7 +72,7 @@ export async function PATCH(
         .eq('family_id', familyId)
         .eq('role', 'owner')
       
-      if (countError || count <= 1) {
+      if (countError || (count ?? 0) <= 1) {
         return NextResponse.json(
           { error: 'Cannot demote the only owner of the family' },
           { status: 400 }
@@ -122,13 +121,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string; userId: string } }
+  { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
   try {
     const supabase = await createSupabaseServerClient()
     const user = await getUser()
-    const familyId = params.id
-    const targetUserId = params.userId
+    const { id: familyId, userId: targetUserId } = await params
     
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -182,7 +180,7 @@ export async function DELETE(
         .eq('family_id', familyId)
         .eq('role', 'owner')
       
-      if (countError || count <= 1) {
+      if (countError || (count ?? 0) <= 1) {
         return NextResponse.json(
           { error: 'Cannot remove the only owner of the family' },
           { status: 400 }

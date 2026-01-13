@@ -6,11 +6,10 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
+  const { id: familyId } = await params
   try {
     const supabase = await createSupabaseServerClient()
     const user = await getUser()
-    const familyId = id
     
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

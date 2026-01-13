@@ -40,12 +40,12 @@ export async function GET() {
         
         return {
           id: family.family_id,
-          name: family.families.name,
+          name: family.families?.[0]?.name,
           role: family.role,
           member_count: countError ? 0 : count,
           joined_at: family.joined_at,
-          created_at: family.families.created_at,
-          owner: family.families.owner
+          created_at: family.families?.[0]?.created_at,
+          owner: family.families?.[0]?.owner
         }
       })
     )
