@@ -7,6 +7,9 @@ interface Family {
   name: string
   owner: string
   created_at: string
+  role?: string
+  member_count?: number
+  joined_at?: string
   invite_token?: string
   invite_token_expires?: string
   invite_token_used?: boolean
