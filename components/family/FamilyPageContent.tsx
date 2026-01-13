@@ -258,7 +258,7 @@ export const FamilyPageContent: React.FC = () => {
     console.log('Rendering no family state');
     return (
       <div className="family-page-content pt-24">
-        <h3 className="text-gray-800 dark:text-gray-200 font-medium mb-16 text-center text-2xl">Vous ne faites encore partie d'aucune famille, rejoignez-en une ou créez-en une nouvelle.</h3>
+        <h3 className="text-gray-800 dark:text-gray-200 font-medium mb-16 text-center text-2xl">Vous ne faites encore partie d&apos;aucune famille, rejoignez-en une ou créez-en une nouvelle.</h3>
         
         {/* Two-column layout for create and join family forms */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -295,7 +295,7 @@ export const FamilyPageContent: React.FC = () => {
           <div className="bg-custom-1 rounded-lg p-4">
             <h4 className="text-lg font-semibold text-gray-100 mb-3">Rejoindre une famille</h4>
             <p className="text-gray-200 text-sm mb-4">
-              Vous avez reçu un code d'invitation ? Utilisez-le pour rejoindre une famille existante.
+              Vous avez reçu un code d&apos;invitation ? Utilisez-le pour rejoindre une famille existante.
             </p>
             
             <div className="space-y-4">
@@ -379,7 +379,7 @@ export const FamilyPageContent: React.FC = () => {
                   className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-3"
                 >
                   <Icon name="add" size={18} className="text-gray-500 dark:text-gray-400" />
-                  <span className="text-gray-800 dark:text-white text-sm font-medium">Générer un lien d'invitation</span>
+                  <span className="text-gray-800 dark:text-white text-sm font-medium">Générer un lien d&apos;invitation</span>
                 </button>
                 
                 {/* Leave Family */}
@@ -431,7 +431,7 @@ export const FamilyPageContent: React.FC = () => {
           <div className="flex justify-between items-center gap-4">
             <div className="flex-1">
               <p className="text-indigo-800 dark:text-indigo-300 text-sm font-medium mb-2">
-                Lien d'invitation pour rejoindre la famille:
+                Lien d&apos;invitation pour rejoindre la famille:
               </p>
               <div className="bg-white dark:bg-gray-950 border border-indigo-200 dark:border-indigo-600 rounded-md p-2 text-sm break-all">
                 {inviteLink}
