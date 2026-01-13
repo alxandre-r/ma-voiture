@@ -71,7 +71,7 @@ export function FillProvider({ children }: { children: ReactNode }) {
    */
   const getVehicleName = (vehicleId: number): string => {
     if (!vehicles) return `Véhicule #${vehicleId}`;
-    const vehicle = vehicles.find(v => v.id === vehicleId.toString());
+    const vehicle = vehicles.find(v => v.id === vehicleId);
     return vehicle?.name || `Véhicule #${vehicleId}`;
   };
 

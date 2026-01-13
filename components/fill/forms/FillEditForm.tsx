@@ -10,7 +10,7 @@
 
 import { Fill } from '@/types/fill';
 
-interface FillEditFormProps {
+export interface FillEditFormProps {
   fill: Fill;
   editData: Partial<Fill>;
   onChangeField: (key: string, value: unknown) => void;

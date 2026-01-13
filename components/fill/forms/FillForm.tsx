@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useFills } from '@/contexts/FillContext';
 import { FillFormData } from '@/types/fill';
 
-interface FillFormProps {
+export interface FillFormProps {
   onCancel?: () => void;
   onSuccess?: () => void;
   autoCloseOnSuccess?: boolean;

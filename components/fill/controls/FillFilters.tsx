@@ -15,7 +15,7 @@ import { useFills } from '@/contexts/FillContext';
 /**
  * FillFilters Component Props
  */
-interface FillFiltersProps {
+export interface FillFiltersProps {
   fills: Fill[] | null;
   onFilterChange: (filters: {
     vehicleFilter: string | number;

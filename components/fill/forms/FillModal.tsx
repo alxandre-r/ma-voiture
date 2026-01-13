@@ -11,7 +11,7 @@
 import { useEffect } from 'react';
 import FillForm from './FillForm';
 
-interface FillModalProps {
+export interface FillModalProps {
   open: boolean;
   onClose: () => void;
   vehicles?: Array<{

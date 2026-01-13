@@ -11,7 +11,7 @@
 import { Fill } from '@/types/fill';
 import Icon from '@/components/ui/Icon';
 
-interface FillRowProps {
+export interface FillRowProps {
   fill: Fill;
   onEdit?: () => void;
   onDelete: () => void;
