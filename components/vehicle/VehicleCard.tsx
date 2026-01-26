@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import VehicleEditForm from './VehicleEditForm';
-import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import Icon from '@/components/ui/Icon';
 
 interface Vehicle {
@@ -191,7 +191,7 @@ export default function VehicleCard({
         )}
 
         {/* Delete Confirmation Dialog */}
-        <ConfirmationDialog
+        <ConfirmationModal
           isOpen={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={() => {
@@ -202,7 +202,8 @@ export default function VehicleCard({
           message={`Êtes-vous sûr de vouloir supprimer le véhicule "${vehicle.name || vehicle.make || 'ce véhicule'}" ? Cette action est irréversible.`}
           confirmText="Supprimer"
           cancelText="Annuler"
-          loading={deletingId === vehicle.id}
+          confirmButtonColor="red"
+          isLoading={deletingId === vehicle.id}
         />
       </div>
     </div>

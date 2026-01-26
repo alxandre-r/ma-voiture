@@ -4,7 +4,7 @@
 import React, { useState } from "react";
 import { useFills } from "@/contexts/FillContext";
 import { FillRow } from "../fill";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { Fill } from "@/types/fill";
 import Link from "next/link";
@@ -118,10 +118,17 @@ export default function LatestFills() {
   }
 
   const filtered = getFilteredFills(selectedVehicleId);
+  
+  // Debug logs
+  console.log('📊 LatestFills component rendered');
+  console.log('🔄 Loading state:', loading);
+  console.log('❌ Error state:', error);
+  console.log('📦 Filtered fills:', filtered?.length || 0);
+  console.log('🚗 Selected vehicle:', selectedVehicleId);
 
   return (
     <div className="space-y-4">
-      <ConfirmationDialog
+      <ConfirmationModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={confirmDelete}
@@ -129,6 +136,7 @@ export default function LatestFills() {
         message="Êtes-vous sûr de vouloir supprimer ce plein ? Cette action est irréversible."
         confirmText="Supprimer"
         cancelText="Annuler"
+        confirmButtonColor="red"
       />
 
       {loading && (
@@ -159,7 +167,7 @@ export default function LatestFills() {
       )}
 
       {filtered.length > 0 && (
-        <div className="bg-white pb-5 rounded-lg space-y-2">
+        <div className="pb-5 space-y-2">
           {filtered.slice(0, 4).map((fill: Fill) => (
             <div key={fill.id}>
               {editingId === fill.id && editData ? (
@@ -191,7 +199,7 @@ export default function LatestFills() {
             <div className="mt-8 text-center">
               <Link
                 href="/historique"
-                className="px-5 py-3 bg-custom-2 hover:bg-custom-3-hover text-white rounded-lg transition-colors"
+                className="px-5 py-3 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg transition-colors"
               >
                 Voir l&apos;historique complet ({filtered.length} pleins)
               </Link>

@@ -7,7 +7,6 @@ import Icon from "@/components/ui/Icon";
 import Charts from "@/components/dashboard/Charts";
 import LatestFills from "@/components/dashboard/LatestFills";
 import { useFills } from "@/contexts/FillContext";
-import { useFamily } from "@/contexts/FamilyContext";
 
 export type Vehicle = {
 	id: number;
@@ -44,16 +43,14 @@ function AddFillClient({ vehicles }: { vehicles: Vehicle[] }) {
 }
 
 export default function DashboardClient({ vehicles }: DashboardClientProps) {
-	const { setSelectedVehicleId, setVehicles } = useFills();
-	const { families, currentFamily, isLoading: isFamilyLoading, loadFamilies } = useFamily();
+	const { setSelectedVehicleId, setVehicles, loading, error } = useFills();
 
 	const [selectedVehicleId, setLocalSelectedVehicleId] = useState<string | null>(null);
-	const [context, setContext] = useState<"user" | "family">("user");
-	const [familyId, setFamilyId] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
+		// Set vehicles
 		setVehicles(vehicles);
+		
 		// init single vehicle if only one
 		if (vehicles.length === 1 && selectedVehicleId === null) {
 		const id = vehicles[0].id.toString();
@@ -62,10 +59,6 @@ export default function DashboardClient({ vehicles }: DashboardClientProps) {
 		}
 	}, [vehicles, setVehicles, selectedVehicleId, setSelectedVehicleId]);
 
-	useEffect(() => {
-		loadFamilies();
-	}, [loadFamilies]);
-
 	const handleVehicleChange = (vehicleId: string | null) => {
 		setLocalSelectedVehicleId(vehicleId);
 		setSelectedVehicleId(vehicleId);
@@ -73,13 +66,15 @@ export default function DashboardClient({ vehicles }: DashboardClientProps) {
 
 	const isSwitcherDisabled = vehicles.length <= 1;
 
-	if (isFamilyLoading) {
+	if (loading) {
 		return (
 		<div className="flex justify-center items-center h-64">
 			<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
 		</div>
 		);
   	}
+
+
 
   	return (
     <>

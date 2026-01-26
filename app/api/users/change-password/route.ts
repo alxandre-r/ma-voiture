@@ -48,7 +48,6 @@ export async function POST(request: Request) {
     });
 
     if (reauthError) {
-      console.error('Erreur d\'authentification avec l\'ancien mot de passe:', reauthError);
       return NextResponse.json(
         { error: 'Ancien mot de passe incorrect' },
         { status: 401 }
@@ -61,7 +60,6 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.error('Erreur Supabase lors du changement de mot de passe:', error);
       return NextResponse.json(
         { error: 'Erreur lors de la mise à jour du mot de passe' },
         { status: 500 }
@@ -78,7 +76,6 @@ export async function POST(request: Request) {
     );
 
   } catch (error) {
-    console.error('Erreur serveur lors du changement de mot de passe:', error);
     return NextResponse.json(
       { error: 'Erreur serveur lors de la mise à jour du mot de passe' },
       { status: 500 }

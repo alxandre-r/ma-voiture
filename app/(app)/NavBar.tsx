@@ -24,8 +24,8 @@ const menuItems = [
     { name: "Tableau de bord", path: "/dashboard", icon: "/icons/dashboard.svg" },
     { name: "Garage", path: "/garage", icon: "/icons/garage.svg" },
     { name: "Consommations", path: "/historique", icon: "/icons/conso.svg" },
-    { name: "Familles", path: "/families", icon: "/icons/responsive.svg" },
-    { name: "Paramètres", path: "/settings", icon: "/icons/settings.svg" }, 
+    { name: "Famille", path: "/family", icon: "/icons/responsive.svg" },
+    { name: "Paramètres", path: "/settings", icon: "/icons/settings.svg" },
 ];
 
 /**
@@ -42,7 +42,7 @@ export default function NavBar() {
         <nav
             role="navigation"
             aria-label="Navigation mobile"
-            className="fixed bottom-[-1px] left-0 right-0 z-50 bg-gray-900 rounded-lg md:hidden"
+            className="fixed bottom-0 left-0 right-0 z-50 bg-gray-900 rounded-t-lg md:hidden"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
             {/* Navigation items container */}

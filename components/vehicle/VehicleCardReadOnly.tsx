@@ -3,7 +3,7 @@
  * @fileoverview Read-only vehicle card component for displaying vehicle information.
  * 
  * This component displays a single vehicle's information in a card format
- * without editing capabilities. Ideal for family vehicles or read-only views.
+ * without editing capabilities. Ideal for read-only views.
  */
 
 'use client';
@@ -33,7 +33,7 @@ interface VehicleCardReadOnlyProps {
  * VehicleCardReadOnly Component
  * 
  * Displays a single vehicle in a card format without editing capabilities.
- * Perfect for family vehicles or any read-only vehicle display.
+ * Perfect for any read-only vehicle display.
  */
 export default function VehicleCardReadOnly({ vehicle, showOwner = true }: VehicleCardReadOnlyProps) {
   

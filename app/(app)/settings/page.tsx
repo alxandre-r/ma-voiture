@@ -218,9 +218,9 @@ export default function SettingsPage() {
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`flex flex-col items-center gap-2 p-3 rounded-lg transition-colors 
+                  className={`flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:cursor-pointer
                     ${activeSection === item.id
-                    ? "bg-indigo-600 text-white shadow-sm"
+                    ? "bg-custom-1 text-white shadow-sm"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                 >
                   <Icon name={item.icon} size={20} className={`flex-shrink-0
@@ -236,9 +236,9 @@ export default function SettingsPage() {
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors 
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:cursor-pointer
                   ${activeSection === item.id
-                  ? "bg-indigo-600 text-white shadow-sm"
+                  ? "bg-custom-1 text-white shadow-sm"
                   : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                 >
                   <Icon name={item.icon} size={18} className={`flex-shrink-0 
@@ -315,7 +315,7 @@ export default function SettingsPage() {
                       setUnits({ ...units, fuel: e.target.value })
                     }
                     className="p-3 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none"
                   >
                     <option value="L">Litres (L)</option>
                     <option value="gal">Gallons (gal)</option>
@@ -331,15 +331,15 @@ export default function SettingsPage() {
                       setUnits({ ...units, consumption: e.target.value })
                     }
                     className="p-3 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none"
                   >
                     <option value="L/100km">Litres par 100km (L/100km)</option>
                     <option value="MPG">Miles par gallon (MPG)</option>
                   </select>
                 </div>
 
-                <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                  <p className="text-sm text-indigo-700 dark:text-indigo-300">
+                <div className="bg-custom-1/10 dark:bg-custom-1-dark/20 p-4 rounded-lg border border-custom-1/20 dark:border-custom-1-dark/20">
+                  <p className="text-sm text-custom-1 dark:text-custom-1-dark">
                     <strong>Note :</strong> Les changements d&apos;unités seront appliqués à tous vos véhicules et historiques de consommation.
                   </p>
                 </div>
@@ -368,7 +368,7 @@ export default function SettingsPage() {
                     <input
                       type="email"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
+                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
                       placeholder="Nouvelle adresse email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -376,20 +376,17 @@ export default function SettingsPage() {
                     <button
                       onClick={handleChangeEmail}
                       disabled={isLoading.email}
-                      className={`px-4 py-3 rounded-lg font-medium transition-colors 
-                        ${isLoading.email
-                        ? "bg-indigo-400 cursor-not-allowed"
-                        : "bg-indigo-600 hover:bg-indigo-700 text-white"} sm:px-6`}
+                      className={`px-4 py-3 text-white rounded-lg font-medium bg-custom-1 dark:bg-custom-1-dark ${isLoading.email ? "opacity-70 cursor-not-allowed" : ""} sm:px-6`}
                     >
                       {isLoading.email ? "Mise à jour..." : "Mettre à jour"}
                     </button>
                     {formStatus.email.success && (
-                      <div className="p-3 bg-sky-100 dark:bg-sky-900/30 rounded-lg text-sky-700 dark:text-sky-300 text-sm">
+                      <div className="p-3 bg-custom-1/10 dark:bg-custom-1-dark/30 rounded-lg text-custom-1 dark:text-custom-1-dark text-sm">
                         {formStatus.email.success}
                       </div>
                     )}
                     {formStatus.email.error && (
-                      <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-700 dark:text-orange-300 text-sm">
+                      <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-700 dark:text-red-300 text-sm">
                         {formStatus.email.error}
                       </div>
                     )}
@@ -403,7 +400,7 @@ export default function SettingsPage() {
                       type="password"
                       placeholder="Ancien mot de passe"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
+                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
                       value={passwords.oldPassword}
                       onChange={(e) =>
                         setPasswords({ ...passwords, oldPassword: e.target.value })
@@ -413,7 +410,7 @@ export default function SettingsPage() {
                       type="password"
                       placeholder="Nouveau mot de passe (min. 6 caractères)"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
+                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
                       value={passwords.newPassword}
                       onChange={(e) =>
                         setPasswords({ ...passwords, newPassword: e.target.value })
@@ -422,20 +419,17 @@ export default function SettingsPage() {
                     <button
                       onClick={handleChangePassword}
                       disabled={isLoading.password}
-                      className={`px-4 py-3 rounded-lg font-medium transition-colors 
-                        ${isLoading.password
-                        ? "bg-indigo-400 cursor-not-allowed"
-                        : "bg-indigo-600 hover:bg-indigo-700 text-white"} sm:px-6`}
+                      className={`px-4 py-3 text-white rounded-lg font-medium bg-custom-1 dark:bg-custom-1-dark ${isLoading.password ? "opacity-70 cursor-not-allowed" : ""} sm:px-6`}
                     >
                       {isLoading.password ? "Mise à jour..." : "Mettre à jour"}
                     </button>
                     {formStatus.password.success && (
-                      <div className="p-3 bg-sky-100 dark:bg-sky-900/30 rounded-lg text-sky-700 dark:text-sky-300 text-sm">
+                      <div className="p-3 bg-custom-1/10 dark:bg-custom-1-dark/30 rounded-lg text-custom-1 dark:text-custom-1-dark text-sm">
                         {formStatus.password.success}
                       </div>
                     )}
                     {formStatus.password.error && (
-                      <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-700 dark:text-orange-300 text-sm">
+                      <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-700 dark:text-red-300 text-sm">
                         {formStatus.password.error}
                       </div>
                     )}
@@ -515,12 +509,9 @@ export default function SettingsPage() {
                   <button
                     onClick={exportUserData}
                     disabled={exportingData}
-                    className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2  
-                      ${exportingData
-                      ? "bg-indigo-400 cursor-not-allowed"
-                      : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
+                    className={`px-4 py-3 text-white rounded-lg bg-custom-1 hover:bg-custom-1-hover font-medium flex items-center gap-2 ${exportingData ? "opacity-70 cursor-not-allowed" : "hover:cursor-pointer"}`}
                   >
-                    <Icon name="add" size={18} />
+                    <Icon name="add" size={18} className="invert" />
                     {exportingData ? "Export en cours..." : "Exporter mes données"}
                   </button>
                   {exportSuccess && (
@@ -536,20 +527,20 @@ export default function SettingsPage() {
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
                     Vous pouvez supprimer définitivement votre compte et toutes vos données associées. Cette action est irréversible.
                   </p>
-                  <div className="bg-orange-50 dark:bg-orange-900/30 p-4 rounded-lg border border-orange-200 dark:border-orange-800 mb-4 flex items-start gap-3">
-                    <p className="text-sm text-orange-700 dark:text-orange-300 font-medium">
+                  <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 mb-4 flex items-start gap-3">
+                    <p className="text-sm text-red-700 dark:text-red-300 font-medium">
                       La suppression de votre compte entraînera la perte définitive de toutes vos données (véhicules, historique de consommation, etc.). Cette action ne peut pas être annulée.
                     </p>
                   </div>
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={deletingAccount}
-                    className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2  
+                    className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 hover:cursor-pointer
                       ${deletingAccount
-                      ? "bg-orange-400 cursor-not-allowed"
-                      : "bg-orange-600 hover:bg-orange-700 text-white"}`}
+                      ? "bg-red-400 cursor-not-allowed"
+                      : "bg-red-600 hover:bg-red-700 text-white"}`}
                   >
-                    <Icon name="delete" size={18} />
+                    <Icon name="delete" size={18} className="invert" />
                     {deletingAccount ? "Suppression en cours..." : "Supprimer mon compte"}
                   </button>
                   {deleteSuccess && (
@@ -567,7 +558,7 @@ export default function SettingsPage() {
                       </p>
                       <input
                         type="text"
-                        className="p-3 rounded-lg border w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none mb-3"
+                        className="p-3 rounded-lg border w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none mb-3 hover:cursor-text"
                         placeholder="Tapez SUPPRIMER MON COMPTE pour confirmer"
                         value={deleteConfirmation}
                         onChange={(e) => setDeleteConfirmation(e.target.value)}
@@ -576,8 +567,8 @@ export default function SettingsPage() {
                         <button
                           onClick={handleAccountDeletion}
                           disabled={deletingAccount}
-                          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors text-white  
-                            ${deletingAccount ? "bg-orange-400 cursor-not-allowed" : "bg-orange-600 hover:bg-orange-700"}`}
+                          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors text-white hover:cursor-pointer 
+                            ${deletingAccount ? "bg-red-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"}`}
                         >
                           Confirmer la suppression
                         </button>
@@ -587,7 +578,7 @@ export default function SettingsPage() {
                             setDeleteConfirmation("");
                           }}
                           disabled={deletingAccount}
-                          className="flex-1 px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200  dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"
+                          className="flex-1 px-4 py-2 rounded-lg font-medium transition-colors bg-gray-200  dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 hover:cursor-pointer"
                         >
                           Annuler
                         </button>
@@ -662,12 +653,6 @@ export default function SettingsPage() {
               <p className="text-gray-500 dark:text-gray-400 mb-6">
                 Vous pouvez vous déconnecter de votre compte à tout moment. Vous devrez vous reconnecter pour accéder à vos données.
               </p>
-              <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 mb-6 flex items-center gap-3">
-                <Icon name="secure" size={20} className="text-red-700 dark:text-red-300 flex-shrink-0" />
-                <p className="text-sm text-red-700 dark:text-red-300 font-medium">
-                  Attention : La déconnexion vous empêchera d&apos;accéder à vos données jusqu&apos;à ce que vous vous reconnectiez.
-                </p>
-              </div>
               <LogoutButton className="w-full" />
             </section>
           )}

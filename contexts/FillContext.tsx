@@ -271,12 +271,20 @@ export function FillProvider({ children }: { children: ReactNode }) {
    * Fetch fills from API
    */
   const fetchFills = async () => {
+    console.log('🔄 Fetching fills from API...');
     setLoading(true);
     setError(null);
     
     try {
+      console.log('📡 Calling /api/fills/get');
       const res = await fetch('/api/fills/get');
-      const body = await res.json().catch(() => ({}));
+      console.log('📥 API response status:', res.status);
+      
+      const body = await res.json().catch((parseErr) => {
+        console.error('❌ Failed to parse JSON response:', parseErr);
+        return {};
+      });
+      console.log('📦 API response body:', body);
       
       if (!res.ok) {
         let errorMessage = body?.error ?? `Erreur de requête (${res.status})`;
@@ -290,6 +298,7 @@ export function FillProvider({ children }: { children: ReactNode }) {
           errorMessage = 'Session expirée. Veuillez vous reconnecter.';
         }
         
+        console.error('⚠️ API error:', errorMessage);
         setError(errorMessage);
         setFills([]);
         setStats(null);
@@ -297,9 +306,11 @@ export function FillProvider({ children }: { children: ReactNode }) {
       }
       
       const fillData = Array.isArray(body?.fills) ? body.fills : [];
+      console.log('📊 Received fills:', fillData.length);
       setFills(fillData);
       setStats(calculateStats(fillData));
     } catch (err) {
+      console.error('💥 Fetch error:', err);
       let errorMessage = 'Impossible de se connecter au serveur.';
       
       if (err instanceof Error) {
@@ -314,6 +325,7 @@ export function FillProvider({ children }: { children: ReactNode }) {
       setFills([]);
       setStats(null);
     } finally {
+      console.log('✅ Fetch completed');
       setLoading(false);
     }
   };

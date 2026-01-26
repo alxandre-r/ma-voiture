@@ -68,7 +68,7 @@ export async function PATCH(request: Request) {
     }
     
     // Prepare update data (exclude id and owner)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const { id: _, owner: __, ...updateData } = body;
     
     // Update fill record

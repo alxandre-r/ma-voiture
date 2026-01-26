@@ -22,7 +22,6 @@ import { createSupabaseServerClient } from '@/lib/supabaseServer';
  * - liters: number (optional)
  * - amount: number (optional)
  * - price_per_liter: number (optional)
- * - is_full: boolean (required)
  * - notes: string (optional)
  */
 export async function POST(request: Request) {
@@ -59,13 +58,6 @@ export async function POST(request: Request) {
       );
     }
     
-    if (body.is_full === undefined) {
-      return NextResponse.json(
-        { error: 'Le champ is_full est requis' },
-        { status: 400 }
-      );
-    }
-    
     // Verify vehicle ownership
     const { data: vehicle, error: vehicleError } = await supabase
       .from('vehicles')
@@ -92,7 +84,6 @@ export async function POST(request: Request) {
         liters: body.liters || null,
         amount: body.amount || null,
         price_per_liter: body.price_per_liter || null,
-        is_full: body.is_full,
         notes: body.notes || null,
       }])
       .select()

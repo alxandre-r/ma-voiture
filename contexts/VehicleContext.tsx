@@ -49,7 +49,20 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
         return;
       }
       
-      setVehicles(Array.isArray(body?.vehicles) ? body.vehicles : []);
+      // Debug: Log the API response structure
+      console.log('API response body:', body);
+      
+      // Handle different response formats
+      let vehiclesData = [];
+      if (Array.isArray(body?.vehicles)) {
+        vehiclesData = body.vehicles;
+      } else if (Array.isArray(body)) {
+        vehiclesData = body;
+      } else if (body?.data) {
+        vehiclesData = Array.isArray(body.data) ? body.data : [];
+      }
+      
+      setVehicles(vehiclesData);
     } catch (err) {
       setError((err as Error).message || 'Unknown error');
       setVehicles([]);

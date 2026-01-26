@@ -14,7 +14,7 @@ import Icon from '@/components/ui/Icon';
 export interface FillRowProps {
   fill: Fill;
   onEdit?: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   isDeleting: boolean;
   showVehicleName?: boolean;
   isEditing?: boolean;
@@ -23,6 +23,7 @@ export interface FillRowProps {
   onSaveEdit?: () => void;
   onCancelEdit?: () => void;
   saving?: boolean;
+  isReadOnly?: boolean;
 }
 
 /**
@@ -42,6 +43,7 @@ export default function FillRow({
   onSaveEdit,
   onCancelEdit,
   saving = false,
+  isReadOnly = false,
 }: FillRowProps) {
   /**
    * Format date for display
@@ -176,9 +178,12 @@ export default function FillRow({
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300">
               {getVehicleDisplayName()}
             </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {fill.odometer ? `${fill.odometer} km` : 'Odomètre N/A'}
+            </div>
           </div>
           <div className="lg:hidden flex gap-2 ml-3 flex-shrink-0">
-            {onEdit && (
+            {onEdit && !isReadOnly && (
               <button
                 onClick={onEdit}
                 disabled={isDeleting}
@@ -188,14 +193,16 @@ export default function FillRow({
                 <Icon name="edit" size={16} className='invert' />
               </button>
             )}
-            <button
-              onClick={onDelete}
-              disabled={isDeleting}
-              className="p-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
-              title="Supprimer"
-            >
-              <Icon name="delete" size={16} className='invert' />
-            </button>
+            {onDelete && !isReadOnly && (
+              <button
+                onClick={onDelete}
+                disabled={isDeleting}
+                className="p-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+                title="Supprimer"
+              >
+                <Icon name="delete" size={16} className='invert' />
+              </button>
+            )}
           </div>
         </div>
 
@@ -222,16 +229,9 @@ export default function FillRow({
           </div>
         </div>
 
-        <div className="hidden lg:block lg:col-span-1 text-center">
-          <div className="text-xs text-gray-500 dark:text-gray-400">Odomètre</div>
-          <div className="text-sm">
-            {fill.odometer || 'N/A'} km
-          </div>
-        </div>
-
         {/* Desktop: Actions */}
         <div className="hidden lg:flex lg:col-span-6 justify-end gap-2">
-          {onEdit && (
+          {onEdit && !isReadOnly && (
             <button
               onClick={onEdit}
               disabled={isDeleting}
@@ -241,14 +241,16 @@ export default function FillRow({
               <Icon name="edit" size={16} className='invert' />
             </button>
           )}
-          <button
-            onClick={onDelete}
-            disabled={isDeleting}
-            className="p-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
-            title="Supprimer"
-          >
-            <Icon name="delete" size={16} className='invert' />
-          </button>
+          {onDelete && !isReadOnly && (
+            <button
+              onClick={onDelete}
+              disabled={isDeleting}
+              className="p-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+              title="Supprimer"
+            >
+              <Icon name="delete" size={16} className='invert' />
+            </button>
+          )}
         </div>
       </div>
 

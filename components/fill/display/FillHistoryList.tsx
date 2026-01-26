@@ -13,7 +13,7 @@ import { useFills } from '@/contexts/FillContext';
 import { Fill } from '@/types/fill';
 import { FillRow } from '.';
 import { FillFilters } from '../controls';
-import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { processFills } from '@/lib/fillUtils';
 
 /**
@@ -21,6 +21,7 @@ import { processFills } from '@/lib/fillUtils';
  * 
  * Comprehensive list of all fuel fill-ups with detailed information.
  */
+
 export default function FillHistoryList() {
   const {
     fills,
@@ -48,7 +49,7 @@ export default function FillHistoryList() {
     sortBy: 'date',
     sortDirection: 'desc' as 'asc' | 'desc'
   });
-
+  
   /**
    * Initialize editing for a fill
    */
@@ -158,8 +159,6 @@ export default function FillHistoryList() {
     }
   }
 
-
-
   /**
    * Format currency
    */
@@ -182,12 +181,10 @@ export default function FillHistoryList() {
    */
   const processedFills = fills ? processFills(fills, filters) : [];
 
-
-
   return (
     <div className="fill-history space-y-6">
       {/* Delete confirmation dialog */}
-      <ConfirmationDialog
+      <ConfirmationModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={confirmDelete}
@@ -195,6 +192,7 @@ export default function FillHistoryList() {
         message="Êtes-vous sûr de vouloir supprimer ce plein ? Cette action est irréversible."
         confirmText="Supprimer"
         cancelText="Annuler"
+        confirmButtonColor="red"
       />
 
       {/* Delete operation feedback */}
@@ -246,8 +244,6 @@ export default function FillHistoryList() {
         </div>
       </div>
       )}
-
-
 
       {/* State handling */}
       {loading && (
