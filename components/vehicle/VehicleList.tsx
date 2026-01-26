@@ -8,28 +8,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useVehicles } from '@/contexts/VehicleContext';
+import { Vehicle, useVehicles } from '@/contexts/VehicleContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import VehicleCard from './VehicleCard';
 import VehicleListStates from './VehicleListStates';
-
-/**
- * Vehicle type definition for personal vehicles.
- */
-type Vehicle = {
-  id: string;
-  owner?: string | null;
-  name?: string | null;
-  make?: string | null;
-  model?: string | null;
-  year?: number | null;
-  fuel_type?: string | null;
-  manufacturer_consumption?: number | null;
-  odometer?: number | null;
-  plate?: string | null;
-  created_at?: string | null;
-  [key: string]: unknown; // Allow for additional fields from API
-};
 
 interface VehicleListPersonalProps {
   vehicles: Vehicle[];
@@ -48,10 +30,10 @@ export default function VehicleListPersonal({ vehicles }: VehicleListPersonalPro
   } = useVehicles();
   
   // Edit state
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<Partial<Vehicle> | null>(null);
   const [saving, setSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [editError, setEditError] = useState<string | null>(null);
 
   // Notification context
@@ -85,7 +67,7 @@ export default function VehicleListPersonal({ vehicles }: VehicleListPersonalPro
   /**
    * Save edited vehicle data to backend.
    */
-  async function saveEdit(id: string) {
+  async function saveEdit(id: number) {
     if (!editData) return;
     setSaving(true);
     try {
@@ -119,13 +101,13 @@ export default function VehicleListPersonal({ vehicles }: VehicleListPersonalPro
   /**
    * Delete a vehicle after confirmation.
    */
-  async function handleDelete(vehicleId: string) {
+  async function handleDelete(vehicleId: number) {
     setDeletingId(vehicleId);
     try {
       const res = await fetch('/api/vehicles/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vehicleId }),
+        body: JSON.stringify({ id: vehicleId }),
       });
       const data = await res.json();
       if (!res.ok) {

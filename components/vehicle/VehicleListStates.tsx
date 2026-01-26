@@ -10,7 +10,7 @@ interface VehicleListStatesProps {
   loading: boolean;
   error: string | null;
   vehicles: Array<{
-    id: string;
+    id: number;
     [key: string]: unknown;
   }> | null;
 }

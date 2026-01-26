@@ -10,24 +10,9 @@
 
 import { useState } from 'react';
 import VehicleEditForm from './VehicleEditForm';
+import { Vehicle } from '@/contexts/VehicleContext'
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import Icon from '@/components/ui/Icon';
-
-interface Vehicle {
-  id: number;
-  owner?: string | null;
-  owner_name?: string | null;
-  name?: string | null;
-  make?: string | null;
-  model?: string | null;
-  year?: number | null;
-  fuel_type?: string | null;
-  manufacturer_consumption?: number | null;
-  odometer?: number | null;
-  plate?: string | null;
-  last_fill?: string | null;
-  [key: string]: unknown; // Allow for additional fields from API
-}
 
 interface VehicleCardProps {
   vehicle: Vehicle;
