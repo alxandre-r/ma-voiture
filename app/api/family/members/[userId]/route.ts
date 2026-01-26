@@ -8,19 +8,14 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { NextResponse } from 'next/server';
 
-type RouteParams = {
-  userId: string;
-};
-
 export async function DELETE(
   _request: Request,
-  context: { params: unknown }
+  { params }: { params: any }
 ) {
-  const { userId } = context.params as RouteParams;
+  const userId = params.userId as string;
 
   const supabase = await createSupabaseServerClient();
 
-  // Get authenticated user
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -32,7 +27,6 @@ export async function DELETE(
     );
   }
 
-  // Check if user is owner of a family
   const { data: familyMember, error: memberError } = await supabase
     .from('family_members')
     .select('family_id, role')
@@ -46,37 +40,25 @@ export async function DELETE(
     );
   }
 
-  // Prevent owner from removing themselves
   if (userId === user.id) {
     return NextResponse.json(
-      {
-        error:
-          'Vous ne pouvez pas vous supprimer vous-même. Utilisez le transfert de propriété ou quittez la famille.',
-      },
+      { error: 'Vous ne pouvez pas vous supprimer vous-même' },
       { status: 400 }
     );
   }
 
-  // Remove the member from family
-  const { error: removeError } = await supabase
+  const { error } = await supabase
     .from('family_members')
     .delete()
     .eq('family_id', familyMember.family_id)
     .eq('user_id', userId);
 
-  if (removeError) {
-    console.error(removeError);
+  if (error) {
     return NextResponse.json(
-      { error: 'Erreur lors de la suppression du membre' },
+      { error: 'Erreur lors de la suppression' },
       { status: 500 }
     );
   }
 
-  return NextResponse.json(
-    {
-      success: true,
-      message: 'Membre supprimé de la famille avec succès',
-    },
-    { status: 200 }
-  );
+  return NextResponse.json({ success: true }, { status: 200 });
 }
