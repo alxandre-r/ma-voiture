@@ -365,7 +365,7 @@ export default function FamilyClient() {
           title="Action impossible"
           message="En tant que propriétaire, vous ne pouvez pas quitter la famille directement. Vous devez d'abord transférer votre rôle de propriétaire à un autre membre de la famille, puis vous pourrez quitter la famille."
           confirmText="Compris"
-          cancelText={null}
+          cancelText={undefined}
           confirmButtonColor="primary"
           isLoading={isLoading}
         />
