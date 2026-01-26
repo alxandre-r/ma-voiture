@@ -36,7 +36,6 @@ export async function GET() {
       // Return basic user info even if profile is not found
       return NextResponse.json(
         {
-          id: user.id,
           email: user.email,
           full_name: null,
           ...user
