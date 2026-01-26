@@ -12,6 +12,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 
 interface VehicleContextType {
   vehicles: any[] | null;
+  selectedVehicle: string | null;
   loading: boolean;
   error: string | null;
   refreshVehicles: () => Promise<void>;
@@ -28,6 +29,7 @@ const VehicleContext = createContext<VehicleContextType | undefined>(undefined);
  */
 export function VehicleProvider({ children }: { children: ReactNode }) {
   const [vehicles, setVehicles] = useState<any[] | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
@@ -109,6 +111,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   return (
     <VehicleContext.Provider value={{
       vehicles,
+      selectedVehicle,
       loading,
       error,
       refreshVehicles,
