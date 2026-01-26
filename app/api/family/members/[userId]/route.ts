@@ -8,24 +8,11 @@
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { NextResponse } from 'next/server';
 
-function getUserIdParam(params: unknown): string {
-  if (
-    typeof params === 'object' &&
-    params !== null &&
-    'userId' in params &&
-    typeof (params as { userId: unknown }).userId === 'string'
-  ) {
-    return (params as { userId: string }).userId;
-  }
-
-  throw new Error('Paramètre userId invalide');
-}
-
 export async function DELETE(
   _request: Request,
-  context: Record<string, unknown>
+  context
 ) {
-  const userId = getUserIdParam(context.params);
+  const userId = context.params.userId as string;
 
   const supabase = await createSupabaseServerClient();
 
