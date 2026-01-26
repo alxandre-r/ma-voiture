@@ -14,7 +14,7 @@ import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import Icon from '@/components/ui/Icon';
 
 interface Vehicle {
-  id: string;
+  id: number;
   owner?: string | null;
   owner_name?: string | null;
   name?: string | null;
@@ -25,20 +25,24 @@ interface Vehicle {
   manufacturer_consumption?: number | null;
   odometer?: number | null;
   plate?: string | null;
+  last_fill?: string | null;
   [key: string]: unknown; // Allow for additional fields from API
 }
 
 interface VehicleCardProps {
   vehicle: Vehicle;
-  onEditStart: (vehicle: Vehicle) => void;
-  onDelete: (vehicleId: string) => void;
-  editingId: string | null;
-  editData: Partial<Vehicle> | null;
-  onChangeField: (key: string, value: unknown) => void;
-  onSaveEdit: (id: string) => void;
-  onCancelEdit: () => void;
-  saving: boolean;
-  deletingId: string | null;
+  onEditStart?: (vehicle: Vehicle) => void;
+  onDelete?: (vehicleId: number) => void;
+  editingId?: number | null;
+  editData?: Partial<Vehicle> | null;
+  onChangeField?: (key: string, value: unknown) => void;
+  onSaveEdit?: (id: number) => void;
+  onCancelEdit?: () => void;
+  saving?: boolean;
+  deletingId?: number | null;
+
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
 /**
@@ -49,15 +53,17 @@ interface VehicleCardProps {
  */
 export default function VehicleCard({
   vehicle,
-  onEditStart,
-  editingId,
-  editData,
-  onChangeField,
-  onSaveEdit,
-  onCancelEdit,
-  saving,
-  deletingId,
-  onDelete,
+  onEditStart = () => {},
+  onDelete = () => {},
+  onChangeField = () => {},
+  onSaveEdit = () => {},
+  onCancelEdit = () => {},
+  editingId = null,
+  editData = null,
+  saving = false,
+  deletingId = null,
+  isSelected = false,
+  onSelect = () => {},
 }: VehicleCardProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -76,7 +82,7 @@ export default function VehicleCard({
   };
 
   return (
-    <div className="vehicle-card">
+    <div className={`vehicle-card${isSelected ? ' selected' : ''}`} onClick={() => onSelect && onSelect()}>
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
         {/* Show vehicle data only when not editing this specific vehicle */}
         {editingId !== vehicle.id && (
@@ -108,7 +114,7 @@ export default function VehicleCard({
               <div className="flex flex-col items-end gap-3">
                 <div className="flex gap-2">
                   <button
-                    onClick={() => onEditStart(vehicle)}
+                    onClick={() => onEditStart?.(vehicle)}
                     className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-custom-3 hover:bg-custom-3-hover text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
                     aria-label={`Modifier ${vehicle.name ?? vehicle.id}`}
                   >
@@ -184,7 +190,7 @@ export default function VehicleCard({
             <VehicleEditForm
               editData={editData}
               onChangeField={onChangeField}
-              onSaveEdit={() => onSaveEdit(vehicle.id)}
+              onSaveEdit={() => onSaveEdit?.(vehicle.id)}
               onCancelEdit={onCancelEdit}
               saving={saving}
             />
@@ -196,7 +202,7 @@ export default function VehicleCard({
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={() => {
             setShowDeleteConfirm(false);
-            onDelete(vehicle.id);
+            onDelete?.(vehicle.id);
           }}
           title="Confirmer la suppression"
           message={`Êtes-vous sûr de vouloir supprimer le véhicule "${vehicle.name || vehicle.make || 'ce véhicule'}" ? Cette action est irréversible.`}
