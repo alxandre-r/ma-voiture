@@ -169,7 +169,7 @@ export const FamilyActions: React.FC<FamilyActionsProps> = ({
         message="Êtes-vous sûr de vouloir quitter cette famille ? Vous perdrez l'accès aux véhicules et aux données partagées par les autres membres."
         confirmText="Quitter"
         cancelText="Annuler"
-        confirmButtonColor="orange"
+        confirmButtonColor="red"
         isLoading={isLoading}
       />
 
@@ -181,8 +181,7 @@ export const FamilyActions: React.FC<FamilyActionsProps> = ({
         title="Action impossible"
         message="En tant que propriétaire, vous ne pouvez pas quitter la famille directement. Vous devez d'abord transférer votre rôle de propriétaire à un autre membre de la famille, puis vous pourrez quitter la famille."
         confirmText="Compris"
-        cancelText={null}
-        confirmButtonColor="blue"
+        confirmButtonColor="primary"
         isLoading={isLoading}
       />
     </div>
