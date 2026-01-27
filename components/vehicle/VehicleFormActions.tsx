@@ -39,7 +39,7 @@ export default function VehicleFormActions({
       <button
         type="submit"
         disabled={loading}
-        className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 cursor-pointer transition-colors sm:px-4 sm:py-2 sm:text-base"
+        className="px-3 py-2 text-sm bg-custom-1 hover:bg-custom-1-dark text-white rounded disabled:opacity-50 cursor-pointer transition-colors sm:px-4 sm:py-2 sm:text-base"
       >
         {loading ? 'Enregistrement...' : submitText}
       </button>

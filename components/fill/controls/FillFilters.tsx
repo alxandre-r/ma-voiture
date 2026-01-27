@@ -139,7 +139,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
             value={vehicleFilter}
             onChange={(e) => setVehicleFilter(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Tous les véhicules</option>
             {uniqueVehicles.length === 0 && (
@@ -165,7 +165,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
               setMonthFilter('all'); // Reset month when year changes
             }}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Toutes les années</option>
             {uniqueYears.length === 0 && (
@@ -188,7 +188,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
             value={monthFilter}
             onChange={(e) => setMonthFilter(e.target.value)}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Tous les mois</option>
             {monthsToDisplay.length === 0 && (
@@ -212,7 +212,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               disabled={loading || !fills || fills.length === 0}
-              className="bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50 flex-1"
+              className="bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50 flex-1"
             >
               <option value="date">Date</option>
               <option value="amount">Montant (€)</option>

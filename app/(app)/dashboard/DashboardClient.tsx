@@ -30,7 +30,7 @@ function AddFillClient({ vehicles }: { vehicles: Vehicle[] }) {
 		<>
 		<button
 			onClick={() => setOpen(true)}
-			className="px-4 py-3 bg-custom-3 text-white rounded-lg hover:bg-custom-3-hover flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3 hover:cursor-pointer"
+			className="px-4 py-3 bg-custom-2 text-white rounded-lg hover:bg-custom-2-hover flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3 hover:cursor-pointer"
 			aria-label="Ajouter un plein"
 		>
 			<Icon name="add" size={20} className="invert dark:invert-0" />

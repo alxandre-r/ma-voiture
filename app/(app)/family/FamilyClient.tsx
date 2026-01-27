@@ -231,7 +231,7 @@ export default function FamilyClient() {
           <div className="relative" ref={settingsMenuRef}>
             <button
               onClick={() => setIsSettingsMenuOpen(!isSettingsMenuOpen)}
-              className="py-2 px-4 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:bg-gray-200 hover:cursor-pointer"
+              className="py-2 px-4 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-600 hover:cursor-pointer"
             >
               <span className="sr-only">Paramètres</span>
               <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -296,7 +296,7 @@ export default function FamilyClient() {
 
         {/* Main Content - Family Members */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-            <h2 className="text-xl p-6 font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800">
+            <h2 className="text-xl p-6 font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-700">
               Membres de la famille
             </h2>
             <div className="p-6">
@@ -313,7 +313,7 @@ export default function FamilyClient() {
             <div className="mt-6">
                 <button
                     onClick={() => setIsInviteModalOpen(true)}
-                    className="w-full bg-orange-50 hover:bg-orange-100 text-custom-2 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 hover:cursor-pointer"
+                    className="w-full bg-orange-50 dark:bg-orange-600/20 hover:bg-orange-100 dark:hover:bg-orange-600/30 text-custom-2 dark:text-custom-2-dark font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 focus:outline-none hover:cursor-pointer"
                 >
                     {/* here, add an invite icon (add.svg from /public/icons) */}
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

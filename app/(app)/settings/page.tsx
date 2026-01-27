@@ -211,7 +211,7 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-8">
         {/* SIDEBAR MENU - Grid on mobile, list on desktop */}
         <aside className="lg:col-span-1">
-          <div className="bg-white dark:bg-gray-950 rounded-lg shadow p-3 sticky top-6 lg:p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sticky top-6 lg:p-4">
             {/* Mobile grid layout */}
             <nav className="lg:hidden grid grid-cols-2 gap-2">
               {menuItems.map((item) => (
@@ -254,7 +254,7 @@ export default function SettingsPage() {
         <div className="lg:col-span-3">
           {/* APPEARANCE SECTION */}
           {activeSection === "appearance" && (
-            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow">
+            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
               <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
                 <Icon name="settings" size={24} />
                 Apparence
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                   <select
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
-                    className="p-4 rounded-lg border w-full bg-gray-50 dark:bg-gray-950 border-gray-300 dark:border-gray-600 hover:cursor-pointer
+                    className="p-4 rounded-lg border w-full bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-600 hover:cursor-pointer
                     focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                   >
                     <option value="light">Clair</option>
@@ -283,7 +283,7 @@ export default function SettingsPage() {
 
           {/* UNITS SECTION */}
           {activeSection === "units" && (
-            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow">
+            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
               <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
                 <Icon name="conso" size={24} />
                 Unités de mesure
@@ -299,7 +299,7 @@ export default function SettingsPage() {
                       setUnits({ ...units, distance: e.target.value })
                     }
                     className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
+                    dark:bg-gray-900 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:p-3"
                   >
                     <option value="km">Kilomètres (km)</option>
                     <option value="miles">Miles (mi)</option>
@@ -315,7 +315,7 @@ export default function SettingsPage() {
                       setUnits({ ...units, fuel: e.target.value })
                     }
                     className="p-3 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none"
+                    dark:bg-gray-900 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none"
                   >
                     <option value="L">Litres (L)</option>
                     <option value="gal">Gallons (gal)</option>
@@ -331,14 +331,14 @@ export default function SettingsPage() {
                       setUnits({ ...units, consumption: e.target.value })
                     }
                     className="p-3 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                    dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none"
+                    dark:bg-gray-900 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none"
                   >
                     <option value="L/100km">Litres par 100km (L/100km)</option>
                     <option value="MPG">Miles par gallon (MPG)</option>
                   </select>
                 </div>
 
-                <div className="bg-custom-1/10 dark:bg-custom-1-dark/20 p-4 rounded-lg border border-custom-1/20 dark:border-custom-1-dark/20">
+                <div className="bg-custom-1/10 dark:bg-custom-1-dark/10 p-4 rounded-lg border border-custom-1/20 dark:border-custom-1-dark/20">
                   <p className="text-sm text-custom-1 dark:text-custom-1-dark">
                     <strong>Note :</strong> Les changements d&apos;unités seront appliqués à tous vos véhicules et historiques de consommation.
                   </p>
@@ -349,7 +349,7 @@ export default function SettingsPage() {
 
           {/* ACCOUNT SECTION */}
           {activeSection === "account" && (
-            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow space-y-8">
+            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-8">
               <div>
                 <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white flex items-center gap-3">
                   <Icon name="secure" size={24} />
@@ -368,7 +368,7 @@ export default function SettingsPage() {
                     <input
                       type="email"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
+                      dark:bg-gray-900 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
                       placeholder="Nouvelle adresse email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -376,7 +376,7 @@ export default function SettingsPage() {
                     <button
                       onClick={handleChangeEmail}
                       disabled={isLoading.email}
-                      className={`px-4 py-3 text-white rounded-lg font-medium bg-custom-1 dark:bg-custom-1-dark ${isLoading.email ? "opacity-70 cursor-not-allowed" : ""} sm:px-6`}
+                      className={`px-4 py-3 text-white rounded-lg font-medium bg-custom-1 dark:bg-custom-1 ${isLoading.email ? "opacity-70 cursor-not-allowed" : ""} sm:px-6`}
                     >
                       {isLoading.email ? "Mise à jour..." : "Mettre à jour"}
                     </button>
@@ -400,7 +400,7 @@ export default function SettingsPage() {
                       type="password"
                       placeholder="Ancien mot de passe"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
+                      dark:bg-gray-900 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
                       value={passwords.oldPassword}
                       onChange={(e) =>
                         setPasswords({ ...passwords, oldPassword: e.target.value })
@@ -410,7 +410,7 @@ export default function SettingsPage() {
                       type="password"
                       placeholder="Nouveau mot de passe (min. 6 caractères)"
                       className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300 hover:cursor-pointer
-                      dark:bg-gray-950 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
+                      dark:bg-gray-900 dark:border-gray-600 dark:hover:border-gray-400 focus:ring-2 focus:ring-custom-1 focus:outline-none sm:p-3"
                       value={passwords.newPassword}
                       onChange={(e) =>
                         setPasswords({ ...passwords, newPassword: e.target.value })
@@ -419,12 +419,12 @@ export default function SettingsPage() {
                     <button
                       onClick={handleChangePassword}
                       disabled={isLoading.password}
-                      className={`px-4 py-3 text-white rounded-lg font-medium bg-custom-1 dark:bg-custom-1-dark ${isLoading.password ? "opacity-70 cursor-not-allowed" : ""} sm:px-6`}
+                      className={`px-4 py-3 text-white rounded-lg font-medium bg-custom-1 dark:bg-custom-1 ${isLoading.password ? "opacity-70 cursor-not-allowed" : ""} sm:px-6`}
                     >
                       {isLoading.password ? "Mise à jour..." : "Mettre à jour"}
                     </button>
                     {formStatus.password.success && (
-                      <div className="p-3 bg-custom-1/10 dark:bg-custom-1-dark/30 rounded-lg text-custom-1 dark:text-custom-1-dark text-sm">
+                      <div className="p-3 bg-custom-1/10 dark:bg-custom-1-dark/10 rounded-lg text-custom-1 dark:text-custom-1-dark text-sm">
                         {formStatus.password.success}
                       </div>
                     )}
@@ -441,7 +441,7 @@ export default function SettingsPage() {
 
           {/* PRIVACY SECTION - RGPD Compliance */}
           {activeSection === "privacy" && (
-            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow space-y-8">
+            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-8">
               <div>
                 <h2 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white flex items-center gap-3">
                   <Icon name="secure" size={24} />
@@ -511,7 +511,7 @@ export default function SettingsPage() {
                     disabled={exportingData}
                     className={`px-4 py-3 text-white rounded-lg bg-custom-1 hover:bg-custom-1-hover font-medium flex items-center gap-2 ${exportingData ? "opacity-70 cursor-not-allowed" : "hover:cursor-pointer"}`}
                   >
-                    <Icon name="add" size={18} className="invert" />
+                    <Icon name="add" size={18} className="invert dark:invert-0" />
                     {exportingData ? "Export en cours..." : "Exporter mes données"}
                   </button>
                   {exportSuccess && (
@@ -527,7 +527,7 @@ export default function SettingsPage() {
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
                     Vous pouvez supprimer définitivement votre compte et toutes vos données associées. Cette action est irréversible.
                   </p>
-                  <div className="bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 mb-4 flex items-start gap-3">
+                  <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg border border-red-200 dark:border-red-800 mb-4 flex items-start gap-3">
                     <p className="text-sm text-red-700 dark:text-red-300 font-medium">
                       La suppression de votre compte entraînera la perte définitive de toutes vos données (véhicules, historique de consommation, etc.). Cette action ne peut pas être annulée.
                     </p>
@@ -540,7 +540,7 @@ export default function SettingsPage() {
                       ? "bg-red-400 cursor-not-allowed"
                       : "bg-red-600 hover:bg-red-700 text-white"}`}
                   >
-                    <Icon name="delete" size={18} className="invert" />
+                    <Icon name="delete" size={18} className="invert dark:invert-0" />
                     {deletingAccount ? "Suppression en cours..." : "Supprimer mon compte"}
                   </button>
                   {deleteSuccess && (
@@ -598,7 +598,7 @@ export default function SettingsPage() {
                     <strong> Ma Voiture Sandy</strong> est :
                   </p>
 
-                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-1">
+                  <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg space-y-1">
                     <p className="text-gray-700 dark:text-gray-300 font-medium">
                       Alexandre Robert — Projet « Ma Voiture Sandy »
                     </p>
@@ -645,7 +645,7 @@ export default function SettingsPage() {
 
           {/* LOGOUT SECTION */}
           {activeSection === "logout" && (
-            <section className="bg-white dark:bg-gray-950 p-6 rounded-lg shadow">
+            <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
               <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white flex items-center gap-3">
                 <Icon name="garage" size={24} />
                 Déconnexion

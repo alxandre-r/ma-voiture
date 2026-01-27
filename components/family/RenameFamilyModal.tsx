@@ -74,7 +74,7 @@ export const RenameFamilyModal: React.FC<RenameFamilyModalProps> = ({
             placeholder="Entrez le nouveau nom"
             maxLength={100}
             disabled={isLoading}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none"
           />
         </div>
 
@@ -93,7 +93,7 @@ export const RenameFamilyModal: React.FC<RenameFamilyModalProps> = ({
           <button
             type="submit"
             disabled={isLoading || !newName.trim() || newName.trim() === currentName}
-            className={`px-4 py-2 text-white rounded-md transition-colors bg-blue-600 hover:bg-blue-700 ${
+            className={`px-4 py-2 text-white rounded-md transition-colors bg-custom-1 hover:bg-custom-1-dark ${
               (isLoading || !newName.trim() || newName.trim() === currentName) ? 'opacity-50 cursor-not-allowed' : 'hover:cursor-pointer'
             }`}
           >

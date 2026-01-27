@@ -161,7 +161,7 @@ export default function VehicleEditForm({
         <button
           onClick={onSaveEdit}
           disabled={saving}
-          className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white text-sm transition hover:cursor-pointer"
+          className="px-4 py-2 rounded-md bg-custom-1 hover:bg-custom-1-dark text-white text-sm transition hover:cursor-pointer"
         >
           {saving ? 'Enregistrement...' : 'Enregistrer'}
         </button>

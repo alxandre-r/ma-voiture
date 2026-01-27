@@ -100,7 +100,7 @@ export default function VehicleCard({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEditStart?.(vehicle)}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-custom-3 hover:bg-custom-3-hover text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
                     aria-label={`Modifier ${vehicle.name ?? vehicle.id}`}
                   >
                     <Icon name="edit" size={18} className="invert dark:invert-0 sm:size-16" />

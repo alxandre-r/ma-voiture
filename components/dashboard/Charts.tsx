@@ -34,23 +34,23 @@ export default function FillCharts() {
       {/* Key metrics */}
       <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 sm:p-3 lg:p-4">
         <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3 sm:gap-3">
-          <div className="bg-gray-200 p-2 rounded sm:p-3">
-            <div className="text-gray-700 text-xs">Consommation moyenne</div>
-            <div className="text-gray-800 font-medium text-lg sm:text-xl">
+          <div className="bg-gray-200 dark:bg-gray-700 p-2 rounded sm:p-3">
+            <div className="text-gray-700 dark:text-gray-300 text-xs">Consommation moyenne</div>
+            <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
               {filteredStats.avg_consumption} L/100km
             </div>
           </div>
 
-          <div className="bg-gray-200 p-2 rounded sm:p-3">
-            <div className="text-gray-700 text-xs">Coût total</div>
-            <div className="text-gray-800 font-medium text-lg sm:text-xl">
+          <div className="bg-gray-200 dark:bg-gray-700 p-2 rounded sm:p-3">
+            <div className="text-gray-700 dark:text-gray-300 text-xs">Coût total</div>
+            <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
               {formatCurrency(filteredStats.total_cost)}
             </div>
           </div>
 
-          <div className="bg-gray-200 p-2 rounded sm:p-3">
-            <div className="text-gray-700 text-xs">Prix moyen/L</div>
-            <div className="text-gray-800 font-medium text-lg sm:text-xl">
+          <div className="bg-gray-200 dark:bg-gray-700 p-2 rounded sm:p-3">
+            <div className="text-gray-700 dark:text-gray-300 text-xs">Prix moyen/L</div>
+            <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
               {formatCurrency(filteredStats.avg_price_per_liter)}
             </div>
           </div>

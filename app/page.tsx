@@ -12,7 +12,7 @@ import SignInForm from "@/components/auth/SignInForm";
 import SignUpForm from "@/components/auth/SignUpForm";
 
 // UI Effects
-import Aurora from '../components/ui/AuroraBackground';
+import Aurora from '../components/ui/effects/AuroraBackground';
 import ShinyText from '../components/ui/effects/ShinyText';
 
 

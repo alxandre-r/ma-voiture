@@ -172,7 +172,7 @@ export default function FillRow({
         {/* Mobile: Date, Vehicle Info, and Actions (all in same row) */}
         <div className="lg:col-span-2 col-span-1 flex justify-between items-start">
           <div className="flex-1">
-            <div className="text-lg font-bold text-custom-1 dark:text-blue-400 mb-1">
+            <div className="text-lg font-bold text-black dark:text-white mb-1">
               {formatDate(fill.date)}
             </div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -187,10 +187,10 @@ export default function FillRow({
               <button
                 onClick={onEdit}
                 disabled={isDeleting}
-                className="p-1.5 bg-custom-3 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+                className="p-1.5 bg-gray-600 dark:bg-gray-700 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
                 title="Modifier"
               >
-                <Icon name="edit" size={16} className='invert' />
+                <Icon name="edit" size={16} className='invert dark:invert-0' />
               </button>
             )}
             {onDelete && !isReadOnly && (
@@ -200,7 +200,7 @@ export default function FillRow({
                 className="p-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
                 title="Supprimer"
               >
-                <Icon name="delete" size={16} className='invert' />
+                <Icon name="delete" size={16} className='invert dark:invert-0' />
               </button>
             )}
           </div>
@@ -209,7 +209,7 @@ export default function FillRow({
         {/* Desktop: Amount */}
         <div className="hidden lg:block lg:col-span-1 lg:text-center">
           <div className="text-xs text-gray-500 dark:text-gray-400">Montant</div>
-          <div className="text-lg font-bold text-green-600 dark:text-green-400">
+          <div className="text-lg font-bold text-custom-1 dark:text-custom-1-dark">
             {formatCurrency(fill.amount)}
           </div>
         </div>
@@ -224,7 +224,7 @@ export default function FillRow({
 
         <div className="hidden lg:block lg:col-span-1 text-center">
           <div className="text-xs text-gray-500 dark:text-gray-400">Litres</div>
-          <div className="text-sm">
+          <div className="font-medium">
             {fill.liters || 'N/A'} L
           </div>
         </div>
@@ -235,10 +235,11 @@ export default function FillRow({
             <button
               onClick={onEdit}
               disabled={isDeleting}
-              className="p-1.5 bg-custom-3 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+              className="p-1.5 bg-gray-600 dark:bg-gray-700 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
               title="Modifier"
             >
-              <Icon name="edit" size={16} className='invert' />
+              <Icon name="edit" size={16} className='invert dark:invert-0 mr-2' />
+              Modifier
             </button>
           )}
           {onDelete && !isReadOnly && (
@@ -248,7 +249,8 @@ export default function FillRow({
               className="p-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
               title="Supprimer"
             >
-              <Icon name="delete" size={16} className='invert' />
+              <Icon name="delete" size={16} className='invert dark:invert-0 mr-2' />
+              Supprimer
             </button>
           )}
         </div>
@@ -258,7 +260,7 @@ export default function FillRow({
       <div className="lg:hidden grid grid-cols-2 gap-3 mt-3">
         <div className="text-center">
           <div className="text-xs text-gray-500 dark:text-gray-400">Montant</div>
-          <div className="font-bold text-green-600 dark:text-green-400">
+          <div className="font-bold text-custom-1 dark:text-custom-1-dark">
             {formatCurrency(fill.amount)}
           </div>
         </div>

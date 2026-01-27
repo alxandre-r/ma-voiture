@@ -140,11 +140,11 @@ export const FamilyMemberList: React.FC<FamilyMemberListProps> = ({
           {members.map((member) => (
             <div 
               key={member.user_id}
-              className={`p-4 rounded-lg shadow-xs border border-gray-200 dark:border-gray-600 ${member.user_id === currentUserId ? 'border-violet-300/30 dark:border-violet-500' : ''}`}
+              className={`p-4 rounded-lg shadow-xs border border-gray-200 dark:border-gray-600 ${member.user_id === currentUserId ? 'border-violet-300/30 dark:border-violet-500/50' : ''}`}
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900 rounded-full flex items-center justify-center text-violet-800/70 dark:text-violet-300 font-medium text-sm flex-shrink-0">
+                  <div className="w-10 h-10 bg-violet-100 dark:bg-violet-600/50 rounded-full flex items-center justify-center text-violet-800/70 dark:text-violet-200 font-medium text-sm flex-shrink-0">
                     {member.full_name ? member.full_name.charAt(0).toUpperCase() : '?'}
                   </div>
                   
@@ -154,7 +154,7 @@ export const FamilyMemberList: React.FC<FamilyMemberListProps> = ({
                         {member.full_name || member.email || 'Membre inconnu'}
                       </p>
                       {member.user_id === currentUserId && (
-                        <span className="inline-block px-2 py-0.5 bg-violet-100 text-violet-800/70 dark:bg-violet-900 dark:text-violet-200 text-xs rounded-full font-medium">
+                        <span className="inline-block px-2 py-0.5 bg-violet-100 text-violet-800/70 dark:bg-violet-600/50 dark:text-violet-200 text-xs rounded-full font-medium">
                           Vous
                         </span>
                       )}
@@ -166,11 +166,11 @@ export const FamilyMemberList: React.FC<FamilyMemberListProps> = ({
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                  <span className={`px-3 py-1 text-xs rounded-full font-medium ${member.role === 'owner' ? 'bg-violet-100 text-violet-800/70 dark:bg-violet-900 dark:text-violet-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200'}`}>
+                  <span className={`px-3 py-1 text-xs rounded-full font-medium ${member.role === 'owner' ? 'bg-violet-100 text-violet-800/70 dark:bg-violet-600/50 dark:text-violet-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200'}`}>
                     {getRoleLabel(member.role)}
                   </span>
                   
-                  <p className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                  <p className="text-xs text-gray-400 dark:text-gray-400 whitespace-nowrap">
                     Rejoint le {new Date(member.joined_at).toLocaleDateString()}
                   </p>
                 </div>
