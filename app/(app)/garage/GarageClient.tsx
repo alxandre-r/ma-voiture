@@ -2,7 +2,8 @@
 
 import React from 'react'
 import AddVehicleButton from './AddVehicleButton'
-import { useVehicles, Vehicle } from '@/contexts/VehicleContext'
+import { useVehicles } from '@/contexts/VehicleContext'
+import { Vehicle } from '@/types/vehicle'
 import VehicleListPersonal from '@/components/vehicle/VehicleList'
 
 export default function GarageClient() {

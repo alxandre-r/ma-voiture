@@ -1,7 +1,8 @@
 import React from "react";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { FillProvider } from "@/contexts/FillContext";
-import DashboardClient, { Vehicle } from "./DashboardClient";
+import DashboardClient from "./DashboardClient";
+import { VehicleMinimal } from '@/types/vehicle';
 
 export default async function DashboardPage() {
   const supabase = await createSupabaseServerClient();
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
     <main className="px-1 pb-24 space-y-3 sm:px-2 sm:space-y-4 lg:px-4 lg:space-y-6">
       <FillProvider>
         <section>
-          <DashboardClient vehicles={(vehicles || []) as Vehicle[]} />
+          <DashboardClient vehicles={(vehicles || []) as VehicleMinimal[]} />
         </section>
 
         <section>

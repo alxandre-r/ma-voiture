@@ -1,29 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import VehicleSwitcher from "@/components/vehicle/VehicleSwitcher"; // optionnel : tu peux inline si tu préfères
+import VehicleSwitcher from "@/components/vehicle/VehicleSwitcher";
 import FillModal from "@/components/fill/forms/FillModal";
 import Icon from "@/components/ui/Icon";
 import Charts from "@/components/dashboard/Charts";
 import LatestFills from "@/components/dashboard/LatestFills";
 import { useFills } from "@/contexts/FillContext";
-
-export type Vehicle = {
-	id: number;
-	name: string | null;
-	make: string | null;
-	model: string | null;
-	odometer: number | null;
-};
+import { VehicleMinimal } from '@/types/vehicle';
 
 interface DashboardClientProps {
-	vehicles: Vehicle[];
+	vehicles: VehicleMinimal[];
 }
 
 /**
  * Petit composant AddFill intégré
  */
-function AddFillClient({ vehicles }: { vehicles: Vehicle[] }) {
+function AddFillClient({ vehicles }: { vehicles: VehicleMinimal[] }) {
 	const [open, setOpen] = useState(false);
 
 	return (

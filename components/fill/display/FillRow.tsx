@@ -187,10 +187,10 @@ export default function FillRow({
               <button
                 onClick={onEdit}
                 disabled={isDeleting}
-                className="p-1.5 bg-gray-600 dark:bg-gray-700 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+                className="p-1.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
                 title="Modifier"
               >
-                <Icon name="edit" size={16} className='invert dark:invert-0' />
+                <Icon name="edit" size={16} />
               </button>
             )}
             {onDelete && !isReadOnly && (
@@ -235,10 +235,10 @@ export default function FillRow({
             <button
               onClick={onEdit}
               disabled={isDeleting}
-              className="p-1.5 bg-gray-600 dark:bg-gray-700 text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
+              className="p-1.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white text-sm rounded disabled:opacity-50 hover:cursor-pointer flex items-center justify-center"
               title="Modifier"
             >
-              <Icon name="edit" size={16} className='invert dark:invert-0 mr-2' />
+              <Icon name="edit" size={16} className='mr-2' />
               Modifier
             </button>
           )}

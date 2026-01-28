@@ -15,7 +15,7 @@
     "@auth/supabase-adapter": "^1.10.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.55.0",
-    "framer-motion": "^12.23.12",
+    "framer-motion": "^12.29.2",
     "motion": "^12.26.1",
     "next": "^15.5.7",
     "next-auth": "^4.24.11",

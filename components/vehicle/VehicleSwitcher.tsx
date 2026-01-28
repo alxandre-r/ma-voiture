@@ -8,23 +8,18 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Icon from '@/components/ui/Icon';
-
-interface Vehicle {
-  id: number;
-  name: string | null;
-  make: string | null;
-  model: string | null;
-  odometer: number | null;
-}
+import { VehicleMinimal } from '@/types/vehicle';
 
 interface VehicleSwitcherProps {
-  vehicles: Vehicle[];
+  vehicles: VehicleMinimal[];
   selectedVehicleId: string | null;
   onVehicleChange: (vehicleId: string | null) => void;
   disabled?: boolean;
 }
+
+
 
 /**
  * VehicleSwitcher Component
@@ -47,6 +42,28 @@ export default function VehicleSwitcher({
     onVehicleChange(vehicleId);
     setIsOpen(false);
   };
+
+  /** Close dropdown when clicking outside or pressing Escape */
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('.vehicle-switcher-dropdown')) {
+        setIsOpen(false);
+      }
+    };
+    
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
   
   /**
    * Get display name for selected vehicle
@@ -67,12 +84,12 @@ export default function VehicleSwitcher({
   };
   
   return (
-    <div className="relative">
+    <div className="relative vehicle-switcher-dropdown">
       {/* Vehicle Switcher Button */}
       <button
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors ${
+        className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-colors focus:outline-none hover:cursor-pointer ${
           disabled 
             ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600 cursor-not-allowed'
             : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
@@ -80,7 +97,7 @@ export default function VehicleSwitcher({
         aria-label="Sélectionner un véhicule"
       >
         <Icon name="garage" size={20} className="text-gray-600 dark:text-gray-300" />
-        <span className="font-medium truncate max-w-[150px] sm:max-w-[200px]">{getSelectedVehicleName()}</span>
+        <span className="font-medium truncate max-w-lg sm:max-w-[200px]">{getSelectedVehicleName()}</span>
         {!disabled && (
           <Icon 
             name="add" 
@@ -111,7 +128,7 @@ export default function VehicleSwitcher({
                 <button
                   key={vehicle.id}
                   onClick={() => handleVehicleChange(vehicle.id.toString())}
-                  className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                  className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-gray-50 hover:cursor-pointer dark:hover:bg-gray-700 transition-colors ${
                     selectedVehicleId === vehicle.id.toString() ? 'bg-blue-50 dark:bg-blue-900/20 font-medium' : ''
                   }`}
                 >

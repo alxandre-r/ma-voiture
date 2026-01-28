@@ -54,16 +54,6 @@ export default function VehicleEditForm({
           />
         </label>
 
-        {/* Owner Field */}
-        <label className="flex flex-col text-sm">
-          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Propriétaire</span>
-          <input
-            value={editData.owner ?? ''}
-            onChange={(e) => onChangeField('owner', e.target.value)}
-            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
-          />
-        </label>
-
         {/* Make Field */}
         <label className="flex flex-col text-sm">
           <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Marque</span>
@@ -101,23 +91,6 @@ export default function VehicleEditForm({
           <input
             value={editData.fuel_type ?? ''}
             onChange={(e) => onChangeField('fuel_type', e.target.value)}
-            className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
-          />
-        </label>
-
-        {/* Consumption Field */}
-        <label className="flex flex-col text-sm">
-          <span className="text-gray-500 dark:text-gray-300 text-xs mb-1">Consommation (L/100km)</span>
-          <input
-            type="number"
-            step="0.1"
-            value={editData.manufacturer_consumption ?? ''}
-            onChange={(e) =>
-              onChangeField(
-                'manufacturer_consumption',
-                e.target.value ? Number(e.target.value) : undefined
-              )
-            }
             className="border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded"
           />
         </label>

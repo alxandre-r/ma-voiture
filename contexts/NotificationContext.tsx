@@ -1,22 +1,15 @@
-/**
- * @file contexts/NotificationContext.tsx
- * @fileoverview Global notification context for consistent CRUD notifications.
- * 
- * This context provides a centralized way to show notifications across the application
- * with a consistent look and behavior.
- */
+"use client";
 
-'use client';
+import { createContext, useContext, useState, ReactNode } from "react";
+import NotificationModal from "@/components/ui/NotificationModal";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-import NotificationModal from '@/components/ui/NotificationModal';
-
-type NotificationType = 'success' | 'error' | 'info' | 'warning';
+type NotificationType = "success" | "error" | "info" | "warning";
 
 interface Notification {
-  isOpen: boolean;
+  id: string;
   message: string;
   type: NotificationType;
+  duration: number;
 }
 
 interface NotificationContextType {
@@ -30,56 +23,49 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [notification, setNotification] = useState<Notification | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const showNotification = (message: string, type: NotificationType, duration = 4000) => {
-    setNotification({ isOpen: true, message, type });
-    
-    setTimeout(() => {
-      setNotification(null);
-    }, duration);
+  const removeNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 
-  const showSuccess = (message: string, duration = 4000) => {
-    showNotification(message, 'success', duration);
-  };
-
-  const showError = (message: string, duration = 4000) => {
-    showNotification(message, 'error', duration);
-  };
-
-  const showInfo = (message: string, duration = 4000) => {
-    showNotification(message, 'info', duration);
-  };
-
-  const showWarning = (message: string, duration = 4000) => {
-    showNotification(message, 'warning', duration);
+  const showNotification = (message: string, type: NotificationType, duration = 6000) => {
+    setNotifications((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), message, type, duration },
+    ]);
   };
 
   return (
     <NotificationContext.Provider
-      value={{ showNotification, showSuccess, showError, showInfo, showWarning }}
+      value={{
+        showNotification,
+        showSuccess: (msg, dur) => showNotification(msg, "success", dur),
+        showError: (msg, dur) => showNotification(msg, "error", dur),
+        showInfo: (msg, dur) => showNotification(msg, "info", dur),
+        showWarning: (msg, dur) => showNotification(msg, "warning", dur),
+      }}
     >
       {children}
-      
-      {/* Global Notification Modal */}
-      {notification && (
-        <NotificationModal
-          isOpen={notification.isOpen}
-          onClose={() => setNotification(null)}
-          message={notification.message}
-          type={notification.type}
-          duration={4000}
-        />
-      )}
+
+      {/* Notification stack container */}
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 px-4 sm:px-0">
+        {notifications.map((n) => (
+          <NotificationModal
+            key={n.id}
+            message={n.message}
+            type={n.type}
+            duration={n.duration}
+            onClose={() => removeNotification(n.id)}
+          />
+        ))}
+      </div>
     </NotificationContext.Provider>
   );
 }
 
 export function useNotifications() {
   const context = useContext(NotificationContext);
-  if (context === undefined) {
-    throw new Error('useNotifications must be used within a NotificationProvider');
-  }
+  if (!context) throw new Error("useNotifications must be used within a NotificationProvider");
   return context;
 }

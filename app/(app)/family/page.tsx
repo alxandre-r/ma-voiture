@@ -7,7 +7,7 @@ import FamilyClient from './FamilyClient';
 
 export default function FamilyPage() {
     return (
-      <div className="family-page-content pt-24">
+      <div className="family-page-content">
         <FamilyClient />
       </div>
     );

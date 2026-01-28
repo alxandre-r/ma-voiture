@@ -8,7 +8,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Vehicle, useVehicles } from '@/contexts/VehicleContext';
+import { useVehicles } from '@/contexts/VehicleContext';
+import { Vehicle } from '@/types/vehicle';
 import { useNotifications } from '@/contexts/NotificationContext';
 import VehicleCard from './VehicleCard';
 import VehicleListStates from './VehicleListStates';
@@ -107,7 +108,7 @@ export default function VehicleListPersonal({ vehicles }: VehicleListPersonalPro
       const res = await fetch('/api/vehicles/delete', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: vehicleId }),
+        body: JSON.stringify({ vehicleId: vehicleId }),
       });
       const data = await res.json();
       if (!res.ok) {

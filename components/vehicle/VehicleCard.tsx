@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import VehicleEditForm from './VehicleEditForm';
-import { Vehicle } from '@/contexts/VehicleContext'
+import { Vehicle } from '@/types/vehicle'
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import Icon from '@/components/ui/Icon';
 
@@ -100,10 +100,10 @@ export default function VehicleCard({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEditStart?.(vehicle)}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium transition sm:px-4 hover:cursor-pointer"
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:text-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium transition sm:px-4 hover:cursor-pointer"
                     aria-label={`Modifier ${vehicle.name ?? vehicle.id}`}
                   >
-                    <Icon name="edit" size={18} className="invert dark:invert-0 sm:size-16" />
+                    <Icon name="edit" size={18} className="dark:invert-0 sm:size-16" />
                     <span className="hidden sm:inline">Modifier</span>
                   </button>
                   <button

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useVehicles, Vehicle } from '@/contexts/VehicleContext';
+import { useVehicles } from '@/contexts/VehicleContext';
+import { Vehicle } from '@/types/vehicle';
 import VehicleCard from './VehicleCard';
 
 export default function VehicleListPersonal() {

@@ -31,30 +31,43 @@ export default function FillCharts() {
 
   return (
     <div className="space-y-4">
-      {/* Key metrics */}
-      <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 sm:p-3 lg:p-4">
-        <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3 sm:gap-3">
-          <div className="bg-gray-200 dark:bg-gray-700 p-2 rounded sm:p-3">
-            <div className="text-gray-700 dark:text-gray-300 text-xs">Consommation moyenne</div>
-            <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
-              {filteredStats.avg_consumption} L/100km
-            </div>
-          </div>
 
-          <div className="bg-gray-200 dark:bg-gray-700 p-2 rounded sm:p-3">
-            <div className="text-gray-700 dark:text-gray-300 text-xs">Coût total</div>
-            <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
-              {formatCurrency(filteredStats.total_cost)}
-            </div>
-          </div>
 
-          <div className="bg-gray-200 dark:bg-gray-700 p-2 rounded sm:p-3">
-            <div className="text-gray-700 dark:text-gray-300 text-xs">Prix moyen/L</div>
-            <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
-              {formatCurrency(filteredStats.avg_price_per_liter)}
+        {(filteredStats.avg_consumption !== null && filteredStats.avg_consumption !== 0) ||
+        (filteredStats.total_cost !== null && filteredStats.total_cost !== 0) ||
+        (filteredStats.avg_price_per_liter !== null && filteredStats.avg_price_per_liter !== 0) ? (
+        <>
+          {/* Key metrics */} 
+          <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 sm:p-3 lg:p-4">
+            <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3 sm:gap-3">
+              <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded sm:p-3">
+                <div className="text-gray-700 dark:text-gray-300 text-xs">Consommation moyenne</div>
+                <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
+                  {filteredStats.avg_consumption} L/100km
+                </div>
+              </div>
+
+              <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded sm:p-3">
+                <div className="text-gray-700 dark:text-gray-300 text-xs">Coût total</div>
+                <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
+                  {formatCurrency(filteredStats.total_cost)}
+                </div>
+              </div>
+
+              <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded sm:p-3">
+                <div className="text-gray-700 dark:text-gray-300 text-xs">Prix moyen/L</div>
+                <div className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl">
+                  {formatCurrency(filteredStats.avg_price_per_liter)}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </>
+        ) : (
+          // nothing
+          <></>
+        )}
+
 
         {/* Charts: limit to last 6 months on small screens */}
         <div className="mt-4 space-y-4">
@@ -75,6 +88,5 @@ export default function FillCharts() {
           )}
         </div>
       </div>
-    </div>
   );
 }

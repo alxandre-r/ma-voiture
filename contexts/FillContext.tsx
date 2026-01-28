@@ -10,6 +10,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Fill, FillStats } from '@/types/fill';
+import { VehicleMinimal } from '@/types/vehicle';
 
 interface FillContextType {
   fills: Fill[] | null;
@@ -17,25 +18,13 @@ interface FillContextType {
   error: string | null;
   stats: FillStats | null;
   selectedVehicleId: string | null;
-  vehicles: Array<{
-    id: number;
-    name: string | null;
-    make: string | null;
-    model: string | null;
-    odometer: number | null;
-  }> | null;
+  vehicles: VehicleMinimal[] | null;
   refreshFills: () => Promise<void>;
   addFillOptimistic: (fill: Fill) => void;
   updateFillOptimistic: (fillId: number, updatedData: Partial<Fill>) => void;
   deleteFillOptimistic: (fillId: number) => void;
   setSelectedVehicleId: (vehicleId: string | null) => void;
-  setVehicles: (vehicles: Array<{
-    id: number;
-    name: string | null;
-    make: string | null;
-    model: string | null;
-    odometer: number | null;
-  }> | null) => void;
+  setVehicles: (vehicles: VehicleMinimal[] | null) => void;
   getFilteredFills: (vehicleId: string | null) => Fill[];
   getFillsByVehicleId: (vehicleId: number) => Fill[];
   getFilteredStats: (vehicleId: string | null) => FillStats;
@@ -56,13 +45,7 @@ export function FillProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<FillStats | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
-  const [vehicles, setVehicles] = useState<Array<{
-    id: number;
-    name: string | null;
-    make: string | null;
-    model: string | null;
-    odometer: number | null;
-  }> | null>(null);
+  const [vehicles, setVehicles] = useState<VehicleMinimal[] | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
   /**

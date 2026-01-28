@@ -11,18 +11,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useFills } from '@/contexts/FillContext';
 import { FillFormData } from '@/types/fill';
+import { VehicleMinimal } from '@/types/vehicle';
 
 export interface FillFormProps {
   onCancel?: () => void;
   onSuccess?: () => void;
   autoCloseOnSuccess?: boolean;
-  vehicles?: Array<{ 
-    id: number; 
-    name: string | null; 
-    make: string | null; 
-    model: string | null; 
-    odometer: number | null;
-  }> | null;
+  vehicles?: VehicleMinimal[] | null;
 }
 
 /**
@@ -36,10 +31,25 @@ export default function FillForm({
   autoCloseOnSuccess = true,
   vehicles = null 
 }: FillFormProps) {
-  const { addFillOptimistic, refreshFills } = useFills();
+  const { addFillOptimistic, refreshFills, selectedVehicleId } = useFills();
   const [loading, setLoading] = useState(false);
+  
+  // Determine the default vehicle ID
+  const getDefaultVehicleId = (): string => {
+    // If there's a selected vehicle from the context (VehicleSwitcher), use it
+    if (selectedVehicleId && vehicles?.some(v => v.id.toString() === selectedVehicleId)) {
+      return selectedVehicleId;
+    }
+    // If only one vehicle exists, use it
+    if (vehicles && vehicles.length === 1) {
+      return vehicles[0].id.toString();
+    }
+    // Otherwise, return empty string
+    return '';
+  };
+  
   const [formData, setFormData] = useState<FillFormData>({
-    vehicle_id: vehicles && vehicles.length === 1 ? vehicles[0].id.toString() : '',
+    vehicle_id: getDefaultVehicleId(),
     date: new Date().toISOString().split('T')[0], // Today's date
     odometer: '',
     liters: '',
@@ -110,7 +120,7 @@ export default function FillForm({
    * Auto-fill odometer from selected vehicle
    */
   useEffect(() => {
-      if (formData.vehicle_id && vehicles) {
+    if (formData.vehicle_id && vehicles) {
       const selectedVehicle = vehicles.find(v => v.id.toString() === formData.vehicle_id);
       if (selectedVehicle && selectedVehicle.odometer !== null) {
         setFormData(prev => ({
@@ -240,7 +250,7 @@ export default function FillForm({
             value={formData.vehicle_id}
             onChange={handleChange}
             required
-            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none hover:cursor-pointer focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
           >
             <option value="">Sélectionnez un véhicule</option>
             {vehicles?.map((vehicle) => (
@@ -272,7 +282,7 @@ export default function FillForm({
           value={formData.date}
           onChange={handleChange}
           required
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 hover:cursor-text"
         />
       </div>
 
@@ -285,7 +295,7 @@ export default function FillForm({
           placeholder="Kilomètres"
           value={formData.odometer}
           onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -300,7 +310,7 @@ export default function FillForm({
           value={formData.amount}
           onChange={handleChange}
           required
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -316,7 +326,7 @@ export default function FillForm({
             placeholder="Litres"
             value={formData.liters}
             onChange={handleChange}
-            className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
           />
         </div>
 
@@ -330,13 +340,13 @@ export default function FillForm({
             placeholder="Prix/litre"
             value={formData.price_per_liter}
             onChange={handleChange}
-            className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
           />
         </div>
       </div>
 
       {/* Help text explaining auto-calculation */}
-      <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded text-sm text-indigo-700 dark:text-indigo-300">
+      <div className="p-3 bg-custom-1/10 dark:bg-custom-1/20 rounded text-sm text-custom-1 dark:text-custom-1-dark">
         💡 <strong>Calcul automatique :</strong> Remplissez soit les litres, soit le prix au litre + le montant. 
         L&apos;autre valeur sera calculée automatiquement.
       </div>
@@ -350,7 +360,7 @@ export default function FillForm({
           value={formData.notes}
           onChange={handleChange}
           rows={3}
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 resize-none border border-gray-300 dark:border-gray-700"
+          className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 resize-none border border-gray-300 dark:border-gray-700"
         />
       </div>
 
@@ -361,7 +371,7 @@ export default function FillForm({
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-3 py-2 text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
+            className="flex-1 px-3 py-2 text-sm bg-gray-300 hover:bg-gray-400 hover:cursor-pointer text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
           >
             Annuler
           </button>
@@ -370,7 +380,7 @@ export default function FillForm({
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
+          className="flex-1 px-3 py-2 text-sm bg-custom-1 hover:bg-custom-1-hover hover:cursor-pointer text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors sm:px-4 sm:py-2 sm:text-base"
         >
           {loading ? 'Enregistrement...' : 'Enregistrer le plein'}
         </button>

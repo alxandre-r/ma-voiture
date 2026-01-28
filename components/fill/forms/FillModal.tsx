@@ -10,17 +10,12 @@
 
 import { useEffect } from 'react';
 import FillForm from './FillForm';
+import { VehicleMinimal } from '@/types/vehicle';
 
 export interface FillModalProps {
   open: boolean;
   onClose: () => void;
-  vehicles?: Array<{
-    id: number;
-    name: string | null;
-    make: string | null;
-    model: string | null;
-    odometer: number | null;
-  }> | null;
+  vehicles?: VehicleMinimal[] | null;
 }
 
 /**

@@ -8,25 +8,26 @@
 
 'use client';
 
-interface Vehicle {
-  id?: string;
-  vehicle_id: string;
-  owner_name: string;
-  name?: string | null;
-  vehicle_name: string;
-  make?: string | null;
-  model?: string | null;
-  year?: number | null;
-  fuel_type?: string | null;
-  odometer?: number | null;
-  plate?: string | null;
-  last_fill?: string | null;
-  [key: string]: unknown; // Allow for additional fields from API
-}
+import { Vehicle } from '@/types/vehicle';
 
 interface VehicleCardReadOnlyProps {
   vehicle: Vehicle;
   showOwner?: boolean;
+}
+
+/**
+ * Get vehicle display name safely
+ */
+function getVehicleDisplayName(vehicle: Vehicle): string {
+  const vehicleName = typeof vehicle.vehicle_name === 'string' ? vehicle.vehicle_name : null;
+  const name = typeof vehicle.name === 'string' ? vehicle.name : null;
+  const make = typeof vehicle.make === 'string' ? vehicle.make : null;
+  const model = typeof vehicle.model === 'string' ? vehicle.model : null;
+  
+  if (vehicleName) return vehicleName;
+  if (name) return name;
+  if (make) return `${make} ${model || ''}`;
+  return 'Véhicule sans nom';
 }
 
 /**
@@ -58,11 +59,11 @@ export default function VehicleCardReadOnly({ vehicle, showOwner = true }: Vehic
         <div className="flex items-center gap-4 min-w-0">
           {/* Vehicle icon/letter */}
           <div className="h-16 w-16 rounded-xl bg-blue-600/20 dark:bg-blue-900/20 flex items-center justify-center text-blue-400 dark:text-blue-400 font-bold text-xl border border-blue-600/30 dark:border-blue-400/30 lg:flex hidden">
-            {((vehicle.make ?? vehicle.vehicle_name ?? vehicle.name ?? '') as string).charAt(0).toUpperCase() || 'V'}
+            {((vehicle.make || vehicle.vehicle_name || vehicle.name || '') as string).charAt(0).toUpperCase() || 'V'}
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-gray-800 dark:text-white text-lg font-bold break-words sm:text-xl sm:break-normal lg:text-2xl lg:truncate">
-              {vehicle.vehicle_name ?? vehicle.name ?? `${vehicle.make ?? 'Marque inconnue'} ${vehicle.model ?? ''}`}
+              {getVehicleDisplayName(vehicle)}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm break-words sm:truncate sm:mt-1">
               {vehicle.make ? `${vehicle.make} ${vehicle.model}` : 'Détails indisponibles'}

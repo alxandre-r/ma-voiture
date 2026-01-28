@@ -220,7 +220,7 @@ export default function FamilyClient() {
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-              Votre groupe familial : {familyData.name}
+              {familyData.name}
             </h1>
             <p className="text-gray-600 dark:text-gray-300">
               Vous partagez vos véhicules et l&#39;historique de vos trajets avec votre famille
