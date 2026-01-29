@@ -1,3 +1,8 @@
+/**
+ * @file app/(app)/family/join/JoinFamilyClient.tsx
+ * @fileoverview Page for joining a family using an invitation token.
+ */
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
