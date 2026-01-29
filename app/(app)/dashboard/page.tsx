@@ -26,7 +26,7 @@ export default async function DashboardPage() {
     .order("name", { ascending: true });
 
   return (
-    <main className="px-1 pb-24 space-y-3 sm:px-2 sm:space-y-4 lg:px-4 lg:space-y-6">
+    <main>
       <FillProvider>
         <section>
           <DashboardClient vehicles={(vehicles || []) as VehicleMinimal[]} />

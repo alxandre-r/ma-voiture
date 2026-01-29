@@ -69,7 +69,7 @@ export default function Sidebar() {
   const isActive = (path: string) => pathname.startsWith(path);
 
   return (
-    <aside className="sticky top-0 z-50 h-screen w-64 border-r border-gray-800 flex-shrink-0 bg-gray-900 text-gray-100 flex flex-col pb-6 pt-8 px-4">
+    <aside className="sticky top-0 z-50 h-screen w-72 border-r border-gray-800 flex-shrink-0 bg-gray-900 text-gray-100 flex flex-col pb-6 pt-8 sm:px-4 lg:px-6">
       {/* Logo / Title */}
       <div className="flex items-center text-2xl font-bold pb-8">Ma voiture sandy</div>
 

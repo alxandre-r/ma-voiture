@@ -215,7 +215,7 @@ export default function FamilyClient() {
 
   if (hasFamily && familyData) {
     return (
-      <div className="px-4">
+      <div>
         {/* Header Section */}
         <div className="flex justify-between items-start mb-8">
           <div>
@@ -231,7 +231,7 @@ export default function FamilyClient() {
           <div className="relative" ref={settingsMenuRef}>
             <button
               onClick={() => setIsSettingsMenuOpen(!isSettingsMenuOpen)}
-              className="py-2 px-4 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-600 hover:cursor-pointer"
+              className="py-2 px-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-700 hover:cursor-pointer"
             >
               <span className="sr-only">Paramètres</span>
               <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -241,7 +241,7 @@ export default function FamilyClient() {
             </button>
             
             {/* Dropdown Menu */}
-            <div className={`absolute right-0 p-2 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg z-50 transition-all duration-300 transform ${isSettingsMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'}`}>
+            <div className={`absolute right-0 p-2 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-300 dark:border-gray-700 z-50 transition-all duration-300 transform ${isSettingsMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'}`}>
               <div className="py-1">
                 {familyData.userRole === 'owner' && (
                   <button
@@ -258,7 +258,7 @@ export default function FamilyClient() {
                 {familyData.userRole === 'member' && (
                   <button
                     onClick={() => setIsLeaveModalOpen(true)}
-                    className="w-full rounded-md text-left px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 hover:cursor-pointer"
+                    className="w-full rounded-md text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 hover:cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -271,7 +271,7 @@ export default function FamilyClient() {
                   <>
                     <button
                       onClick={() => setIsOwnerLeaveErrorOpen(true)}
-                      className="w-full rounded-md text-left px-4 py-2 text-sm  hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 hover:cursor-pointer"
+                      className="w-full rounded-md text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 hover:cursor-pointer"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

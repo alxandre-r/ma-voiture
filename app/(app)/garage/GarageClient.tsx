@@ -40,8 +40,8 @@ export default function GarageClient() {
   }
 
   return (
-    <main className="px-1 pt-4 pb-24 space-y-3 sm:px-2 sm:space-y-4 lg:px-4 lg:space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Vos véhicules</h1>
+    <main className="space-y-6">
+      <h1 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white">Vos véhicules</h1>
 
       {/* Section véhicules personnels */}
       <VehicleListPersonal vehicles={transformedVehicles} />

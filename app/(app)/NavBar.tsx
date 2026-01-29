@@ -23,7 +23,6 @@ import { usePathname } from "next/navigation";
 const menuItems = [
     { name: "Tableau de bord", path: "/dashboard", icon: "/icons/dashboard.svg" },
     { name: "Garage", path: "/garage", icon: "/icons/garage.svg" },
-    { name: "Consommations", path: "/historique", icon: "/icons/conso.svg" },
     { name: "Famille", path: "/family", icon: "/icons/responsive.svg" },
     { name: "Paramètres", path: "/settings", icon: "/icons/settings.svg" },
 ];

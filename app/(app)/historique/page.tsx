@@ -40,8 +40,8 @@ export default async function HistoriquePage() {
     .order('name', { ascending: true });
 
   return (
-    <main className="px-1 py-2 space-y-3 sm:px-2 sm:py-3 sm:space-y-4 lg:px-4 lg:py-6 lg:space-y-6">
-      <h1 className="text-xl font-bold text-gray-800 dark:text-white sm:text-2xl lg:text-3xl">Historique des pleins</h1>
+    <main className="">
+      <h1 className="text-xl font-bold mb-4 text-gray-800 dark:text-white sm:text-2xl lg:text-3xl">Historique des pleins</h1>
       
       <FillProvider>
         <FillHistoryList />

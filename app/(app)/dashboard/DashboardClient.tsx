@@ -75,7 +75,7 @@ export default function DashboardClient({ vehicles }: DashboardClientProps) {
 			<div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-700"> {error} </div>
 		)}
 
-		<div className="flex flex-col sm:flex-row gap-4 w-full pt-4">
+		<div className="flex flex-col sm:flex-row gap-4 w-full">
 			<VehicleSwitcher
 				vehicles={vehicles}
 				selectedVehicleId={selectedVehicleId}

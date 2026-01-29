@@ -205,7 +205,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <main className="px-1 py-2 sm:px-2 sm:py-3 lg:px-4 lg:py-6 max-w-5xl mx-auto">
+    <main className="">
       <h1 className="text-xl font-bold mb-4 sm:text-2xl sm:mb-6 lg:text-3xl lg:mb-8 text-gray-800 dark:text-white">Paramètres</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-8">
