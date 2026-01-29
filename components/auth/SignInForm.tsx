@@ -44,7 +44,8 @@ export default function SignInForm() {
       setErrorMsg(error.message);
       setLoading(false);
     } else {
-      window.location.href = "/dashboard";
+      const redirectUrl = new URLSearchParams(window.location.search).get("redirect") || "/dashboard";
+      window.location.href = redirectUrl;
     }
   };
 

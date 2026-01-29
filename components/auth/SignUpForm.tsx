@@ -47,7 +47,8 @@ export default function SignUpForm() {
         return;
       }
 
-      window.location.href = "/dashboard";
+      const redirectUrl = new URLSearchParams(window.location.search).get("redirect") || "/dashboard";
+      window.location.href = redirectUrl;
     } catch (err) {
       console.error("Erreur signup client:", err);
       setIsError(true);

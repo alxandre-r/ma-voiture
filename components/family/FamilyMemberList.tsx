@@ -140,7 +140,7 @@ export const FamilyMemberList: React.FC<FamilyMemberListProps> = ({
           {members.map((member) => (
             <div 
               key={member.user_id}
-              className={`p-4 rounded-lg shadow-xs border border-gray-200 dark:border-gray-600 ${member.user_id === currentUserId ? 'border-violet-300/30 dark:border-violet-500/50' : ''}`}
+              className={`p-4 rounded-lg shadow-xs border border-gray-200 dark:border-gray-600`}
             >
               <div className="flex items-start justify-between gap-4">
           {/* Left: Avatar */}
@@ -162,7 +162,7 @@ export const FamilyMemberList: React.FC<FamilyMemberListProps> = ({
             </span>
                 )}
               </div>
-              <span className={`px-3 py-1 text-xs rounded-full font-medium whitespace-nowrap ${member.role === 'owner' ? 'bg-violet-100 text-violet-800/70 dark:bg-violet-600/50 dark:text-violet-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200'}`}>
+              <span className={`px-3 py-1 text-xs rounded-full font-medium whitespace-nowrap bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-200`}>
                 {getRoleLabel(member.role)}
               </span>
             </div>

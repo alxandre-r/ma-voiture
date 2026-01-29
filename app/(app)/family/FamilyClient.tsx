@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FamilyForm } from '@/components/family';
+import { FamilyForm, JoinFamilyForm } from '@/components/family';
 import { FamilyMemberList } from '@/components/family/FamilyMemberList';
 import { InviteFamilyModal } from '@/components/family/InviteFamilyModal';
 import { RenameFamilyModal } from '@/components/family/RenameFamilyModal';
@@ -354,7 +354,7 @@ export default function FamilyClient() {
           message="Êtes-vous sûr de vouloir quitter cette famille ? Vous perdrez l'accès aux véhicules et aux données partagées par les autres membres."
           confirmText="Quitter"
           cancelText="Annuler"
-          confirmButtonColor="neutral"
+          confirmButtonColor="red"
           isLoading={isLoading}
         />
 
@@ -374,6 +374,7 @@ export default function FamilyClient() {
           isOpen={isInviteModalOpen}
           onClose={() => setIsInviteModalOpen(false)}
           inviteLink={`${window.location.origin}/family/join?token=${familyData.invite_token || ''}`}
+          inviteCode={familyData.invite_token || ''}
           onCopy={() => {
             navigator.clipboard.writeText(`${window.location.origin}/family/join?token=${familyData.invite_token || ''}`);
             showNotification('Lien d\'invitation copié dans le presse-papiers !', 'success');
@@ -385,45 +386,91 @@ export default function FamilyClient() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h3 className="text-gray-800 dark:text-gray-200 font-medium mb-16 text-center text-2xl">
-        Vous ne faites encore partie d&apos;aucune famille, rejoignez-en une ou créez-en une nouvelle.
-      </h3>
-
-      {/* Two-column layout for create and join family forms */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* Create Family Section */}
-        <div className="bg-custom-3 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-gray-100 mb-3">Créer une famille</h4>
-          <p className="text-gray-200 text-sm mb-4">
-            Créez une nouvelle famille pour partager vos véhicules et votre historique avec vos proches.
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Bienvenue à bord
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Créez une famille ou rejoignez-en une pour partager vos véhicules et collaborer avec vos proches.
           </p>
-
-          <FamilyForm onFamilyCreated={handleFamilyCreated} />
         </div>
 
-        {/* Join Family Section */}
-        <div className="bg-custom-1 rounded-lg p-4">
-          <h4 className="text-lg font-semibold text-gray-100 mb-3">Rejoindre une famille</h4>
-          <p className="text-gray-200 text-sm mb-4">
-            Vous avez reçu un code d&apos;invitation ? Utilisez-le pour rejoindre une famille existante.
-          </p>
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          
+          {/* Create Family Card */}
+          <div className="group relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-custom-2 to-custom-2-hover rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-12 h-12 bg-custom-2 dark:bg-custom-2-hover/30 rounded-xl mb-6">
+                <svg className="w-6 h-6 text-white dark:text-custom-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                Créer une famille
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm leading-relaxed">
+                Lancez votre propre espace familial. Gérez les véhicules, partagez l'historique des trajets et collaborez avec vos proches.
+              </p>
+              
+              <div className="space-y-3 mb-8">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-custom-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                  </svg>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Gestion complète de la famille</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-custom-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                  </svg>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Invitez vos proches facilement</span>
+                </div>
+              </div>
 
-          <div className="space-y-4">
-            <input
-              type="text"
-              disabled
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-800 dark:text-white cursor-not-allowed"
-              placeholder="Code d'invitation (fonctionnalité à venir)"
-            />
+              <FamilyForm onFamilyCreated={handleFamilyCreated} />
+            </div>
+          </div>
 
-            <button
-              disabled
-              className="w-full px-4 py-2 bg-white rounded-md cursor-not-allowed text-gray-400 transition-colors"
-            >
-              Rejoindre la famille (bientôt disponible)
-            </button>
+          {/* Join Family Card */}
+          <div className="group relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-custom-1 to-custom-1-hover rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+            <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-12 h-12 bg-custom-1 dark:bg-custom-1-hover/30 rounded-xl mb-6">
+                <svg className="w-6 h-6 text-white dark:text-custom-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                Rejoindre une famille
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm leading-relaxed">
+                Vous avez reçu une invitation ? Rejoignez la famille de vos proches en utilisant le code ou le lien fourni.
+              </p>
+              
+              <div className="space-y-3 mb-8">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-custom-1 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                  </svg>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Accès instantané aux véhicules partagés</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-custom-1 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                  </svg>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Collaboration en temps réel</span>
+                </div>
+              </div>
+
+              <JoinFamilyForm onFamilyJoined={handleFamilyCreated} />
+            </div>
           </div>
         </div>
       </div>
