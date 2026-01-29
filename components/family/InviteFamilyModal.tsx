@@ -51,7 +51,7 @@ export const InviteFamilyModal: React.FC<InviteFamilyModalProps> = ({
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          Vous pouvez aussi communiquer ce code à rentrer manuellement par l'invité :
+          Vous pouvez aussi communiquer ce code à rentrer manuellement par l&apos;invité :
         </p>
         <div className="flex pb-4 gap-2">
           <input

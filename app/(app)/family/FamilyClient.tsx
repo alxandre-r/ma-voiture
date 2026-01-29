@@ -415,7 +415,7 @@ export default function FamilyClient() {
                 Créer une famille
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-8 text-sm leading-relaxed">
-                Lancez votre propre espace familial. Gérez les véhicules, partagez l'historique des trajets et collaborez avec vos proches.
+                Lancez votre propre espace familial. Gérez les véhicules, partagez l&apos;historique des trajets et collaborez avec vos proches.
               </p>
               
               <div className="space-y-3 mb-8">
