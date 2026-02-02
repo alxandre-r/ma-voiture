@@ -1,24 +1,14 @@
-/**
- * @file components/fill/FillFilters.tsx
- * @fileoverview Advanced filtering and sorting controls for fuel fill-up records.
- * 
- * This component provides comprehensive filtering by vehicle, date (month/year),
- * and sorting options for the history page.
- */
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Fill } from '@/types/fill';
-import { useFills } from '@/contexts/FillContext';
+import { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
-/**
- * FillFilters Component Props
- */
 export interface FillFiltersProps {
   fills: Fill[] | null;
+  vehicles: (Vehicle | VehicleMinimal)[];
   onFilterChange: (filters: {
-    vehicleFilter: string | number;
+    vehicleFilter: number[];
     yearFilter: string;
     monthFilter: string;
     sortBy: string;
@@ -27,102 +17,90 @@ export interface FillFiltersProps {
   loading: boolean;
 }
 
-/**
- * FillFilters Component
- * 
- * Advanced filtering and sorting controls for fuel fill-up history.
- */
-export default function FillFilters({ fills, onFilterChange, loading }: FillFiltersProps) {
-  // Get vehicles from context
-  const { vehicles, getVehicleName } = useFills();
-
-  // Filter state
-  const [vehicleFilter, setVehicleFilter] = useState<'all' | number>('all');
+export default function FillFilters({ fills, vehicles, onFilterChange, loading }: FillFiltersProps) {
+  const [vehicleFilter, setVehicleFilter] = useState<number[]>([]);
   const [yearFilter, setYearFilter] = useState('all');
   const [monthFilter, setMonthFilter] = useState('all');
-  
-  // Sort state
   const [sortBy, setSortBy] = useState('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Apply filters when they change
+  // --- Update parent on any filter change ---
   useEffect(() => {
-    onFilterChange({
-      vehicleFilter,
-      yearFilter,
-      monthFilter,
-      sortBy,
-      sortDirection
-    });
+    onFilterChange({ vehicleFilter, yearFilter, monthFilter, sortBy, sortDirection });
   }, [vehicleFilter, yearFilter, monthFilter, sortBy, sortDirection, onFilterChange]);
 
-  /**
-   * Get unique vehicles for filter dropdown
-   */
-  const uniqueVehicles = vehicles ? vehicles
-    .filter(v => v.name && v.name.trim() !== '')
-    .sort((a, b) => (a.name || '').localeCompare(b.name || '')) : [];
+  // --- Close dropdown on outside click ---
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  /**
-   * Get unique years for filter dropdown
-   */
-  const uniqueYears = fills ? Array.from(new Set(fills
-    .map(fill => fill.date ? new Date(fill.date).getFullYear().toString() : null)
-    .filter((year): year is string => !!year)
-  )).sort((a, b) => b.localeCompare(a)) : [];
+  const toggleVehicle = (id: number) => {
+    if (id === 0) {
+      // "Tous les véhicules" cliqué -> clear filter
+      setVehicleFilter([]);
+    } else {
+      setVehicleFilter(prev =>
+        prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]
+      );
+    }
+  };
 
-  /**
-   * Get months for selected year
-   */
-  const monthsForSelectedYear = fills && yearFilter !== 'all' 
-    ? Array.from(new Set(fills
-      .filter(fill => fill.date && new Date(fill.date).getFullYear().toString() === yearFilter)
-      .map(fill => fill.date ? new Date(fill.date).getMonth() : null)
-      .filter((month): month is number => month !== null)
-    )).sort((a, b) => a - b)
+  // --- Helpers ---
+  const uniqueVehicles = vehicles.filter((v): v is Vehicle => typeof v.id === 'number');
+
+  const uniqueYears = fills
+    ? Array.from(new Set(
+        fills
+          .map(f => f.date ? new Date(f.date).getFullYear().toString() : null)
+          .filter((y): y is string => !!y)
+      )).sort((a, b) => b.localeCompare(a))
     : [];
 
-  /**
-   * Get months for all years (when no specific year is selected)
-   */
-  const monthsForAllYears = fills 
-    ? Array.from(new Set(fills
-      .map(fill => fill.date ? new Date(fill.date).getMonth() : null)
-      .filter((month): month is number => month !== null)
-    )).sort((a, b) => a - b)
+  const monthsForSelectedYear = fills && yearFilter !== 'all'
+    ? Array.from(new Set(
+        fills
+          .filter(f => f.date && new Date(f.date).getFullYear().toString() === yearFilter)
+          .map(f => f.date ? new Date(f.date).getMonth() : null)
+          .filter((m): m is number => m !== null)
+      )).sort((a, b) => a - b)
     : [];
 
-  /**
-   * Format month number to French month name
-   */
+  const monthsForAllYears = fills
+    ? Array.from(new Set(
+        fills
+          .map(f => f.date ? new Date(f.date).getMonth() : null)
+          .filter((m): m is number => m !== null)
+      )).sort((a, b) => a - b)
+    : [];
+
+  const monthsToDisplay = yearFilter !== 'all' ? monthsForSelectedYear : monthsForAllYears;
+
   const formatMonth = (month: number) => {
     const monthNames = [
-      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+      'Janvier','Février','Mars','Avril','Mai','Juin',
+      'Juillet','Août','Septembre','Octobre','Novembre','Décembre'
     ];
     return monthNames[month] || 'Inconnu';
   };
 
-  /**
-   * Get vehicle name by ID for display
-   */
-  const getVehicleDisplayName = (vehicleId: number | 'all'): string => {
-    if (vehicleId === 'all') return 'Tous les véhicules';
-    if (!vehicles) return `Véhicule #${vehicleId}`;
-    const vehicle = vehicles.find(v => v.id === vehicleId);
-    return vehicle?.name || `Véhicule #${vehicleId}`;
-  };
+  const toggleSortDirection = () => setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
 
-  /**
-   * Get the months to display based on current filters
-   */
-  const monthsToDisplay = yearFilter !== 'all' ? monthsForSelectedYear : monthsForAllYears;
-
-  /**
-   * Handle sort direction toggle
-   */
-  const toggleSortDirection = () => {
-    setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+  // --- Display text for vehicle button ---
+  const vehicleButtonText = () => {
+    if (vehicleFilter.length === 0) return 'Tous les véhicules';
+    if (vehicleFilter.length === 1) {
+      const v = uniqueVehicles.find(v => v.id === vehicleFilter[0]);
+      return v ? v.name || `${v.make} ${v.model}` : 'Véhicule sélectionné';
+    }
+    return `${vehicleFilter.length} sélectionnés`;
   };
 
   return (
@@ -131,59 +109,61 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Vehicle Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Véhicule
-          </label>
-          <select
-            value={vehicleFilter}
-            onChange={(e) => setVehicleFilter(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+        <div ref={dropdownRef} className="relative">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Véhicule</label>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen(prev => !prev)}
             disabled={loading || !fills || fills.length === 0}
-            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
+            className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded border border-gray-300 dark:border-gray-700 flex justify-between items-center focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="all">Tous les véhicules</option>
-            {uniqueVehicles.length === 0 && (
-              <option value="all" disabled>
-                {loading ? 'Chargement...' : 'Aucun véhicule disponible'}
-              </option>
-            )}
-            {uniqueVehicles.map((vehicle) => (
-              <option key={vehicle.id} value={vehicle.id}>{vehicle.name}</option>
-            ))}
-          </select>
+            {vehicleButtonText()}
+            {/* <FaChevronDown className="ml-2 text-gray-500" /> */}
+          </button>
+
+          {dropdownOpen && (
+            <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded shadow-lg max-h-60 overflow-auto">
+              <button
+                type="button"
+                onClick={() => toggleVehicle(0)}
+                className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center"
+              >
+                <span>Tous les véhicules</span>
+                {vehicleFilter.length === 0 /* && coche */}
+              </button>
+
+              {uniqueVehicles.map(v => (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => toggleVehicle(v.id)}
+                  className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center"
+                >
+                  <span>{v.name || `${v.make} ${v.model}`}</span>
+                  {vehicleFilter.includes(v.id) /* && coche */}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Year Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Année
-          </label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Année</label>
           <select
             value={yearFilter}
-            onChange={(e) => {
-              setYearFilter(e.target.value);
-              setMonthFilter('all'); // Reset month when year changes
-            }}
+            onChange={(e) => { setYearFilter(e.target.value); setMonthFilter('all'); }}
             disabled={loading || !fills || fills.length === 0}
             className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Toutes les années</option>
-            {uniqueYears.length === 0 && (
-              <option value="all" disabled>
-                {loading ? 'Chargement...' : 'Aucune année disponible'}
-              </option>
-            )}
-            {uniqueYears.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
+            {uniqueYears.map(year => <option key={year} value={year}>{year}</option>)}
           </select>
         </div>
 
         {/* Month Filter */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Mois
-          </label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mois</label>
           <select
             value={monthFilter}
             onChange={(e) => setMonthFilter(e.target.value)}
@@ -191,12 +171,7 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
             className="w-full bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50"
           >
             <option value="all">Tous les mois</option>
-            {monthsToDisplay.length === 0 && (
-              <option value="all" disabled>
-                {loading ? 'Chargement...' : 'Aucun mois disponible'}
-              </option>
-            )}
-            {monthsToDisplay.map((month) => (
+            {monthsToDisplay.map(month => (
               <option key={month} value={month.toString()}>{formatMonth(month)}</option>
             ))}
           </select>
@@ -204,15 +179,13 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
 
         {/* Sort Options */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Trier par
-          </label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Trier par</label>
           <div className="flex gap-2">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               disabled={loading || !fills || fills.length === 0}
-              className="bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 disabled:opacity-50 flex-1"
+              className="bg-white dark:bg-gray-900 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700 flex-1"
             >
               <option value="date">Date</option>
               <option value="amount">Montant (€)</option>
@@ -222,39 +195,12 @@ export default function FillFilters({ fills, onFilterChange, loading }: FillFilt
               onClick={toggleSortDirection}
               disabled={loading || !fills || fills.length === 0}
               className="px-3 py-2 bg-custom-2 hover:bg-custom-2-hover rounded"
-              title={sortDirection === 'desc' ? 'Tri décroissant' : 'Tri croissant'}
             >
-              <img
-              src={sortDirection === 'desc' ? '/icons/sort-descending.svg' : '/icons/sort-ascending.svg'}
-              alt={sortDirection === 'desc' ? 'Tri décroissant' : 'Tri croissant'}
-              className="w-6 h-6 invert"
-              />
+              {sortDirection === 'desc' ? '⬇️' : '⬆️'}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Filter Summary */}
-      {(vehicleFilter !== 'all' || yearFilter !== 'all' || monthFilter !== 'all') && (
-        <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded text-sm">
-          <span className="font-medium">Filtres actifs : </span>
-          {vehicleFilter !== 'all' && <span className="text-indigo-600 dark:text-indigo-400">Véhicule: {getVehicleDisplayName(vehicleFilter)}</span>}
-          {(vehicleFilter !== 'all' && (yearFilter !== 'all' || monthFilter !== 'all')) && <span className="mx-1">•</span>}
-          {yearFilter !== 'all' && <span className="text-indigo-600 dark:text-indigo-400">Année: {yearFilter}</span>}
-          {(yearFilter !== 'all' && monthFilter !== 'all') && <span className="mx-1">•</span>}
-          {monthFilter !== 'all' && <span className="text-indigo-600 dark:text-indigo-400">Mois: {formatMonth(parseInt(monthFilter))}</span>}
-          <button
-            onClick={() => {
-              setVehicleFilter('all');
-              setYearFilter('all');
-              setMonthFilter('all');
-            }}
-            className="ml-3 text-red-600 dark:text-red-400 hover:underline text-xs"
-          >
-            Réinitialiser
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,10 +1,11 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Vehicle } from '@/types/vehicle';
+import { useFamily } from '@/contexts/FamilyContext';
+import { Vehicle, VehicleMinimal} from '@/types/vehicle';
 
 interface VehicleContextType {
-  vehicles: Vehicle[];
+  vehicles: VehicleMinimal[];
   selectedVehicleId: number | null;
   loading: boolean;
   error: string | null;
@@ -16,16 +17,28 @@ interface VehicleContextType {
 const VehicleContext = createContext<VehicleContextType | undefined>(undefined);
 
 export function VehicleProvider({ children }: { children: ReactNode }) {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleMinimal[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userRole } = useFamily();
+
+  function normalizeVehicle(v: Vehicle): VehicleMinimal {
+    return {
+      id: v.id,
+      name: v.name ?? null,
+      make: v.make ?? null,
+      model: v.model ?? null,
+      odometer: v.odometer ?? null,
+    };
+  }
 
   const fetchVehicles = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/vehicles/get');
+      const endpoint = userRole ? '/api/vehicles/get/family_vehicles' : '/api/vehicles/get';
+      const res = await fetch(endpoint);
       const body = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -34,13 +47,16 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Support response arrays or { vehicles: [...] }
-      let vehiclesData: Vehicle[] = [];
-      if (Array.isArray(body?.vehicles)) vehiclesData = body.vehicles;
-      else if (Array.isArray(body)) vehiclesData = body;
-      else if (Array.isArray(body?.data)) vehiclesData = body.data;
+    const rawVehicles: Vehicle[] = Array.isArray(body?.vehicles)
+      ? body.vehicles
+      : Array.isArray(body)
+      ? body
+      : Array.isArray(body?.data)
+      ? body.data
+      : [];
 
-      setVehicles(vehiclesData);
+    const normalized = rawVehicles.map(normalizeVehicle);
+    setVehicles(normalized);
     } catch (err) {
       setError((err as Error).message || 'Unknown error');
       setVehicles([]);
@@ -54,21 +70,18 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   };
 
   const addVehicleOptimistic = (vehicle: Vehicle) => {
-    setVehicles((prev) => [vehicle, ...prev]);
+    setVehicles(prev => [normalizeVehicle(vehicle), ...prev]);
   };
+
 
   const handleSetSelectedVehicleId = (id: number | null) => {
     setSelectedVehicleId(id);
   };
 
   useEffect(() => {
-    fetchVehicles();
-  }, []);
+    fetchVehicles(); // Fetch vehicles on initial load
+  }, [userRole]);
 
-  useEffect(() => {
-    const interval = setInterval(fetchVehicles, 5 * 60 * 1000); // 5 min
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <VehicleContext.Provider
