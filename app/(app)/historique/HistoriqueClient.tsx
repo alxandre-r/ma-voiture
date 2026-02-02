@@ -23,17 +23,15 @@ export default function HistoriqueClient() {
 
   // Si aucun véhicule n'est présent
   if (!vehicles || vehicles.length === 0) {
-    console.log('Aucun véhicule disponible pour l\'historique.');
     return (
       <div className="text-center py-8">
-        Aucun véhicule disponible pour l'historique.
+        Aucun véhicule disponible pour l&apos;historique des pleins.
       </div>
     );
   }
 
   // Mount FillProvider uniquement quand vehicles sont disponibles
   return (
-    console.log('Véhicules disponibles pour l\'historique:', vehicles),
     <FillProvider vehiclesProp={vehicles}>
       <FillHistoryList />
     </FillProvider>
