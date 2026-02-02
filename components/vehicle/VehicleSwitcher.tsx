@@ -14,8 +14,8 @@ import { VehicleMinimal } from '@/types/vehicle';
 
 interface VehicleSwitcherProps {
   vehicles: VehicleMinimal[];
-  selectedVehicleId: string | null;
-  onVehicleChange: (vehicleId: string | null) => void;
+  selectedVehicleId: number | null;
+  onVehicleChange: (vehicleId: number | null) => void;
   disabled?: boolean;
 }
 
@@ -38,7 +38,7 @@ export default function VehicleSwitcher({
   /**
    * Handle vehicle selection change
    */
-  const handleVehicleChange = (vehicleId: string | null) => {
+  const handleVehicleChange = (vehicleId: number | null) => {
     onVehicleChange(vehicleId);
     setIsOpen(false);
   };
@@ -79,7 +79,7 @@ export default function VehicleSwitcher({
       return 'Tous les véhicules';
     }
     
-    const selectedVehicle = vehicles.find(v => v.id.toString() === selectedVehicleId);
+    const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
     return selectedVehicle ? selectedVehicle.name || `${selectedVehicle.make} ${selectedVehicle.model}` : 'Tous les véhicules';
   };
   
@@ -127,9 +127,9 @@ export default function VehicleSwitcher({
               vehicles.map((vehicle) => (
                 <button
                   key={vehicle.id}
-                  onClick={() => handleVehicleChange(vehicle.id.toString())}
+                  onClick={() => handleVehicleChange(vehicle.id)}
                   className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-gray-50 hover:cursor-pointer dark:hover:bg-gray-700 transition-colors ${
-                    selectedVehicleId === vehicle.id.toString() ? 'bg-blue-50 dark:bg-blue-900/20 font-medium' : ''
+                    selectedVehicleId === vehicle.id ? 'bg-blue-50 dark:bg-blue-900/20 font-medium' : ''
                   }`}
                 >
                   <Icon name="car" size={18} className="text-gray-600 dark:text-gray-300" />

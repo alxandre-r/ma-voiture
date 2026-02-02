@@ -36,9 +36,9 @@ function AddFillClient({ vehicles }: { vehicles: VehicleMinimal[] }) {
 }
 
 export default function DashboardClient({ vehicles }: DashboardClientProps) {
-	const { setSelectedVehicleId, setVehicles, loading, error } = useFills();
+	const { setSelectedVehicleIds, setVehicles, loading, error } = useFills();
 
-	const [selectedVehicleId, setLocalSelectedVehicleId] = useState<string | null>(null);
+	const [selectedVehicleId, setLocalSelectedVehicleId] = useState<number | null>(null);
 
 	useEffect(() => {
 		// Set vehicles
@@ -46,15 +46,15 @@ export default function DashboardClient({ vehicles }: DashboardClientProps) {
 		
 		// init single vehicle if only one
 		if (vehicles.length === 1 && selectedVehicleId === null) {
-		const id = vehicles[0].id.toString();
+		const id = vehicles[0].id;
 		setLocalSelectedVehicleId(id);
-		setSelectedVehicleId(id);
+		setSelectedVehicleIds([id]);
 		}
-	}, [vehicles, setVehicles, selectedVehicleId, setSelectedVehicleId]);
+	}, [vehicles, setVehicles, selectedVehicleId, setSelectedVehicleIds]);
 
-	const handleVehicleChange = (vehicleId: string | null) => {
+	const handleVehicleChange = (vehicleId: number | null) => {
 		setLocalSelectedVehicleId(vehicleId);
-		setSelectedVehicleId(vehicleId);
+		setSelectedVehicleIds(vehicleId ? [vehicleId] : []);
 	};
 
 	const isSwitcherDisabled = vehicles.length <= 1;
@@ -66,8 +66,6 @@ export default function DashboardClient({ vehicles }: DashboardClientProps) {
 		</div>
 		);
   	}
-
-
 
   	return (
     <>
