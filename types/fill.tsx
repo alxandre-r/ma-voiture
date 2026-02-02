@@ -35,7 +35,7 @@ export interface Fill {
  * Data structure used in fill-up forms before submission.
  */
 export interface FillFormData {
-  vehicle_id: string;
+  vehicle_id: number;
   date: string;
   odometer: string;
   liters: string;
