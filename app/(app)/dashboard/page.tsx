@@ -27,7 +27,7 @@ export default async function DashboardPage() {
 
   return (
     <main>
-      <FillProvider>
+      <FillProvider vehiclesProp={(vehicles || []) as VehicleMinimal[]}>
         <section>
           <DashboardClient vehicles={(vehicles || []) as VehicleMinimal[]} />
         </section>
