@@ -13,7 +13,7 @@ export default function LatestFills() {
   const {
     loading,
     error,
-    selectedVehicleId,
+    selectedVehicleIds,
     refreshFills,
     deleteFillOptimistic,
     getFilteredFills,
@@ -117,14 +117,7 @@ export default function LatestFills() {
     }
   }
 
-  const filtered = getFilteredFills(selectedVehicleId);
-  
-  // Debug logs
-  console.log('📊 LatestFills component rendered');
-  console.log('🔄 Loading state:', loading);
-  console.log('❌ Error state:', error);
-  console.log('📦 Filtered fills:', filtered?.length || 0);
-  console.log('🚗 Selected vehicle:', selectedVehicleId);
+  const filtered = getFilteredFills(selectedVehicleIds);
 
   return (
     <div className="space-y-4">
@@ -161,7 +154,7 @@ export default function LatestFills() {
 
       {!loading && !error && filtered.length === 0 && (
         <div className="text-center py-8 text-gray-500">
-          <p className="mb-2">Aucun plein enregistré pour {selectedVehicleId ? "ce véhicule" : "le moment"}.</p>
+          <p className="mb-2">Aucun plein enregistré pour {selectedVehicleIds.length === 1 ? "ce véhicule" : "le moment"}.</p>
           <p className="text-sm">Ajoutez votre premier plein en utilisant le bouton ci-dessus.</p>
         </div>
       )}

@@ -7,16 +7,9 @@ import FillChart from "./charts/FillChart";
 import OdometerChart from "./charts/OdometerChart";
 
 export default function FillCharts() {
-  const { stats, fills, selectedVehicleId, getFilteredStats, loading, error } = useFills();
+  const { stats, fills, selectedVehicleIds, getFilteredStats, loading, error } = useFills();
 
-  const filteredStats = getFilteredStats(selectedVehicleId);
-
-  // Debug logs
-  console.log('📈 Charts component rendered');
-  console.log('🔄 Loading state:', loading);
-  console.log('❌ Error state:', error);
-  console.log('📊 Stats available:', !!stats);
-  console.log('📦 Fills available:', fills?.length || 0);
+  const filteredStats = getFilteredStats(selectedVehicleIds);
 
   if (!stats || !fills || fills.length === 0) return null;
 

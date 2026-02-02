@@ -1,11 +1,18 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { useFamily } from '@/contexts/FamilyContext';
-import { Vehicle, VehicleMinimal} from '@/types/vehicle';
+import { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 interface VehicleContextType {
-  vehicles: VehicleMinimal[];
+  vehicles: VehicleMinimal[];      // utilisé partout (dashboard, switcher…)
+  vehiclesFull: Vehicle[];          // utilisé par Garage
   selectedVehicleId: number | null;
   loading: boolean;
   error: string | null;
@@ -18,11 +25,17 @@ const VehicleContext = createContext<VehicleContextType | undefined>(undefined);
 
 export function VehicleProvider({ children }: { children: ReactNode }) {
   const [vehicles, setVehicles] = useState<VehicleMinimal[]>([]);
+  const [vehiclesFull, setVehiclesFull] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const { userRole } = useFamily();
 
+  /**
+   * Normalise un Vehicle complet en VehicleMinimal
+   * TODO(cleanup): séparer la logique minimal / full dans un service dédié
+   */
   function normalizeVehicle(v: Vehicle): VehicleMinimal {
     return {
       id: v.id,
@@ -36,30 +49,36 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   const fetchVehicles = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const endpoint = userRole ? '/api/vehicles/get/family_vehicles' : '/api/vehicles/get';
+      const endpoint = userRole
+        ? '/api/vehicles/get/family_vehicles'
+        : '/api/vehicles/get';
+
       const res = await fetch(endpoint);
       const body = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         setError(body?.error ?? `Request failed (${res.status})`);
         setVehicles([]);
+        setVehiclesFull([]);
         return;
       }
 
-    const rawVehicles: Vehicle[] = Array.isArray(body?.vehicles)
-      ? body.vehicles
-      : Array.isArray(body)
-      ? body
-      : Array.isArray(body?.data)
-      ? body.data
-      : [];
+      const rawVehicles: Vehicle[] = Array.isArray(body?.vehicles)
+        ? body.vehicles
+        : Array.isArray(body)
+        ? body
+        : Array.isArray(body?.data)
+        ? body.data
+        : [];
 
-    const normalized = rawVehicles.map(normalizeVehicle);
-    setVehicles(normalized);
+      setVehiclesFull(rawVehicles);
+      setVehicles(rawVehicles.map(normalizeVehicle));
     } catch (err) {
       setError((err as Error).message || 'Unknown error');
       setVehicles([]);
+      setVehiclesFull([]);
     } finally {
       setLoading(false);
     }
@@ -70,29 +89,26 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   };
 
   const addVehicleOptimistic = (vehicle: Vehicle) => {
+    // Optimiste sur les deux représentations
+    setVehiclesFull(prev => [vehicle, ...prev]);
     setVehicles(prev => [normalizeVehicle(vehicle), ...prev]);
   };
 
-
-  const handleSetSelectedVehicleId = (id: number | null) => {
-    setSelectedVehicleId(id);
-  };
-
   useEffect(() => {
-    fetchVehicles(); // Fetch vehicles on initial load
+    fetchVehicles();
   }, [userRole]);
-
 
   return (
     <VehicleContext.Provider
       value={{
         vehicles,
+        vehiclesFull,
         selectedVehicleId,
         loading,
         error,
         refreshVehicles,
         addVehicleOptimistic,
-        setSelectedVehicleId: handleSetSelectedVehicleId,
+        setSelectedVehicleId,
       }}
     >
       {children}
@@ -102,6 +118,8 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
 
 export function useVehicles() {
   const context = useContext(VehicleContext);
-  if (!context) throw new Error('useVehicles must be used within VehicleProvider');
+  if (!context) {
+    throw new Error('useVehicles must be used within VehicleProvider');
+  }
   return context;
 }
