@@ -12,7 +12,6 @@ import {
 import { Fill, FillStats } from '@/types/fill';
 import { VehicleMinimal } from '@/types/vehicle';
 
-/* ---------------- Types ---------------- */
 interface FillContextType {
   fills: Fill[];
   loading: boolean;
@@ -20,6 +19,7 @@ interface FillContextType {
   stats: FillStats;
 
   selectedVehicleIds: number[]; // multi-sélection
+  selectedVehicleId: number | null; // sélection principale (le premier)
   vehicles: VehicleMinimal[];
 
   refreshFills: () => void;
@@ -28,6 +28,7 @@ interface FillContextType {
   deleteFillOptimistic: (fillId: number) => void;
 
   setSelectedVehicleIds: (vehicleIds: number[]) => void;
+  setSelectedVehicleId: (vehicleId: number | null) => void;
   setVehicles: (vehicles: VehicleMinimal[]) => void;
 
   getFilteredFills: (vehicleIds?: number[]) => Fill[];
@@ -37,7 +38,6 @@ interface FillContextType {
 
 const FillContext = createContext<FillContextType | undefined>(undefined);
 
-/* ---------------- Utils ---------------- */
 const emptyStats = (): FillStats => ({
   total_fills: 0,
   total_liters: 0,
@@ -49,7 +49,6 @@ const emptyStats = (): FillStats => ({
   monthly_chart: [],
 });
 
-/* ---------------- Provider ---------------- */
 export function FillProvider({
   children,
   vehiclesProp,
@@ -64,17 +63,27 @@ export function FillProvider({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /* ---------------- Sync vehiclesProp ---------------- */
+  // --- selectedVehicleId dérivé du premier élément ---
+  const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+
   useEffect(() => {
     if (!vehiclesProp || vehiclesProp.length === 0) return;
     setVehicles(vehiclesProp);
-    // Par défaut, sélectionner tous les véhicules disponibles
-    setSelectedVehicleIds(
-      vehiclesProp.map(v => Number(v.id)).filter(id => Number.isFinite(id))
-    );
+
+    const ids = vehiclesProp.map(v => Number(v.id)).filter(id => Number.isFinite(id));
+    setSelectedVehicleIds(ids);
+
+    // le premier véhicule comme sélection principale
+    setSelectedVehicleId(ids[0] ?? null);
   }, [vehiclesProp]);
 
-  /* ---------------- Helpers ---------------- */
+  // --- Sync selectedVehicleId avec selectedVehicleIds
+  useEffect(() => {
+    if (!selectedVehicleIds.includes(selectedVehicleId ?? -1)) {
+      setSelectedVehicleId(selectedVehicleIds[0] ?? null);
+    }
+  }, [selectedVehicleIds, selectedVehicleId]);
+
   const getVehicleName = useCallback(
     (vehicleId: number): string => {
       const v = vehicles.find(v => v.id === vehicleId);
@@ -92,29 +101,21 @@ export function FillProvider({
     const totalLiters = data.reduce((sum, f) => sum + (f.liters ?? 0), 0);
     const totalCost = data.reduce((sum, f) => sum + (f.amount ?? 0), 0);
 
-    // Last fill
-    const lastFill = [...data].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )[0];
+    const lastFill = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-    // Monthly chart
     const monthlyStats = data.reduce((acc, fill) => {
       if (!fill.date || fill.amount == null) return acc;
       const date = new Date(fill.date);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      if (!acc[monthKey])
-        acc[monthKey] = { month: monthKey, amount: 0, count: 0, odometer: fill.odometer ?? null };
+      if (!acc[monthKey]) acc[monthKey] = { month: monthKey, amount: 0, count: 0, odometer: fill.odometer ?? null };
       acc[monthKey].amount += fill.amount;
       acc[monthKey].count += 1;
       if (fill.odometer) acc[monthKey].odometer = fill.odometer;
       return acc;
     }, {} as Record<string, { month: string; amount: number; count: number; odometer: number | null }>);
 
-    const monthlyChart = Object.values(monthlyStats)
-      .sort((a, b) => a.month.localeCompare(b.month))
-      .slice(-12);
+    const monthlyChart = Object.values(monthlyStats).sort((a, b) => a.month.localeCompare(b.month)).slice(-12);
 
-    // Avg consumption (sur toutes les fills filtrées)
     let avgConsumption = 0;
     const fillsWithOdometer = data.filter(f => f.odometer != null && f.liters != null);
     if (fillsWithOdometer.length > 1) {
@@ -144,7 +145,6 @@ export function FillProvider({
     };
   }, []);
 
-  /* ---------------- Filtered helpers ---------------- */
   const getFilteredFills = useCallback(
     (vehicleIds?: number[]): Fill[] => {
       const ids = vehicleIds && vehicleIds.length > 0 ? vehicleIds : selectedVehicleIds;
@@ -162,7 +162,6 @@ export function FillProvider({
     [getFilteredFills, calculateStats]
   );
 
-  /* ---------------- Fetch fills ---------------- */
   const vehicleIdsKey = useMemo(
     () => selectedVehicleIds.filter(id => id > 0).sort((a, b) => a - b).join(','),
     [selectedVehicleIds]
@@ -195,7 +194,6 @@ export function FillProvider({
     if (isReady) fetchFills();
   }, [fetchFills, isReady]);
 
-  /* ---------------- Optimistic updates ---------------- */
   const refreshFills = useCallback(() => fetchFills(), [fetchFills]);
 
   const addFillOptimistic = useCallback(
@@ -231,7 +229,6 @@ export function FillProvider({
     [calculateStats]
   );
 
-  /* ---------------- Provider ---------------- */
   return (
     <FillContext.Provider
       value={{
@@ -240,12 +237,14 @@ export function FillProvider({
         error,
         stats,
         selectedVehicleIds,
+        selectedVehicleId,     
         vehicles,
         refreshFills,
         addFillOptimistic,
         updateFillOptimistic,
         deleteFillOptimistic,
         setSelectedVehicleIds,
+        setSelectedVehicleId, 
         setVehicles,
         getFilteredFills,
         getFilteredStats,
@@ -257,7 +256,6 @@ export function FillProvider({
   );
 }
 
-/* ---------------- Hook ---------------- */
 export function useFills() {
   const ctx = useContext(FillContext);
   if (!ctx) throw new Error('useFills must be used within a FillProvider');
