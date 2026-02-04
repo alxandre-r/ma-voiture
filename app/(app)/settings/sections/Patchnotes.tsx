@@ -52,6 +52,7 @@ export default function PatchnotesSection() {
               </li>
               <li>Refonte visuelle des <strong>VehicleCards</strong> et du formulaire d&apos;édition de véhicule. <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">Voir le garage</Link>.</li>
               <li>Modal de formulaire d&apos;ajout et édition basé sur le composant générique Modal.</li>
+              <li>Ajout de la page patchnotes dans les paramètres, avec résumé et détails des changements.</li>
             </ul>
           </div>
 
@@ -86,9 +87,10 @@ export default function PatchnotesSection() {
               <li>Refonte des types : <code>family</code>, <code>fill</code>, <code>vehicle</code> et ajout du type <code>user</code>.</li>
               <li>Déplacement de <code>VehicleAddForm</code> et <code>VehicleEditForm</code> dans <code>/vehicle/forms</code>.</li>
               <li><code>VehicleEditForm</code> : appels API indépendants et refonte visuelle.</li>
-              <li><code>VehicleCard</code> gère maintenant l’édition et suppression ; suppression de <code>VehicleCardReadOnly</code>.</li>
+              <li><code>VehicleCard</code> gère maintenant l&apos;édition et suppression ; suppression de <code>VehicleCardReadOnly</code>.</li>
               <li>Suppression de <code>VehicleListState</code> ; contenu intégré dans <code>VehicleList</code>.</li>
               <li><code>FamilyMemberList</code> mis à jour pour utiliser la vue <code>family_for_display</code>.</li>
+              <li>Refonte de la page paramètres qui utilise maintenant un fichier par section</li>.
             </ul>
           </div>
         </div>
@@ -100,8 +102,8 @@ export default function PatchnotesSection() {
         <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
             <li>Ajouter des checkboxes dans le <strong>FillFilter</strong> des véhicules.</li>
             <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
-            <li>Améliorer l’affichage du <strong>FillEdit</strong>.</li>
-            <li>Dans <Link href="/settings" className="text-indigo-600 dark:text-indigo-400 underline">Settings</Link>, possibilité de modifier le nom d’utilisateur.</li>
+            <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
+            <li>Dans <Link href="/settings" className="text-indigo-600 dark:text-indigo-400 underline">Settings</Link>, possibilité de modifier le nom d&apos;utilisateur.</li>
             <li>Utiliser les <strong>Notifications</strong> dans la page <strong>Settings</strong> (Edit Email, mot de passe, nom).</li>
             <li>Unifier <code>api/vehicles/get</code> et <code>api/vehicles/get/family_vehicles</code> sous <code>api/vehicles/get</code> à partir de <code>vehicles_for_display</code>.</li>
         </ul>
