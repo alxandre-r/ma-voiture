@@ -29,7 +29,7 @@ export default function SettingsMenu({ activeSection, onChange }: Props) {
           <button
             key={item.id}
             onClick={() => onChange(item.id)}
-            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors
+            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:cursor-pointer
               ${
                 activeSection === item.id
                   ? "bg-custom-1 text-white"
