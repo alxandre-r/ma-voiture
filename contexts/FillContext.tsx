@@ -70,7 +70,7 @@ export function FillProvider({
     if (!vehiclesProp || vehiclesProp.length === 0) return;
     setVehicles(vehiclesProp);
 
-    const ids = vehiclesProp.map(v => Number(v.id)).filter(id => Number.isFinite(id));
+    const ids = vehiclesProp.map(v => Number(v.vehicle_id)).filter(id => Number.isFinite(id));
     setSelectedVehicleIds(ids);
 
     // le premier véhicule comme sélection principale
@@ -86,7 +86,7 @@ export function FillProvider({
 
   const getVehicleName = useCallback(
     (vehicleId: number): string => {
-      const v = vehicles.find(v => v.id === vehicleId);
+      const v = vehicles.find(v => v.vehicle_id === vehicleId);
       if (!v) return `Véhicule #${vehicleId}`;
       if (v.name) return v.name;
       if (v.make || v.model) return `${v.make ?? ''} ${v.model ?? ''}`.trim();

@@ -38,10 +38,10 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
    */
   function normalizeVehicle(v: Vehicle): VehicleMinimal {
     return {
-      id: v.vehicle_id,
+      vehicle_id: v.vehicle_id,
       name: v.name ?? null,
-      make: v.make ?? null,
-      model: v.model ?? null,
+      make: v.make,
+      model: v.model,
       odometer: v.odometer ?? null,
     };
   }

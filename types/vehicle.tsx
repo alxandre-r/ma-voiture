@@ -22,7 +22,7 @@ export interface VehicleForDisplay extends Vehicle {
 }
 
 export interface VehicleMinimal {
-  id: number;
+  vehicle_id: number;
   name?: string | null;
   make?: string | null;
   model?: string | null;

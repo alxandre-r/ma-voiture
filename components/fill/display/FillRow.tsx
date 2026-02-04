@@ -157,15 +157,6 @@ export default function FillRow({
     );
   }
 
-  /**
-   * Get vehicle display name
-   * The API now provides this via the vehicle_fills view with proper fallback
-   */
-  const getVehicleDisplayName = () => {
-    // The vehicle_fills view handles: COALESCE(NULLIF(v.name, ''), concat_ws(' ', v.make, v.model))
-    return fill.vehicle_name || `Véhicule #${fill.vehicle_id}`;
-  };
-
   return (
     <div className="bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
@@ -176,7 +167,7 @@ export default function FillRow({
               {formatDate(fill.date)}
             </div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              {getVehicleDisplayName()}
+              {fill.vehicle_name}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
               {fill.odometer ? `${fill.odometer} km` : 'Odomètre N/A'}

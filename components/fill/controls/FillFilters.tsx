@@ -54,7 +54,7 @@ export default function FillFilters({ fills, vehicles, onFilterChange, loading }
   };
 
   // --- Helpers ---
-  const uniqueVehicles = vehicles.filter((v): v is Vehicle => typeof v.id === 'number');
+  const uniqueVehicles = vehicles.filter((v): v is Vehicle => typeof v.vehicle_id === 'number');
 
   const uniqueYears = fills
     ? Array.from(new Set(
@@ -97,11 +97,13 @@ export default function FillFilters({ fills, vehicles, onFilterChange, loading }
   const vehicleButtonText = () => {
     if (vehicleFilter.length === 0) return 'Tous les véhicules';
     if (vehicleFilter.length === 1) {
-      const v = uniqueVehicles.find(v => v.id === vehicleFilter[0]);
+      const v = uniqueVehicles.find(v => v.vehicle_id === vehicleFilter[0]);
       return v ? v.name || `${v.make} ${v.model}` : 'Véhicule sélectionné';
     }
     return `${vehicleFilter.length} sélectionnés`;
   };
+
+  console.log('Render FillFilters with vehicles:', vehicles);
 
   return (
     <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -134,13 +136,13 @@ export default function FillFilters({ fills, vehicles, onFilterChange, loading }
 
               {uniqueVehicles.map(v => (
                 <button
-                  key={v.id}
+                  key={v.vehicle_id}
                   type="button"
-                  onClick={() => toggleVehicle(v.id)}
+                  onClick={() => toggleVehicle(v.vehicle_id)}
                   className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center"
                 >
                   <span>{v.name || `${v.make} ${v.model}`}</span>
-                  {vehicleFilter.includes(v.id) /* && coche */}
+                  {vehicleFilter.includes(v.vehicle_id) /* && coche */}
                 </button>
               ))}
             </div>
