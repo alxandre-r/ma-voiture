@@ -35,7 +35,7 @@ export default function DashboardClient() {
 
   // Initialisation unique de la sélection locale
   const [localSelectedVehicleId, setLocalSelectedVehicleId] = useState<number | null>(() => 
-    selectedVehicleId ?? (vehicles[0]?.id ?? null)
+    selectedVehicleId ?? (vehicles[0]?.vehicle_id ?? null)
   );
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function DashboardClient() {
 
     // Si un seul véhicule et aucune sélection initiale
     if (vehicles.length === 1 && !selectedVehicleId) {
-      const id = vehicles[0].id;
+      const id = vehicles[0].vehicle_id;
       setLocalSelectedVehicleId(id);
       setSelectedVehicleIds([id]);
       setSelectedVehicleId(id);

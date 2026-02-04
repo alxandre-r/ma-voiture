@@ -22,7 +22,7 @@ export default function VehicleSwitcher({
 
   // --- Local copy de la sélection, sync initial seulement ---
   const [vehicleFilter, setVehicleFilter] = useState<number[]>(() => 
-    selectedVehicleIds.length ? selectedVehicleIds : vehicles.length ? [vehicles[0].id] : []
+    selectedVehicleIds.length ? selectedVehicleIds : vehicles.length ? [vehicles[0].vehicle_id] : []
   );
 
   // --- Sync parent -> local uniquement si parent change réellement ---
@@ -31,7 +31,7 @@ export default function VehicleSwitcher({
       selectedVehicleIds.length !== vehicleFilter.length ||
       !selectedVehicleIds.every(id => vehicleFilter.includes(id))
     ) {
-      setVehicleFilter(selectedVehicleIds.length ? selectedVehicleIds : [vehicles[0]?.id].filter(Boolean));
+      setVehicleFilter(selectedVehicleIds.length ? selectedVehicleIds : [vehicles[0]?.vehicle_id].filter(Boolean));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVehicleIds]);
@@ -67,9 +67,9 @@ export default function VehicleSwitcher({
   // --- Toggle "Tous les véhicules" ---
   const toggleAllVehicles = () => {
     if (vehicleFilter.length === vehicles.length) {
-      setVehicleFilter([vehicles[0].id]); // force 1 sélection minimum
+      setVehicleFilter([vehicles[0].vehicle_id]); // force 1 sélection minimum
     } else {
-      setVehicleFilter(vehicles.map(v => v.id));
+      setVehicleFilter(vehicles.map(v => v.vehicle_id));
     }
   };
 
@@ -77,7 +77,7 @@ export default function VehicleSwitcher({
   const getButtonLabel = () => {
     if (vehicleFilter.length === vehicles.length) return 'Tous les véhicules';
     if (vehicleFilter.length === 1) {
-      const v = vehicles.find(v => v.id === vehicleFilter[0]);
+      const v = vehicles.find(v => v.vehicle_id === vehicleFilter[0]);
       return v ? v.name || `${v.make} ${v.model}` : 'Véhicule sélectionné';
     }
     return `${vehicleFilter.length} véhicules sélectionnés`;
@@ -119,15 +119,15 @@ export default function VehicleSwitcher({
           {/* Liste véhicules */}
           {vehicles.map(v => (
             <button
-              key={v.id}
+              key={v.vehicle_id}
               type="button"
-              onClick={() => toggleVehicle(v.id)}
+              onClick={() => toggleVehicle(v.vehicle_id)}
               className={`w-full text-left px-4 py-2 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                vehicleFilter.includes(v.id) ? 'font-medium' : ''
+                vehicleFilter.includes(v.vehicle_id) ? 'font-medium' : ''
               }`}
             >
               <span>{v.name || `${v.make} ${v.model}`}</span>
-              {vehicleFilter.includes(v.id) /* && coche */}
+              {vehicleFilter.includes(v.vehicle_id) /* && coche */}
             </button>
           ))}
 

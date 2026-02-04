@@ -14,7 +14,7 @@ export default function NotIdentifiedPage() {
     return (
         <main className="min-h-screen flex items-center justify-center p-6">
             <section className="max-w-md text-center">
-                <h1 className="m-0 text-2xl font-semibold">Vous n’êtes pas identifié</h1>
+                <h1 className="m-0 text-2xl font-semibold">Vous n&apos;êtes pas identifié</h1>
                 <p className="text-gray-600 leading-relaxed mt-3">
                     Une erreur a peut-être eu lieu. Vous devez être connecté pour continuer.
                 </p>

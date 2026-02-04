@@ -24,10 +24,10 @@ export default function FillForm({
   // --- Détermine l'ID du véhicule par défaut ---
   const getDefaultVehicleId = (): number => {
     if (selectedVehicleIds && vehicles) {
-      const match = vehicles.find(v => selectedVehicleIds.includes(v.id));
-      if (match) return match.id;
+      const match = vehicles.find(v => selectedVehicleIds.includes(v.vehicle_id));
+      if (match) return match.vehicle_id;
     }
-    if (vehicles && vehicles.length === 1) return vehicles[0].id;
+    if (vehicles && vehicles.length === 1) return vehicles[0].vehicle_id;
     return 0;
   };
 
@@ -46,7 +46,7 @@ export default function FillForm({
   // --- Auto-remplir le kilométrage selon le véhicule sélectionné ---
   useEffect(() => {
     if (formData.vehicle_id && vehicles) {
-      const selectedVehicle = vehicles.find(v => v.id === formData.vehicle_id);
+      const selectedVehicle = vehicles.find(v => v.vehicle_id === formData.vehicle_id);
       if (selectedVehicle && selectedVehicle.odometer != null) {
         setFormData(prev => ({ ...prev, odometer: selectedVehicle.odometer!.toString() }));
       }
@@ -113,7 +113,7 @@ export default function FillForm({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'ajout du plein');
 
-      addFillOptimistic({ ...data.fill, ...fillData, id: data.fill.id || Date.now() });
+      addFillOptimistic({ ...data.fill, ...fillData, vehicle_id: data.fill.vehicle_id || Date.now() });
       setMessage('✅ Plein ajouté avec succès !');
 
       setFormData(prev => ({
@@ -152,7 +152,7 @@ export default function FillForm({
           >
             <option value="">Sélectionnez un véhicule</option>
             {vehicles.map(v => (
-              <option key={v.id} value={v.id}>{v.name || `${v.make} ${v.model}`}</option>
+              <option key={v.vehicle_id} value={v.vehicle_id}>{v.name || `${v.make} ${v.model}`}</option>
             ))}
           </select>
         </div>
@@ -160,7 +160,7 @@ export default function FillForm({
         <div>
           <label className="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Véhicule</label>
           <input type="text" value={vehicles[0].name || `${vehicles[0].make} ${vehicles[0].model}`} readOnly className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-3 py-2 rounded outline-none cursor-not-allowed border border-gray-300 dark:border-gray-700" />
-          <input type="hidden" name="vehicle_id" value={vehicles[0].id} />
+          <input type="hidden" name="vehicle_id" value={vehicles[0].vehicle_id} />
         </div>
       ) : null}
 
