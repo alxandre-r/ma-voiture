@@ -29,7 +29,6 @@ export default function LatestFills() {
     liters: number | undefined;
     amount: number | undefined;
     price_per_liter: number | undefined;
-    is_full: boolean;
     notes: string;
   }> | null>(null);
   const [saving, setSaving] = useState(false);
@@ -43,7 +42,6 @@ export default function LatestFills() {
       liters: fill.liters || undefined,
       amount: fill.amount || undefined,
       price_per_liter: fill.price_per_liter || undefined,
-      is_full: fill.is_full,
       notes: fill.notes || '',
     });
   }
@@ -149,13 +147,6 @@ export default function LatestFills() {
           >
             Réessayer
           </button>
-        </div>
-      )}
-
-      {!loading && !error && filtered.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <p className="mb-2">Aucun plein enregistré pour {selectedVehicleIds.length === 1 ? "ce véhicule" : "le moment"}.</p>
-          <p className="text-sm">Ajoutez votre premier plein en utilisant le bouton ci-dessus.</p>
         </div>
       )}
 

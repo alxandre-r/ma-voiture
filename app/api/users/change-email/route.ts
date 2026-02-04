@@ -47,16 +47,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Update email in users_profile table
+    // Update email in users table
     await supabase
-      .from('users_profile')
+      .from('users')
       .update({ email: newEmail })
       .eq('id', user.id);
-
-    // Note: We don't update the owner field in vehicles table because:
-    // - The owner field stores user UUIDs, not email addresses
-    // - The vehicles table references users_profile(id) which is a UUID
-    // - Email changes don't affect the UUID-based ownership relationships
 
     return NextResponse.json(
       { 

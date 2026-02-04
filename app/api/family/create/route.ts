@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       .insert([
         {
           name: name.trim(),
-          owner: user.id,
+          owner_id: user.id,
         }
       ])
       .select()

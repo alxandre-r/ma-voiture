@@ -1,6 +1,6 @@
 /**
  * @file app/api/auth/check-email/route.ts
- * @fileoverview Vérifie côté serveur si un email est déjà présent (table 'users_profile').
+ * @fileoverview Vérifie côté serveur si un email est déjà présent (table 'users').
  *              Cette route utilise la clé service_role (côté serveur uniquement).
  *
  * POST body: { email: string }
@@ -27,9 +27,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email requis" }, { status: 400 });
     }
 
-    // On interroge la table users_profile pour vérifier si l'email existe
+    // On interroge la table users pour vérifier si l'email existe
     const { data, error } = await supabaseAdmin
-      .from("users_profile") // table users_profile
+      .from("users") // table users
       .select("id")
       .eq("email", email)
       .maybeSingle();

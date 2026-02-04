@@ -1,5 +1,5 @@
 /**
- * @file app/api/vehicles/get/route.tsx
+ * @file app/api/vehicles/get/family_vehicles/route.tsx
  * @fileoverview API route to fetch vehicles for authenticated user's family.
  * 
  * This endpoint returns all vehicles of the current user's family,
@@ -42,7 +42,7 @@ export async function GET() {
 
     // Fetch all vehicles for this family
     const { data: vehicles, error: vehiclesError } = await supabase
-        .from('family_vehicles')
+        .from('vehicles_for_display')
         .select('*')
         .eq('family_id', familyMember.family_id);
 

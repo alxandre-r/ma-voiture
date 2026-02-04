@@ -31,9 +31,9 @@ export async function GET() {
 
   // Fetch vehicles owned by this user
   const { data: vehicles, error: vehiclesError } = await supabase
-    .from('user_vehicles')
+    .from('vehicles_for_display')
     .select('*')
-    .eq('owner', user.id);
+    .eq('owner_id', user.id);
 
   if (vehiclesError) {
     return NextResponse.json({ error: vehiclesError.message }, { status: 500 });

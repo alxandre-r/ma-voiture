@@ -40,7 +40,7 @@ export async function GET() {
 
     // Get all family members with user details using the view
     const { data: members, error: membersError } = await supabase
-      .from('family_members_info')
+      .from('family_for_display')
       .select('*')
       .eq('family_id', familyMember.family_id);
 

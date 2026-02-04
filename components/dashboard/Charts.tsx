@@ -54,32 +54,31 @@ export default function FillCharts() {
                 </div>
               </div>
             </div>
+
+            {/* Charts: limit to last 6 months on small screens */}
+            <div className="mt-4 space-y-4">
+              {monthlyChart && monthlyChart.length > 0 && (
+                <div>
+                  <FillChart data={monthlyChart.slice(-6)} />
+                </div>
+              )}
+
+              {hasOdometer && (
+                <div>
+                  <OdometerChart
+                    data={monthlyChart
+                      .slice(-6)
+                      .map((item: { month: string; odometer: number | null }) => ({ month: item.month, odometer: item.odometer || 0 }))}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </>
         ) : (
-          // nothing
+          // nothing if no stat (user has no fill)
           <></>
         )}
-
-
-        {/* Charts: limit to last 6 months on small screens */}
-        <div className="mt-4 space-y-4">
-          {monthlyChart && monthlyChart.length > 0 && (
-            <div>
-              <FillChart data={monthlyChart.slice(-6)} />
-            </div>
-          )}
-
-          {hasOdometer && (
-            <div>
-              <OdometerChart
-                data={monthlyChart
-                  .slice(-6)
-                  .map((item: { month: string; odometer: number | null }) => ({ month: item.month, odometer: item.odometer || 0 }))}
-              />
-            </div>
-          )}
-        </div>
       </div>
   );
 }

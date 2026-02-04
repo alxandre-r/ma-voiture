@@ -23,9 +23,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email et mot de passe requis" }, { status: 400 });
     }
 
-    // -- Optional: check your table 'users_profile' to avoid duplicates --
+    // -- Optional: check your table 'users' to avoid duplicates --
     const { data: existingUsers, error: checkError } = await supabaseAdmin
-      .from("users_profile") // table qui expose email
+      .from("users") // table qui expose email
       .select("id")
       .eq("email", email)
       .maybeSingle();

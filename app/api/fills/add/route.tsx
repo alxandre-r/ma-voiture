@@ -9,21 +9,6 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 
-/**
- * POST /api/fills/add
- * 
- * Add a new fuel fill-up record to the database.
- * Requires authentication.
- * 
- * Request body should contain:
- * - vehicle_id: number (required)
- * - date: string (YYYY-MM-DD, required)
- * - odometer: number (optional)
- * - liters: number (optional)
- * - amount: number (optional)
- * - price_per_liter: number (optional)
- * - notes: string (optional)
- */
 export async function POST(request: Request) {
   const supabase = await createSupabaseServerClient();
   
@@ -51,19 +36,12 @@ export async function POST(request: Request) {
       );
     }
     
-    if (!body.date) {
-      return NextResponse.json(
-        { error: 'Le champ date est requis' },
-        { status: 400 }
-      );
-    }
-    
     // Verify vehicle ownership
     const { data: vehicle, error: vehicleError } = await supabase
       .from('vehicles')
-      .select('id, name, make, model, fuel_type')
+      .select('id, name, fuel_type')
       .eq('id', body.vehicle_id)
-      .eq('owner', user.id)
+      .eq('owner_id', user.id)
       .single();
     
     if (vehicleError || !vehicle) {
@@ -78,7 +56,7 @@ export async function POST(request: Request) {
       .from('fills')
       .insert([{
         vehicle_id: body.vehicle_id,
-        owner: user.id,
+        owner_id: user.id,
         date: body.date,
         odometer: body.odometer || null,
         liters: body.liters || null,
@@ -103,24 +81,11 @@ export async function POST(request: Request) {
         .from('vehicles')
         .update({ odometer: body.odometer })
         .eq('id', body.vehicle_id)
-        .eq('owner', user.id);
+        .eq('owner_id', user.id);
         
       if (updateError) {
         console.error('Error updating vehicle odometer:', updateError);
-        // Don't fail the entire operation if odometer update fails
       }
-    }
-
-    // Update vehicle last_fill with the date of this new fill
-    const { error: lastFillError } = await supabase
-      .from('vehicles')
-      .update({ last_fill: body.date })
-      .eq('id', body.vehicle_id)
-      .eq('owner', user.id);
-      
-    if (lastFillError) {
-      console.error('Error updating vehicle last_fill:', lastFillError);
-      // Don't fail the entire operation if last_fill update fails
     }
     
     // Add vehicle info to response for UI

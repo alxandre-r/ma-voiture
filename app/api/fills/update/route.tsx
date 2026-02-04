@@ -49,7 +49,7 @@ export async function PATCH(request: Request) {
     // Verify fill ownership
     const { data: existingFill, error: fillError } = await supabase
       .from('fills')
-      .select('id, owner, vehicle_id')
+      .select('id, owner_id, vehicle_id')
       .eq('id', body.id)
       .single();
     
@@ -60,7 +60,7 @@ export async function PATCH(request: Request) {
       );
     }
     
-    if (existingFill.owner !== user.id) {
+    if (existingFill.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Vous n&apos;êtes pas autorisé à modifier ce plein' },
         { status: 403 }
@@ -69,14 +69,14 @@ export async function PATCH(request: Request) {
     
     // Prepare update data (exclude id and owner)
 
-    const { id: _, owner: __, ...updateData } = body;
+    const { id: _, owner_id: __, ...updateData } = body;
     
     // Update fill record
     const { data: updatedFill, error } = await supabase
       .from('fills')
       .update(updateData)
       .eq('id', body.id)
-      .eq('owner', user.id)
+      .eq('owner_id', user.id)
       .select()
       .single();
     
@@ -94,7 +94,7 @@ export async function PATCH(request: Request) {
         .from('vehicles')
         .update({ odometer: body.odometer })
         .eq('id', existingFill.vehicle_id)
-        .eq('owner', user.id);
+        .eq('owner_id', user.id);
         
       if (updateError) {
         console.error('Error updating vehicle odometer:', updateError);

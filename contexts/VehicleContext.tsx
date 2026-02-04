@@ -38,7 +38,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
    */
   function normalizeVehicle(v: Vehicle): VehicleMinimal {
     return {
-      id: v.id,
+      id: v.vehicle_id,
       name: v.name ?? null,
       make: v.make ?? null,
       model: v.model ?? null,
@@ -99,6 +99,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   }, [userRole]);
 
   return (
+    console.log('VehicleProvider render with vehicles:', vehiclesFull),
     <VehicleContext.Provider
       value={{
         vehicles,

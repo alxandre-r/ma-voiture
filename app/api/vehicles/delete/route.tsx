@@ -32,18 +32,18 @@ export async function DELETE(request: Request) {
     }
 
     // Parse request body
-    const { vehicleId } = await request.json();
+    const { vehicle_id } = await request.json();
 
-    if (!vehicleId) {
+    if (!vehicle_id) {
       return NextResponse.json({ error: 'Vehicle ID is required' }, { status: 400 });
     }
 
     // First, verify the vehicle exists and is owned by the user
     const { data: vehicle, error: fetchError } = await supabase
       .from('vehicles')
-      .select('id, owner')
-      .eq('id', vehicleId)
-      .eq('owner', user.id)
+      .select('id, owner_id')
+      .eq('id', vehicle_id)
+      .eq('owner_id', user.id)
       .maybeSingle();
 
     if (fetchError) {
@@ -59,8 +59,8 @@ export async function DELETE(request: Request) {
     const { error: deleteError } = await supabase
       .from('vehicles')
       .delete()
-      .eq('id', vehicleId)
-      .eq('owner', user.id);
+      .eq('id', vehicle_id)
+      .eq('owner_id', user.id);
 
     if (deleteError) {
       console.error('Error deleting vehicle:', deleteError);
@@ -68,7 +68,7 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json(
-      { message: 'Vehicle deleted successfully', vehicleId },
+      { message: 'Vehicle deleted successfully', vehicle_id },
       { status: 200 }
     );
   } catch (err) {
