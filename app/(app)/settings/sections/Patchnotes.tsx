@@ -100,6 +100,7 @@ export default function PatchnotesSection() {
     <div className="bg-custom-1/10 border-l-4 border-custom-1 p-4 rounded-lg shadow-sm space-y-2">
         <h4 className="text-lg font-semibold text-custom-1 mb-2">À venir / Prochaines fonctionnalités</h4>
         <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+            <li>Corriger l'affichage des données avec le bouton des véhicule dans le <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">Dashboard</Link>.</li>
             <li>Ajouter des checkboxes dans le <strong>FillFilter</strong> des véhicules.</li>
             <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
             <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
