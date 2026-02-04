@@ -78,7 +78,6 @@ export default function PatchnotesSection() {
               <li>Calcul automatique du <code>calculated_consumption</code> des véhicules directement en base.</li>
             </ul>
           </div>
-
           {/* Composants et types */}
           <div>
             <h4 className="text-lg font-semibold mb-1">Composants et types</h4>
@@ -100,13 +99,40 @@ export default function PatchnotesSection() {
     <div className="bg-custom-1/10 border-l-4 border-custom-1 p-4 rounded-lg shadow-sm space-y-2">
         <h4 className="text-lg font-semibold text-custom-1 mb-2">À venir / Prochaines fonctionnalités</h4>
         <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-            <li>Corriger l'affichage des données avec le bouton des véhicule dans le <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">Dashboard</Link>.</li>
-            <li>Ajouter des checkboxes dans le <strong>FillFilter</strong> des véhicules.</li>
-            <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
-            <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
-            <li>Dans <Link href="/settings" className="text-indigo-600 dark:text-indigo-400 underline">Settings</Link>, possibilité de modifier le nom d&apos;utilisateur.</li>
-            <li>Utiliser les <strong>Notifications</strong> dans la page <strong>Settings</strong> (Edit Email, mot de passe, nom).</li>
-            <li>Unifier <code>api/vehicles/get</code> et <code>api/vehicles/get/family_vehicles</code> sous <code>api/vehicles/get</code> à partir de <code>vehicles_for_display</code>.</li>
+          {/* Dashboard & Véhicules */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">Dashboard & Véhicules</li>
+          <li>Corriger l&apos;affichage des données avec le bouton des véhicule dans le <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">Dashboard</Link>.</li>
+          <li>Ajouter des checkboxes dans le <strong>FillFilter</strong> des véhicules.</li>
+          <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
+          <li>Page <strong>Consommations</strong> : Ajouter l&apos;icône de tri et afficher les KM parcourus.</li>
+
+          {/* Notifications & Historique */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>
+          <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
+          <li>Utiliser les <strong>Notifications</strong> dans la page <strong>Settings</strong> (Edit Email, mot de passe, nom).</li>
+
+          {/* Paramètres & Compte */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Paramètres & Compte</li>
+          <li>Refonte de la section <strong>Mon compte</strong> dans la page <Link href="/settings" className="text-indigo-600 dark:text-indigo-400 underline">Settings</Link> pour gérer l&apos;édition du <strong> nom </strong>, email et mot de passe.</li>
+          <li>Corriger les bordures sur les sections <strong>Mon compte</strong> et <strong>Apparance</strong>.</li>
+
+          {/* API & Backend */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">API & Backend</li>
+          <li>Unifier <code>api/vehicles/get</code> et <code>api/vehicles/get/family_vehicles</code> sous <code>api/vehicles/get</code> à partir de <code>vehicles_for_display</code>.</li>
+
+          {/* Famille */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
+          <li><p className="text-red-600 font-bold inline">Bug fix critique </p> :  Ajouter la gestion du <code>family_id</code> dans la table <code>users</code> (rejoindre/quitter une famille).</li><li>Page <strong>Famille</strong> : Restreindre l&apos;invitation de nouveaux membres au propriétaire uniquement.</li>
+          <li>Correction du formulaire d&apos;invitation : le bouton copier doit copier le code d&apos;invitation correct.</li>
+
+          {/* Nouvelles fonctionnalités */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Nouvelles fonctionnalités</li>
+          <li>Implémenter la notion d&apos;<strong>assurance de véhicule</strong> avec informations et historique.</li>
+          <li>Ajouter les <strong>statistiques de coûts</strong> par véhicule et par flotte (jour, mois, année).</li>
+
+          {/* UX / Design */}
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">UX / Design général</li>
+          <li>Responsive mobile : Ajouter un espacement en bas de page pour éviter que la navBar ne cache le contenu.</li>
         </ul>
     </div>
     </section>
