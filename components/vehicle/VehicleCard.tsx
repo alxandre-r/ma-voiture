@@ -153,6 +153,26 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
             <div>Créé le : {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString('fr-FR') : '—'}</div>
             </div>
 
+            {/* --- Si pas de plein enregistré : hint pour ajouter un plein --- */}
+            {!vehicle.last_fill && (
+              <div className="mt-4 p-4 rounded-lg border border-dashed border-custom-2 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 text-center">
+                <p className="font-semibold text-gray-700 dark:text-gray-300">
+                  Aucun plein enregistré pour ce véhicule
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Ajoutez votre premier plein pour commencer le suivi.
+                </p>
+                <button
+                  onClick={() => {
+                    window.location.href = `/dashboard?addFill=true&vehicleId=${vehicle.vehicle_id}`;
+                  }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-custom-2 text-white rounded-md hover:bg-custom-2-hover transition-all text-sm font-medium hover:cursor-pointer"
+                >
+                  <Icon name="add" size={16} className="invert dark:invert-0" />
+                  Ajouter un plein
+                </button>
+              </div>
+            )}
         </div>
       )}
 
