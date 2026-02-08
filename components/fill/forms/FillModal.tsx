@@ -49,9 +49,9 @@ export default function FillModal({ open, onClose, vehicles = null }: FillModalP
       >
 
         <FillForm
-          onCancel={onClose}
+          isOpen={open}
+          onClose={onClose}
           onSuccess={onClose}
-          autoCloseOnSuccess={true}
           vehicles={vehicles}
         />
       </div>
