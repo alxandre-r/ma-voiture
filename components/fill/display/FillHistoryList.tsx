@@ -180,7 +180,7 @@ export default function FillHistoryList({ vehicles }: FillHistoryListProps) {
 
       {/* Filters */}
       <FillFilters
-        fills={fills}
+        fills={fills ?? null}
         vehicles={allVehicles}
         loading={loading}
         onFilterChange={handleFilterChange}
