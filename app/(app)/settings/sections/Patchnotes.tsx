@@ -37,7 +37,7 @@ export default function PatchnotesSection() {
             quand l&apos;utilisateur a un véhicule mais aucun plein.
           </li>
                     <li>
-            Reworked la page Mon Compte dans les paramètres. L'utilisateur peut maintenant y modifier son nom.
+            Reworked la page Mon Compte dans les paramètres. L&apos;utilisateur peut maintenant y modifier son nom.
           </li>
           <li>
             Ajuster la largeur de plusieurs inputs et boutons dans les paramètres.
