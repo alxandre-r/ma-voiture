@@ -64,8 +64,8 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
 
       {/* --- Header --- */}
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-2xl text-gray-600 dark:text-gray-300 font-bold">
-          {editData.make?.[0] || '🚗'}
+        <div className="w-16 h-16 rounded-full bg-custom-2 text-white flex items-center justify-center text-2xl font-bold">
+              {editData.make?.[0] || '🚗'}
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">

@@ -13,7 +13,7 @@ export default function LogoutSection() {
       <p className="text-gray-500 dark:text-gray-400 mb-6">
         Vous pouvez vous déconnecter de votre compte à tout moment. Vous devrez vous reconnecter pour accéder à vos données.
       </p>
-      <LogoutButton className="w-full" />
+      <LogoutButton className="w-full lg:w-[360px]" />
     </section>
   );
 }

@@ -17,7 +17,7 @@ export default function AppearanceSection() {
       <select
         value={theme}
         onChange={(e) => setTheme(e.target.value)}
-        className="w-full p-3 rounded-lg border bg-gray-50 dark:bg-gray-900"
+        className="w-full lg:w-[360px] p-3 rounded-lg border border-gray-300 bg-gray-50 dark:bg-gray-900 dark:border-gray-700"
       >
         <option value="light">Clair</option>
         <option value="dark">Sombre</option>

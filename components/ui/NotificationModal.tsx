@@ -51,14 +51,14 @@ export default function NotificationModal({
           <div
             className={`rounded-xl border ${palette[type]} bg-white dark:bg-gray-900 shadow-lg`}
           >
-            <div className="flex items-start gap-3 p-4">
+            <div className="flex items-start gap-3 p-6 min-w-[280px] max-w-sm">
               <p className="flex-1 text-sm text-gray-800 dark:text-white">
                 {message}
               </p>
 
               <button
                 onClick={() => setVisible(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-white"
+                className="text-gray-800 hover:text-gray-600 dark:hover:text-white hover:cursor-pointer transition-opacity"
                 aria-label="Fermer"
               >
                 ×

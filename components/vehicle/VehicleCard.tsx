@@ -67,11 +67,11 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           }}
         />
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 flex flex-col gap-5 transition-colors">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 flex flex-col gap-5 transition-colors">
 
           {/* --- Header : Véhicule --- */}
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-2xl text-gray-600 dark:text-gray-300 font-bold">
+            <div className="w-16 h-16 rounded-full bg-custom-2 text-white flex items-center justify-center text-2xl font-bold">
               {vehicle.make?.[0] || '🚗'}
             </div>
 
@@ -98,13 +98,13 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
               </button>
 
               {showMenu && (
-                <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 z-10">
+                <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-700 rounded-lg shadow-md border border-gray-200 dark:border-gray-600 z-10">
                   <button
                     onClick={() => {
                       setEditing(true);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-900 first:rounded-t-lg transition flex items-center gap-2 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-custom-1/10 dark:hover:bg-blue-900 first:rounded-t-lg transition flex items-center gap-2 cursor-pointer"
                   >
                     <Icon name="edit" size={16} />
                     Modifier

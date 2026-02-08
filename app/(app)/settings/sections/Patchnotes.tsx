@@ -12,7 +12,7 @@ export default function PatchnotesSection() {
     {
       version: "1.0.1",
       date: "08 Février 2026",
-      summary: "Amélioration de l&apos;expérience utilisateur et correction de bugs mineurs.",
+      summary: "Amélioration de l'expérience utilisateur et correction de bugs mineurs.",
       details: (
         <ul className="list-disc list-inside space-y-1">
           <li>
@@ -36,8 +36,21 @@ export default function PatchnotesSection() {
             </Link>{" "}
             quand l&apos;utilisateur a un véhicule mais aucun plein.
           </li>
+                    <li>
+            Reworked la page Mon Compte dans les paramètres. L'utilisateur peut maintenant y modifier son nom.
+          </li>
           <li>
-            Correction de bugs :Correction du selecteur de véhicule dans la page Dashboard. Correction d&apos;un bug lié à la fonctionnalité famille.
+            Ajuster la largeur de plusieurs inputs et boutons dans les paramètres.
+          </li>
+          <li>
+            Ajuster la couleur du badge véhicule dans le
+              <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
+                garage
+              </Link>
+              .
+          </li>
+          <li>
+            Correction de bugs : Correction du selecteur de véhicule dans la page Dashboard. Correction d&apos;un bug lié à la fonctionnalité famille.
           </li>
           <li>
             Amélioration de l&apos;affichage mobile pour l&apos;ensemble des pages.
@@ -128,11 +141,6 @@ export default function PatchnotesSection() {
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>
           <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
-          <li>Utiliser les <strong>Notifications</strong> dans la page <strong>Settings</strong> (Edit Email, mot de passe, nom).</li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Paramètres & Compte</li>
-          <li>Refonte de la section <strong>Mon compte</strong> dans la page <Link href="/settings" className="text-indigo-600 dark:text-indigo-400 underline">Settings</Link>.</li>
-          <li>Corriger les bordures sur les sections <strong>Mon compte</strong> et <strong>Apparance</strong>.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">API & Backend</li>
           <li>Simplification du code de <code>api/vehicles/get</code> permettant de get les véhicules de l&apos;user et des membres de la famille en une seule requête.</li>

@@ -28,7 +28,7 @@ export default function UnitsSection() {
             onChange={(e) =>
               setUnits({ ...units, distance: e.target.value })
             }
-            className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300
+            className="p-4 rounded-lg border w-full lg:w-[360px] bg-gray-50 border-gray-300
               dark:bg-gray-900 dark:border-gray-600 hover:cursor-pointer
               focus:ring-2 focus:ring-custom-1 focus:outline-none"
           >
@@ -47,7 +47,7 @@ export default function UnitsSection() {
             onChange={(e) =>
               setUnits({ ...units, fuel: e.target.value })
             }
-            className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300
+            className="p-4 rounded-lg border w-full lg:w-[360px] bg-gray-50 border-gray-300
               dark:bg-gray-900 dark:border-gray-600 hover:cursor-pointer
               focus:ring-2 focus:ring-custom-1 focus:outline-none"
           >
@@ -66,7 +66,7 @@ export default function UnitsSection() {
             onChange={(e) =>
               setUnits({ ...units, consumption: e.target.value })
             }
-            className="p-4 rounded-lg border w-full bg-gray-50 border-gray-300
+            className="p-4 rounded-lg border w-full lg:w-[360px] bg-gray-50 border-gray-300
               dark:bg-gray-900 dark:border-gray-600 hover:cursor-pointer
               focus:ring-2 focus:ring-custom-1 focus:outline-none"
           >

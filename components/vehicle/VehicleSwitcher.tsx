@@ -110,7 +110,7 @@ export default function VehicleSwitcher({
           "
         >
           {/* Hint */}
-          <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+          <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700">
             Sélection multiple possible
           </div>
 
@@ -121,7 +121,7 @@ export default function VehicleSwitcher({
             onClick={toggleAll}
           />
 
-          <div className="border-t dark:border-gray-700 my-1" />
+          <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
           <div className="max-h-64 overflow-y-auto">
             {vehicles.map(v => (
@@ -158,7 +158,7 @@ function DropdownItem({
         px-4 py-2 text-left
         transition hover:cursor-pointer
         ${checked
-          ? 'bg-custom-1/20 dark:bg-custom-1/10'
+          ? 'bg-custom-1/10 dark:bg-custom-1/10'
           : 'hover:bg-gray-100 dark:hover:bg-gray-700'}
       `}
     >
@@ -174,7 +174,7 @@ function DropdownItem({
         <Icon
           name="check"
           size={12}
-          className={`text-white transition-opacity ${
+          className={`text-white invert transition-opacity ${
             checked ? 'opacity-100' : 'opacity-0'
           }`}
         />
