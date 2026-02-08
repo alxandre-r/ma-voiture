@@ -138,6 +138,7 @@ export default function PatchnotesSection() {
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">Dashboard & Véhicules</li>
           <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
           <li>Page <strong>Consommations</strong> : Ajouter l&apos;icône de tri et afficher les KM parcourus.</li>
+          <li>Bug fix : charts ne fonctionnent pas correctement en multi sélection de véhicules.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>
           <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
