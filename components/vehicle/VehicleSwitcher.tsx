@@ -1,143 +1,192 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Icon from '@/components/ui/Icon';
 import { VehicleMinimal } from '@/types/vehicle';
 
 interface VehicleSwitcherProps {
   vehicles: VehicleMinimal[];
-  selectedVehicleIds: number[];
-  onVehicleChange: (vehicleIds: number[]) => void;
+  value: number[];
+  onChange: (vehicleIds: number[]) => void;
   disabled?: boolean;
 }
 
 export default function VehicleSwitcher({
   vehicles,
-  selectedVehicleIds,
-  onVehicleChange,
+  value,
+  onChange,
   disabled = false,
 }: VehicleSwitcherProps) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-  // --- Local copy de la sélection, sync initial seulement ---
-  const [vehicleFilter, setVehicleFilter] = useState<number[]>(() => 
-    selectedVehicleIds.length ? selectedVehicleIds : vehicles.length ? [vehicles[0].vehicle_id] : []
-  );
-
-  // --- Sync parent -> local uniquement si parent change réellement ---
   useEffect(() => {
-    if (
-      selectedVehicleIds.length !== vehicleFilter.length ||
-      !selectedVehicleIds.every(id => vehicleFilter.includes(id))
-    ) {
-      setVehicleFilter(selectedVehicleIds.length ? selectedVehicleIds : [vehicles[0]?.vehicle_id].filter(Boolean));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVehicleIds]);
-
-  // --- Sync local -> parent à chaque changement local ---
-  useEffect(() => {
-    if (vehicleFilter.length) {
-      onVehicleChange(vehicleFilter);
-    }
-  }, [vehicleFilter, onVehicleChange]);
-
-  // --- Close dropdown on outside click ---
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
+    const onClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
   }, []);
 
-  // --- Toggle véhicule (toujours au moins 1 sélection) ---
+  /* ---------------- Logic ---------------- */
+
   const toggleVehicle = (id: number) => {
-    if (vehicleFilter.includes(id)) {
-      if (vehicleFilter.length === 1) return; // toujours au moins 1
-      setVehicleFilter(vehicleFilter.filter(v => v !== id));
+    if (value.includes(id)) {
+      onChange(value.filter(v => v !== id)); // autorise 0 sélection
     } else {
-      setVehicleFilter([...vehicleFilter, id]);
+      onChange([...value, id]);
     }
   };
 
-  // --- Toggle "Tous les véhicules" ---
-  const toggleAllVehicles = () => {
-    if (vehicleFilter.length === vehicles.length) {
-      setVehicleFilter([vehicles[0].vehicle_id]); // force 1 sélection minimum
+  const toggleAll = () => {
+    if (value.length === vehicles.length) {
+      onChange([]);
     } else {
-      setVehicleFilter(vehicles.map(v => v.vehicle_id));
+      onChange(vehicles.map(v => v.vehicle_id));
     }
   };
 
-  // --- Label bouton ---
-  const getButtonLabel = () => {
-    if (vehicleFilter.length === vehicles.length) return 'Tous les véhicules';
-    if (vehicleFilter.length === 1) {
-      const v = vehicles.find(v => v.vehicle_id === vehicleFilter[0]);
-      return v ? v.name || `${v.make} ${v.model}` : 'Véhicule sélectionné';
+  const label = () => {
+    if (value.length === 0) return 'Sélectionnez un ou plusieurs véhicules';
+    if (value.length === vehicles.length) return 'Tous les véhicules';
+
+    if (value.length === 1) {
+      const v = vehicles.find(v => v.vehicle_id === value[0]);
+      return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
     }
-    return `${vehicleFilter.length} véhicules sélectionnés`;
+
+    return `${value.length} véhicules sélectionnés`;
   };
+
+  /* ---------------- Render ---------------- */
 
   return (
-    <div ref={dropdownRef} className="relative">
+    <div
+      ref={ref}
+      className="relative w-full sm:w-[360px]" // largeur fixe desktop, full mobile
+    >
+      {/* Trigger */}
       <button
         type="button"
-        onClick={() => !disabled && setDropdownOpen(prev => !prev)}
-        disabled={disabled || vehicles.length === 0}
-        className="flex items-center justify-between w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+        disabled={disabled}
+        onClick={() => setOpen(o => !o)}
+        className="
+          flex items-center justify-between w-full
+          px-4 py-3 rounded-lg border
+          bg-white dark:bg-gray-800
+          border-gray-300 dark:border-gray-700
+          hover:bg-gray-50 dark:hover:bg-gray-700
+          transition hover:cursor-pointer
+        "
       >
-        <div className="flex items-center gap-2">
-          <Icon name="garage" size={20} className="text-gray-600 dark:text-gray-300" />
-          <span className="font-medium truncate">{getButtonLabel()}</span>
-        </div>
+        <span
+          className={`truncate ${
+            value.length === 0
+              ? 'text-gray-400 dark:text-gray-500'
+              : 'font-medium'
+          }`}
+        >
+          {label()}
+        </span>
+
         <Icon
-          name="add"
+          name="arrow-down"
           size={16}
-          className={`transform transition-transform ${dropdownOpen ? 'rotate-45' : ''} text-gray-500`}
+          className={`ml-6 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
-      {dropdownOpen && (
-        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow-lg max-h-60 overflow-auto">
-          {/* Tous les véhicules */}
-          <button
-            type="button"
-            onClick={toggleAllVehicles}
-            className={`w-full text-left px-4 py-2 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 ${
-              vehicleFilter.length === vehicles.length ? 'font-medium' : ''
-            }`}
-          >
-            <span>Tous les véhicules</span>
-            {/* coche manuelle possible ici */}
-          </button>
+      {/* Dropdown */}
+      {open && (
+        <div
+          className="
+            absolute z-50 mt-2 w-full
+            bg-white dark:bg-gray-800
+            border border-gray-300 dark:border-gray-700
+            rounded-lg shadow-lg
+            overflow-hidden
+          "
+        >
+          {/* Hint */}
+          <div className="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+            Sélection multiple possible
+          </div>
 
-          {/* Liste véhicules */}
-          {vehicles.map(v => (
-            <button
-              key={v.vehicle_id}
-              type="button"
-              onClick={() => toggleVehicle(v.vehicle_id)}
-              className={`w-full text-left px-4 py-2 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                vehicleFilter.includes(v.vehicle_id) ? 'font-medium' : ''
-              }`}
-            >
-              <span>{v.name || `${v.make} ${v.model}`}</span>
-              {vehicleFilter.includes(v.vehicle_id) /* && coche */}
-            </button>
-          ))}
+          {/* All */}
+          <DropdownItem
+            label="Tous les véhicules"
+            checked={value.length === vehicles.length && vehicles.length > 0}
+            onClick={toggleAll}
+          />
 
-          {vehicles.length === 0 && (
-            <div className="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm">
-              Aucun véhicule disponible
-            </div>
-          )}
+          <div className="border-t dark:border-gray-700 my-1" />
+
+          <div className="max-h-64 overflow-y-auto">
+            {vehicles.map(v => (
+              <DropdownItem
+                key={v.vehicle_id}
+                label={v.name || `${v.make} ${v.model}`}
+                checked={value.includes(v.vehicle_id)}
+                onClick={() => toggleVehicle(v.vehicle_id)}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
+  );
+}
+
+/* ---------------- Item ---------------- */
+
+function DropdownItem({
+  label,
+  checked,
+  onClick,
+}: {
+  label: string;
+  checked: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        flex items-center gap-3 w-full
+        px-4 py-2 text-left
+        transition hover:cursor-pointer
+        ${checked
+          ? 'bg-custom-1/20 dark:bg-custom-1/10'
+          : 'hover:bg-gray-100 dark:hover:bg-gray-700'}
+      `}
+    >
+      {/* Checkbox visuelle */}
+      <span
+        className={`
+          w-4 h-4 rounded border flex items-center justify-center
+          ${checked
+            ? 'bg-custom-1 border-custom-1'
+            : 'border-gray-400 dark:border-gray-500'}
+        `}
+      >
+        <Icon
+          name="check"
+          size={12}
+          className={`text-white transition-opacity ${
+            checked ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      </span>
+
+      <span
+        className={`truncate ${
+          checked ? 'font-medium text-dark dark:text-white' : ''
+        }`}
+      >
+        {label}
+      </span>
+    </button>
   );
 }

@@ -60,7 +60,7 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
           <div className="min-h-screen flex flex-col transition-colors duration-300 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800" style={{ position: 'relative' }}>
             <NavBar />
             <div className="flex-1 flex flex-col">
-              <main className="px-2 py-3 pt-8 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
+              <main className="px-2 py-3 pt-8 pb-24 sm:px-4 lg:px-6 transition-colors duration-300">{children}</main>
             </div>
           </div>
       </NotificationProvider>

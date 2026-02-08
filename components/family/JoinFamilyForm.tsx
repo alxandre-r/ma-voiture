@@ -71,7 +71,9 @@ export function JoinFamilyForm({ onFamilyJoined }: { onFamilyJoined?: (family: {
           placeholder="Entrez le code d'invitation"
           required
           disabled={isLoading}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
+          focus:outline-none focus:ring-2 focus:ring-custom-1 
+          bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
         />
       </div>
 

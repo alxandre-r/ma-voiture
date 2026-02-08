@@ -12,7 +12,7 @@ export { FillFilters } from './controls';
 
 // Export types for convenience
 export type { FillRowProps } from './display/FillRow';
-export type { FillFormProps } from './forms/FillForm';
+export type { FillFormProps } from './forms/FillAddForm';
 export type { FillEditFormProps } from './forms/FillEditForm';
 export type { FillModalProps } from './forms/FillModal';
 export type { FillFiltersProps } from './controls/FillFilters';

@@ -3,7 +3,7 @@ import DashboardClientWrapper from "./DashboardClientWrapper";
 
 export default function DashboardPage() {
   return (
-    <main className="px-6">
+    <main>
       <DashboardClientWrapper />
     </main>
   );

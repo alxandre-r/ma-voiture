@@ -154,7 +154,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
             </div>
 
             {/* --- Si pas de plein enregistré : hint pour ajouter un plein --- */}
-            {!vehicle.last_fill && (
+            {!vehicle.last_fill_date && (
               <div className="mt-4 p-4 rounded-lg border border-dashed border-custom-2 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 text-center">
                 <p className="font-semibold text-gray-700 dark:text-gray-300">
                   Aucun plein enregistré pour ce véhicule

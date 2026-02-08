@@ -12,7 +12,7 @@ interface FamilyFormProps {
   }) => void;
 }
 
-export const FamilyForm: React.FC<FamilyFormProps> = ({ onFamilyCreated }) => {
+export const AddFamilyForm: React.FC<FamilyFormProps> = ({ onFamilyCreated }) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -76,7 +76,9 @@ export const FamilyForm: React.FC<FamilyFormProps> = ({ onFamilyCreated }) => {
           minLength={2}
           maxLength={100}
           disabled={isLoading}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm 
+          focus:outline-none focus:ring-2 focus:ring-custom-2 
+          bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
         />
       </div>
 

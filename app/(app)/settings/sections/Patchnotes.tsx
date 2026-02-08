@@ -11,8 +11,8 @@ export default function PatchnotesSection() {
   const patchnotesData: VersionBlockProps[] = [
     {
       version: "1.0.1",
-      date: "05 Février 2026",
-      summary: "Amélioration de l'expérience utilisateur et correction de bugs mineurs.",
+      date: "08 Février 2026",
+      summary: "Amélioration de l&apos;expérience utilisateur et correction de bugs mineurs.",
       details: (
         <ul className="list-disc list-inside space-y-1">
           <li>
@@ -36,6 +36,13 @@ export default function PatchnotesSection() {
             </Link>{" "}
             quand l&apos;utilisateur a un véhicule mais aucun plein.
           </li>
+          <li>
+            Correction de bugs :Correction du selecteur de véhicule dans la page Dashboard. Correction d&apos;un bug lié à la fonctionnalité famille.
+          </li>
+          <li>
+            Amélioration de l&apos;affichage mobile pour l&apos;ensemble des pages.
+          </li>
+
         </ul>
       ),
       type: "minor",
@@ -44,7 +51,7 @@ export default function PatchnotesSection() {
       version: "1.0.0",
       date: "04 Février 2026",
       summary:
-        "Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l'expérience utilisateur.",
+        "Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l&apos;expérience utilisateur.",
       details: (
         <div className="space-y-6">
           {/* Frontend / UX */}
@@ -116,11 +123,8 @@ export default function PatchnotesSection() {
       details: (
         <ul className="list-disc list-inside space-y-1">
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">Dashboard & Véhicules</li>
-          <li>Corriger l&apos;affichage des données avec le bouton des véhicules dans le <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">Dashboard</Link>.</li>
-          <li>Ajouter des checkboxes dans le <strong>FillFilter</strong> des véhicules.</li>
           <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
           <li>Page <strong>Consommations</strong> : Ajouter l&apos;icône de tri et afficher les KM parcourus.</li>
-          <li>Fix l&apos;affichage du bouton "Voir l&apos;historique des pleins" sur mobile</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>
           <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
@@ -131,19 +135,16 @@ export default function PatchnotesSection() {
           <li>Corriger les bordures sur les sections <strong>Mon compte</strong> et <strong>Apparance</strong>.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">API & Backend</li>
-          <li>Unifier <code>api/vehicles/get</code> et <code>api/vehicles/get/family_vehicles</code> sous <code>api/vehicles/get</code>.</li>
+          <li>Simplification du code de <code>api/vehicles/get</code> permettant de get les véhicules de l&apos;user et des membres de la famille en une seule requête.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
-          <li><p className="text-red-600 font-bold inline">Bug fix critique </p> : Ajouter la gestion du <code>family_id</code> dans la table <code>users</code>.</li>
           <li>Page <strong>Famille</strong> : Restreindre l&apos;invitation au propriétaire uniquement.</li>
-          <li>Correction du formulaire d&apos;invitation : bouton copier fonctionne correctement.</li>
+          <li>Correction du formulaire d&apos;invitation</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Nouvelles fonctionnalités</li>
           <li>Implémenter l&apos;<strong>assurance de véhicule</strong> avec informations et historique.</li>
           <li>Ajouter les <strong>statistiques de coûts</strong> par véhicule et par flotte.</li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">UX / Design général</li>
-          <li>Responsive mobile : Ajouter un espacement en bas de page pour éviter que la navBar ne cache le contenu.</li>
+          <li>Prise en charge des <strong>véhicules électriques</strong>.</li>
         </ul>
       ),
       type: "todo",

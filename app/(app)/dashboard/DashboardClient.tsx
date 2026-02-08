@@ -1,143 +1,143 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 import VehicleSwitcher from '@/components/vehicle/VehicleSwitcher';
-import FillModal from '@/components/fill/forms/FillModal';
+import FillFormModal from '@/components/fill/forms/FillAddForm';
 import Charts from '@/components/dashboard/Charts';
 import LatestFills from '@/components/dashboard/LatestFills';
 import Icon from '@/components/ui/Icon';
 
 import DashboardLandingPage from './DashboardLandingPage';
-import DashboardAddFills from './DashboardAddFills';
-
 import { useVehicles } from '@/contexts/VehicleContext';
 import { useFills } from '@/contexts/FillContext';
 
-/* -------------------------------------------------------------------------- */
-/*                               Add fill CTA                                 */
-/* -------------------------------------------------------------------------- */
-
-function AddFillClient() {
-  const { vehicles } = useVehicles();
-  const [open, setOpen] = useState(false);
-
+/* ---------------- Loader léger ---------------- */
+function LoaderInline() {
   return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        className="px-4 py-3 bg-custom-2 text-white rounded-lg hover:bg-custom-2-hover flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3"
-      >
-        <Icon name="add" size={20} className="invert dark:invert-0" />
-        <span className="font-medium">Ajouter un plein</span>
-      </button>
-
-      <FillModal
-        open={open}
-        onClose={() => setOpen(false)}
-        vehicles={vehicles}
-      />
-    </>
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary" />
+    </div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*                              Dashboard client                               */
-/* -------------------------------------------------------------------------- */
-
-export default function DashboardClient() {
-  const {
-    vehicles,
-    selectedVehicleId,
-    setSelectedVehicleId,
-    loading: vehiclesLoading,
-    error: vehiclesError,
-  } = useVehicles();
-
-  const {
-    fills,
-    setVehicles: setFillsVehicles,
-    setSelectedVehicleIds,
-  } = useFills();
-
-  /* ------------------------ Local selected vehicle ------------------------- */
-  const [localSelectedVehicleId, setLocalSelectedVehicleId] = useState<number | null>(
-    () => selectedVehicleId ?? vehicles[0]?.vehicle_id ?? null
+/* ---------------- Add Fill Button ---------------- */
+function AddFillClient({ onOpen }: { onOpen: () => void }) {
+  return (
+    <button
+      onClick={onOpen}
+      className="px-4 py-3 bg-custom-2 text-white rounded-lg hover:bg-custom-2-hover flex items-center gap-2 transition-all duration-200 sm:px-6 sm:py-3 hover:cursor-pointer"
+    >
+      <Icon name="add" size={20} className="invert dark:invert-0" />
+      <span className="font-medium">Ajouter un plein</span>
+    </button>
   );
+}
 
-  /* --------------------------- Context synchronisation --------------------- */
+/* ---------------- Dashboard Main ---------------- */
+export default function DashboardClient() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const { vehicles, selectedVehicleId, setSelectedVehicleId } = useVehicles();
+  const { fills, setVehicles: setFillsVehicles, setSelectedVehicleIds: setFillSelectedVehicleIds } = useFills();
+
+  const [selectedVehicleIds, setSelectedVehicleIds] = useState<number[]>([]);
+  const initialized = useRef(false);
+
+  const [fillModalOpen, setFillModalOpen] = useState(false);
+  const [fillVehicleId, setFillVehicleId] = useState<number | null>(null);
+
+  /* ---------------- URL deep-link ---------------- */
   useEffect(() => {
+    if (searchParams.get('addFill') === 'true') {
+      setFillModalOpen(true);
+      const vid = searchParams.get('vehicleId');
+      if (vid) setFillVehicleId(Number(vid));
+      router.replace('/dashboard', { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  /* ---------------- Initialisation contexts ---------------- */
+  useEffect(() => {
+    if (initialized.current || !vehicles.length) return;
+
     setFillsVehicles(vehicles);
 
-    if (vehicles.length === 1 && !selectedVehicleId) {
-      const id = vehicles[0].vehicle_id;
-      setLocalSelectedVehicleId(id);
-      setSelectedVehicleIds([id]);
-      setSelectedVehicleId(id);
-    }
-  }, [
-    vehicles,
-    selectedVehicleId,
-    setFillsVehicles,
-    setSelectedVehicleIds,
-    setSelectedVehicleId,
-  ]);
+    // ✅ Tous les véhicules sélectionnés par défaut
+    const initialIds = vehicles.map(v => v.vehicle_id);
+    setSelectedVehicleIds(initialIds);
+    setFillSelectedVehicleIds(initialIds);
+    setSelectedVehicleId(initialIds[0] ?? null);
 
-  /* --------------------------- Vehicle switcher ---------------------------- */
-  const handleVehicleChange = (vehicleIds: number[]) => {
-    const id = vehicleIds[0] ?? null;
+    initialized.current = true;
+  }, [vehicles, setFillsVehicles, setFillSelectedVehicleIds, setSelectedVehicleId]);
 
-    setLocalSelectedVehicleId(id);      // UI
-    setSelectedVehicleIds(vehicleIds);  // FillContext
-    setSelectedVehicleId(id);           // VehicleContext
+  /* ---------------- Vehicle switch handler ---------------- */
+  const handleVehicleChange = (ids: number[]) => {
+    setSelectedVehicleIds(ids);
+    setFillSelectedVehicleIds(ids);
+    setSelectedVehicleId(ids[0] ?? null);
   };
 
-  /* ------------------------------- Loading --------------------------------- */
-  if (vehiclesLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
-      </div>
-    );
-  }
+  /* ----------------- States & Render ----------------- */
+  if (!vehicles.length) return <DashboardLandingPage />;
 
-  /* ---------------------------- Empty states ------------------------------- */
-  if (vehicles.length === 0) {
-    return <DashboardLandingPage />;
-  }
-
-  if (vehicles.length > 0 && fills.length === 0) {
-    return <DashboardAddFills />;
-  }
-
-  /* ---------------------------- Normal dashboard --------------------------- */
   return (
     <>
-      {vehiclesError && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-700">
-          {vehiclesError}
-        </div>
-      )}
-
       <section>
-        {/* Header actions */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
-          <VehicleSwitcher
-            vehicles={vehicles}
-            selectedVehicleIds={
-              localSelectedVehicleId !== null ? [localSelectedVehicleId] : []
-            }
-            onVehicleChange={handleVehicleChange}
-          />
-          <AddFillClient />
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full items-start">
+          {vehicles.length > 1 ? (
+            <VehicleSwitcher
+              vehicles={vehicles}
+              value={selectedVehicleIds}
+              onChange={handleVehicleChange}
+            />
+          ) : vehicles.length === 1 ? (
+            <div className="px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 font-medium">
+              {vehicles[0].name || `${vehicles[0].make} ${vehicles[0].model}`}
+            </div>
+          ) : null}
+
+          {/* Add Fill Button */}
+          <div className="flex flex-col">
+            <AddFillClient onOpen={() => setFillModalOpen(true)} />
+
+            {/* Hint aligné sous le bouton */}
+            {selectedVehicleIds.length === 1 &&
+             fills !== undefined &&
+             !fills.some(f => f.vehicle_id === selectedVehicleIds[0]) && (
+              <div className="flex flex-col items-center mt-2">
+                <Icon name="arrow-up" size={24} className="text-gray-400 dark:invert-0 animate-bounce" />
+                <p className="text-gray-800 dark:text-gray-100 font-medium text-lg sm:text-xl animate-pulse">
+                  Cliquez sur le bouton « Ajouter un plein » pour commencer.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Content */}
         <div className="mt-6 grid grid-cols-1 gap-6">
           <Charts />
-          <LatestFills />
+
+          {/* LatestFills si plusieurs véhicules ou pleins existants */}
+          {selectedVehicleIds.length !== 1 ||
+           (fills !== undefined && fills.some(f => selectedVehicleIds.includes(f.vehicle_id))) ? (
+            fills === undefined ? <LoaderInline /> : <LatestFills />
+          ) : null}
         </div>
       </section>
+
+      {/* Modal Fill */}
+      <FillFormModal
+        isOpen={fillModalOpen}
+        onClose={() => setFillModalOpen(false)}
+        vehicles={vehicles}
+        initialVehicleId={fillVehicleId ?? undefined}
+      />
     </>
   );
 }

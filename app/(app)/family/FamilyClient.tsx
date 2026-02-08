@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { FamilyForm, JoinFamilyForm } from '@/components/family';
+import { AddFamilyForm, JoinFamilyForm } from '@/components/family';
 import { FamilyMemberList } from '@/components/family/FamilyMemberList';
 import { InviteFamilyModal } from '@/components/family/InviteFamilyModal';
 import { RenameFamilyModal } from '@/components/family/RenameFamilyModal';
@@ -433,7 +433,7 @@ export default function FamilyClient() {
                 </div>
               </div>
 
-              <FamilyForm onFamilyCreated={handleFamilyCreated} />
+              <AddFamilyForm onFamilyCreated={handleFamilyCreated} />
             </div>
           </div>
 
