@@ -16,8 +16,8 @@ export default function PatchnotesSection() {
       details: (
         <ul className="list-disc list-inside space-y-1">
           <li>Page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">Historique</Link> : 
-          Amélioration de l'affichage mobile des filtres. Ajout des kilomètres parcourus dans les statistiques. </li>
-          <li> Rework visuel de l'édition d'un plein, support mobile.</li>
+          Amélioration de l&apos;affichage mobile des filtres. Ajout des kilomètres parcourus dans les statistiques. </li>
+          <li> Rework visuel de l&apos;édition d&apos;un plein, support mobile.</li>
         </ul>
       ),
       type: "minor",
