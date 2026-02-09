@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useFills } from '@/contexts/FillContext';
 import { FillFormData } from '@/types/fill';
 import { VehicleMinimal } from '@/types/vehicle';
-import { Modal } from '@/components/ui/Modal'; // import de ton Modal
+import { Modal } from '@/components/ui/Modal';
 
 export interface FillFormProps {
   isOpen: boolean;

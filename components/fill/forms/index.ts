@@ -3,4 +3,3 @@
 
 export { default as FillForm } from './FillAddForm';
 export { default as FillEditForm } from './FillEditForm';
-export { default as FillModal } from './FillModal';

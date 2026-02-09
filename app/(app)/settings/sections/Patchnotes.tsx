@@ -9,6 +9,19 @@ export default function PatchnotesSection() {
 
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
+   {
+      version: "1.0.2",
+      date: "09 Février 2026",
+      summary: "Améliorations mineures.", 
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>Page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">Historique</Link> : 
+          Amélioration de l'affichage mobile des filtres. Ajout des kilomètres parcourus dans les statistiques. </li>
+          <li> Rework visuel de l'édition d'un plein, support mobile.</li>
+        </ul>
+      ),
+      type: "minor",
+    },
     {
       version: "1.0.1",
       date: "08 Février 2026",
@@ -64,7 +77,7 @@ export default function PatchnotesSection() {
       version: "1.0.0",
       date: "04 Février 2026",
       summary:
-        "Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l&apos;expérience utilisateur.",
+        "Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l'expérience utilisateur.",
       details: (
         <div className="space-y-6">
           {/* Frontend / UX */}
@@ -137,7 +150,6 @@ export default function PatchnotesSection() {
         <ul className="list-disc list-inside space-y-1">
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">Dashboard & Véhicules</li>
           <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
-          <li>Page <strong>Consommations</strong> : Ajouter l&apos;icône de tri et afficher les KM parcourus.</li>
           <li>Bug fix : charts ne fonctionnent pas correctement en multi sélection de véhicules.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>

@@ -86,6 +86,14 @@ export default function FillHistoryList({ vehicles }: FillHistoryListProps) {
   // --- Statistics ---
   const totalLiters = useMemo(() => filteredFills.reduce((sum, f) => sum + (f.liters ?? 0), 0), [filteredFills]);
   const totalCost = useMemo(() => filteredFills.reduce((sum, f) => sum + (f.amount ?? 0), 0), [filteredFills]);
+  const totalKilometers = useMemo(() => {
+    // Calculer les kilomètres parcourus en comparant l'odomètre min et max des pleins
+    if (filteredFills.length === 0) return 0;
+    const odometers = filteredFills.map(f => f.odometer).filter(o => o !== null) as number[];
+    if (odometers.length === 0) return 0;
+    return Math.max(...odometers) - Math.min(...odometers);
+  }, [filteredFills]);
+
   const avgPricePerLiter = totalLiters > 0 ? totalCost / totalLiters : 0;
 
   // --- Handlers édition ---
@@ -188,22 +196,26 @@ export default function FillHistoryList({ vehicles }: FillHistoryListProps) {
 
       {/* Statistics */}
       {filteredFills.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
           <div className="bg-custom-1 p-3 rounded">
             <div className="text-gray-100 text-sm">Pleins totaux</div>
-            <div className="font-medium text-gray-100">{filteredFills.length}</div>
+            <div className="font-medium text-xl text-gray-100">{filteredFills.length}</div>
           </div>
           <div className="bg-custom-1 p-3 rounded">
             <div className="text-gray-100 text-sm">Litres totaux</div>
-            <div className="font-medium text-gray-100">{totalLiters.toFixed(1)} L</div>
+            <div className="font-medium text-xl text-gray-100">{totalLiters.toFixed(1)} L</div>
           </div>
           <div className="bg-custom-1 p-3 rounded">
             <div className="text-gray-100 text-sm">Coût total</div>
-            <div className="font-medium text-gray-100">{formatCurrency(totalCost)}</div>
+            <div className="font-medium text-xl text-gray-100">{formatCurrency(totalCost)}</div>
+          </div>
+          <div className="bg-custom-1 p-3 rounded">
+            <div className="text-gray-100 text-sm">KM parcourus</div>
+            <div className="font-medium text-xl text-gray-100">{totalKilometers} km</div>
           </div>
           <div className="bg-custom-1 p-3 rounded">
             <div className="text-gray-100 text-sm">Prix moyen/L</div>
-            <div className="font-medium text-gray-100">{avgPricePerLiter.toFixed(3)} €/L</div>
+            <div className="font-medium text-xl text-gray-100">{avgPricePerLiter.toFixed(3)} €/L</div>
           </div>
         </div>
       )}

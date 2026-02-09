@@ -1,14 +1,7 @@
-/**
- * @file components/fill/FillEditForm.tsx
- * @fileoverview Inline edit form for fuel fill-up records.
- * 
- * This component provides an inline editing interface for modifying
- * existing fill-up records.
- */
-
 'use client';
 
 import { Fill } from '@/types/fill';
+import Icon from '@/components/ui/Icon';
 
 export interface FillEditFormProps {
   fill: Fill;
@@ -19,11 +12,6 @@ export interface FillEditFormProps {
   saving: boolean;
 }
 
-/**
- * FillEditForm Component
- * 
- * Inline form for editing existing fill-up records.
- */
 export default function FillEditForm({
   fill,
   editData,
@@ -32,142 +20,139 @@ export default function FillEditForm({
   onCancelEdit,
   saving,
 }: FillEditFormProps) {
-  /**
-   * Handle field changes
-   */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
-      const checkbox = e.target as HTMLInputElement;
-      onChangeField(name, checkbox.checked);
-    } else {
-      onChangeField(name, value);
+
+  const v = <T,>(key: keyof Fill): T =>
+    (editData[key] as T) ?? (fill[key] as T);
+
+  /* ---------- recalculs croisés ---------- */
+
+  const updateFromLiters = (liters?: number) => {
+    const amount = v<number>('amount');
+    if (liters && amount && liters > 0) {
+      onChangeField('price_per_liter', Number((amount / liters).toFixed(3)));
     }
   };
 
-  /**
-   * Calculate price per liter automatically
-   */
-  const calculatePricePerLiter = () => {
-    const liters = editData.liters || fill.liters || 0;
-    const amount = editData.amount || fill.amount || 0;
-    
-    if (liters > 0 && amount > 0) {
-      const pricePerLiter = amount / liters;
-      onChangeField('price_per_liter', pricePerLiter.toFixed(3));
+  const updateFromPrice = (price?: number) => {
+    const amount = v<number>('amount');
+    if (price && amount && price > 0) {
+      onChangeField('liters', Number((amount / price).toFixed(2)));
     }
   };
 
   return (
-    <div className="space-y-3">
-      {/* Date */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Date</label>
-        <input
-          type="date"
-          name="date"
-          value={editData.date || fill.date}
-          onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
-        />
-      </div>
+    <div className="bg-white dark:bg-gray-800 px-4 py-4 rounded-lg border border-custom-1/40 dark:border-custom-1-dark/40 space-y-4">
 
-      {/* Odometer */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Kilométrage</label>
-        <input
-          type="number"
-          name="odometer"
-          placeholder="Kilomètres"
-          value={editData.odometer || fill.odometer || ''}
-          onChange={handleChange}
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
-        />
-      </div>
+      {/* Ligne principale */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
 
-      {/* Liters */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Litres</label>
-        <input
-          type="number"
-          step="0.01"
-          name="liters"
-          placeholder="Litres"
-          value={editData.liters || fill.liters || ''}
-          onChange={(e) => {
-            handleChange(e);
-            calculatePricePerLiter();
-          }}
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 border border-gray-300 dark:border-gray-700"
-        />
-      </div>
+        {/* Date + Odomètre */}
+        <div className="lg:col-span-3 space-y-2">
+          <input
+            type="date"
+            value={v<string>('date')}
+            onChange={(e) => onChangeField('date', e.target.value)}
+            className="w-full text-lg font-bold bg-transparent border-b-2 border-custom-1 focus:outline-none"
+          />
 
-      {/* Amount */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Montant (€)</label>
-        <input
-          type="number"
-          step="0.01"
-          name="amount"
-          placeholder="Montant total"
-          value={editData.amount || fill.amount || ''}
-          onChange={(e) => {
-            handleChange(e);
-            calculatePricePerLiter();
-          }}
-          className="w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-blue-500 border border-gray-300 dark:border-gray-700"
-        />
-      </div>
+          <div className="relative">
+            <input
+              type="number"
+              value={v<number>('odometer') ?? ''}
+              onChange={(e) =>
+                onChangeField('odometer', e.target.value ? Number(e.target.value) : null)
+              }
+              className="w-full pr-10 bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none"
+              placeholder="Odomètre"
+            />
+            <span className="absolute right-2 bottom-1 text-sm text-gray-500">km</span>
+          </div>
+        </div>
 
-      {/* Price per Liter (read-only, calculated) */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Prix au litre (€)</label>
-        <input
-          type="number"
-          step="0.001"
-          name="price_per_liter"
-          placeholder="Prix/litre"
-          value={editData.price_per_liter || fill.price_per_liter || ''}
-          onChange={handleChange}
-          readOnly
-          className="w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-3 py-2 rounded outline-none cursor-not-allowed border border-gray-300 dark:border-gray-600"
-        />
+        {/* Montant */}
+        <div className="lg:col-span-2">
+          <div className="text-xs text-gray-500 mb-1">Montant</div>
+          <div className="relative">
+            <input
+              type="number"
+              step="0.01"
+              value={v<number>('amount') ?? ''}
+              onChange={(e) =>
+                onChangeField('amount', e.target.value ? Number(e.target.value) : null)
+              }
+              className="w-full pr-8 text-lg font-bold text-custom-1 dark:text-custom-1-dark bg-transparent border-b border-gray-300 focus:outline-none"
+            />
+            <span className="absolute right-2 bottom-1 text-sm text-gray-500">€</span>
+          </div>
+        </div>
+
+        {/* Prix / L */}
+        <div className="lg:col-span-2">
+          <div className="text-xs text-gray-500 mb-1">Prix / L</div>
+          <div className="relative">
+            <input
+              type="number"
+              step="0.001"
+              value={v<number>('price_per_liter') ?? ''}
+              onChange={(e) => {
+                const price = Number(e.target.value);
+                onChangeField('price_per_liter', price);
+                updateFromPrice(price);
+              }}
+              className="w-full pr-8 bg-transparent border-b border-gray-300 focus:outline-none"
+            />
+            <span className="absolute right-2 bottom-1 text-sm text-gray-500">€/L</span>
+          </div>
+        </div>
+
+        {/* Litres */}
+        <div className="lg:col-span-2">
+          <div className="text-xs text-gray-500 mb-1">Litres</div>
+          <div className="relative">
+            <input
+              type="number"
+              step="0.01"
+              value={v<number>('liters') ?? ''}
+              onChange={(e) => {
+                const liters = Number(e.target.value);
+                onChangeField('liters', liters);
+                updateFromLiters(liters);
+              }}
+              className="w-full pr-8 bg-transparent border-b border-gray-300 focus:outline-none"
+            />
+            <span className="absolute right-2 bottom-1 text-sm text-gray-500">L</span>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="lg:col-span-3 flex justify-end gap-2 pt-2">
+          <button
+            onClick={onCancelEdit}
+            disabled={saving}
+            className="px-3 py-2 rounded text-sm bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 cursor-pointer"
+          >
+            Annuler
+          </button>
+
+          <button
+            onClick={onSaveEdit}
+            disabled={saving}
+            className="px-4 py-2 rounded text-sm bg-custom-1 text-white hover:bg-custom-1/90 flex items-center gap-2 cursor-pointer"
+          >
+            <Icon name="check" className='invert dark:invert-0' size={14} />
+            {saving ? 'Sauvegarde…' : 'Valider'}
+          </button>
+        </div>
       </div>
 
       {/* Notes */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Notes</label>
-        <textarea
-          name="notes"
-          placeholder="Notes supplémentaires"
-          value={editData.notes || fill.notes || ''}
-          onChange={handleChange}
-          rows={3}
-          className="w-full bg-white dark:bg-gray-950 text-gray-800 dark:text-white px-3 py-2 rounded outline-none focus:ring-1 focus:ring-indigo-500 resize-none border border-gray-300 dark:border-gray-700"
-        />
-      </div>
-
-      {/* Form Actions */}
-      <div className="flex gap-3 pt-4">
-        <button
-          type="button"
-          onClick={onCancelEdit}
-          disabled={saving}
-          className="flex-1 px-4 py-2 bg-gray-400 dark:bg-gray-600 text-white rounded hover:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
-        >
-          Annuler
-        </button>
-        
-        <button
-          type="button"
-          onClick={onSaveEdit}
-          disabled={saving}
-          className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
-        >
-          {saving ? 'Enregistrement...' : 'Enregistrer'}
-        </button>
-      </div>
+      <textarea
+        value={v<string>('notes') ?? ''}
+        onChange={(e) => onChangeField('notes', e.target.value)}
+        placeholder="📝 Notes…"
+        rows={2}
+        className="w-full text-sm bg-gray-50 dark:bg-gray-700 rounded p-2 resize-none focus:outline-none"
+      />
     </div>
   );
 }
