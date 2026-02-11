@@ -110,7 +110,7 @@ export default function JoinFamilyClient() {
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow p-6 text-center">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Vous faites déjà partie d'une famille
+            Vous faites déjà partie d&apos;une famille
           </h2>
           <p className="mt-3 text-gray-600 dark:text-gray-400">
             Vous ne pouvez pas rejoindre une autre famille.
