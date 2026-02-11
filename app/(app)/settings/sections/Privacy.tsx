@@ -30,31 +30,35 @@ export default function PrivacySection() {
     }
   };
 
-  const handleAccountDeletion = async () => {
-    if (deleteConfirmation !== "SUPPRIMER MON COMPTE") {
-      alert("Veuillez confirmer la suppression en tapant 'SUPPRIMER MON COMPTE'");
+const handleAccountDeletion = async () => {
+  if (deleteConfirmation !== "SUPPRIMER MON COMPTE") {
+    alert("Veuillez confirmer la suppression en tapant 'SUPPRIMER MON COMPTE'");
+    return;
+  }
+
+  setDeletingAccount(true);
+  setDeleteSuccess(null);
+
+  try {
+    const res = await fetch("/api/auth/delete-account", { method: "POST" });
+    const body = await res.json();
+
+    if (!res.ok) {
+      setDeleteSuccess(body.error || "Erreur lors de la suppression du compte");
       return;
     }
 
-    setDeletingAccount(true);
-    setDeleteSuccess(null);
+    setDeleteSuccess("Votre compte a été supprimé avec succès. Vous serez redirigé vers la page d'accueil.");
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setDeleteSuccess(
-        "Votre compte a été supprimé avec succès. Vous allez être redirigé."
-      );
-      // router.push('/auth/not-identified');
-    } catch {
-      setDeleteSuccess(
-        "Erreur lors de la suppression du compte. Veuillez réessayer."
-      );
-    } finally {
-      setDeletingAccount(false);
-      setShowDeleteConfirm(false);
-      setDeleteConfirmation("");
-    }
-  };
+    setTimeout(() => window.location.href = "/", 3000);
+  } catch {
+    setDeleteSuccess("Erreur lors de la suppression du compte. Veuillez réessayer.");
+  } finally {
+    setDeletingAccount(false);
+    setShowDeleteConfirm(false);
+    setDeleteConfirmation("");
+  }
+};
 
   return (
     <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-8">

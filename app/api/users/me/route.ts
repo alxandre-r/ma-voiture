@@ -44,7 +44,7 @@ export async function GET() {
         {
           id: user.id,
           email: user.email,
-          full_name: null,
+          name: null,
           hasFamily,
         },
         { status: 200 }
@@ -55,7 +55,7 @@ export async function GET() {
       {
         id: profile.id,
         email: profile.email,
-        full_name: profile.name,
+        name: profile.name,
         hasFamily,
       },
       { status: 200 }

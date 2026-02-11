@@ -11,6 +11,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 
 export default function SignUpForm() {
   const supabase = createSupabaseBrowserClient();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -27,13 +28,13 @@ export default function SignUpForm() {
       const res = await fetch("/api/auth/sign-up", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const body = await res.json();
       if (!res.ok) {
         setIsError(true);
-        setMessage(body.error || "Erreur lors de l&apos;inscription");
+        setMessage(body.error || "Erreur lors de l'inscription");
         setLoading(false);
         return;
       }
@@ -66,6 +67,15 @@ export default function SignUpForm() {
           {message}
         </p>
       )}
+
+      <input
+        type="text"
+        required
+        placeholder="Nom ou pseudo"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
+      />
 
       <input
         type="email"
