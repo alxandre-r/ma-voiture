@@ -9,6 +9,18 @@ export default function PatchnotesSection() {
 
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
+      {
+      version: "1.0.3",
+      date: "11 Février 2026",
+      summary: "Améliorations des fonctionnalités liées au compte utilisateur.", 
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>A l&apos;inscription, ajout d&apos;un champ pour le nom de l&apos;utilisateur. Ce nom est utilisé pour les fonctionnalités de famille et modifiable depuis la page Paramètres &gt; Mon compte.</li>
+          <li>Possibilité de supprimer son compte depuis la page Paramètres &gt; Confidentialité. Cette action supprime l&apos;utilisateur de la base de données et invalide sa session.</li>
+        </ul>
+      ),
+      type: "minor",
+    },
    {
       version: "1.0.2",
       date: "09 Février 2026",
@@ -77,7 +89,7 @@ export default function PatchnotesSection() {
       version: "1.0.0",
       date: "04 Février 2026",
       summary:
-        "Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l'expérience utilisateur.",
+        "Introduction des patchnotes. Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l'expérience utilisateur.",
       details: (
         <div className="space-y-6">
           {/* Frontend / UX */}
@@ -149,14 +161,10 @@ export default function PatchnotesSection() {
       details: (
         <ul className="list-disc list-inside space-y-1">
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">Dashboard & Véhicules</li>
-          <li>Améliorer l&apos;affichage du <strong>FillEdit</strong>.</li>
           <li>Bug fix : charts ne fonctionnent pas correctement en multi sélection de véhicules.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>
           <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">API & Backend</li>
-          <li>Simplification du code de <code>api/vehicles/get</code> permettant de get les véhicules de l&apos;user et des membres de la famille en une seule requête.</li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
           <li>Page <strong>Famille</strong> : Restreindre l&apos;invitation au propriétaire uniquement.</li>
