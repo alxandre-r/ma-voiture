@@ -72,11 +72,10 @@ const handleChange = (
 ) => {
   const { name, value, type } = e.target;
 
-  let parsedValue: any = value;
-
-  // ✅ FIX : convertir vehicle_id en number
+  // convertir vehicle_id en number
   if (name === 'vehicle_id') {
-    parsedValue = value === '' ? 0 : Number(value);
+    setFormData({ ...formData, vehicle_id: parseInt(value, 10) });
+    return;
   }
 
   if (type === 'checkbox') {
@@ -84,7 +83,7 @@ const handleChange = (
     return;
   }
 
-  const newFormData = { ...formData, [name]: parsedValue };
+  const newFormData = { ...formData, [name]: value };
 
   // --- calculs auto ---
   const liters = parseFloat(newFormData.liters);
