@@ -40,16 +40,17 @@ export default function VehicleForm({
     make: '',
     model: '',
     year: '',
-    fuel_type: '',
+    fuel_type: 'Essence',
     odometer: '',
   });
 
   /* ---------------------------- helpers ---------------------------- */
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
 
   const isFormValid = useMemo(() => {
     if (!formData.make.trim()) return false;
@@ -98,7 +99,7 @@ export default function VehicleForm({
         make: '',
         model: '',
         year: '',
-        fuel_type: '',
+        fuel_type: 'Essence',
         odometer: '',
       });
 
@@ -210,11 +211,10 @@ export default function VehicleForm({
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Carburant
           </label>
-          <input
+          <select
             name="fuel_type"
             value={formData.fuel_type}
             onChange={handleChange}
-            placeholder="Essence"
             className="
               w-full rounded-md border border-gray-300 dark:border-gray-700
               bg-white dark:bg-gray-800 px-3 py-3 text-sm
@@ -222,7 +222,12 @@ export default function VehicleForm({
               hover:border-gray-400 dark:hover:border-gray-600
               transition-colors
             "
-          />
+          >
+            <option value="Essence">Essence</option>
+            <option value="Diesel">Diesel</option>
+            <option value="Électrique" className="cursor-not-allowed" disabled>Électrique (à venir)</option>
+            <option value="Hybride" className="cursor-not-allowed" disabled>Hybride (à venir)</option>
+          </select>
         </div>
       </div>
 
