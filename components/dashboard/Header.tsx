@@ -5,9 +5,10 @@ import { motion } from "framer-motion";
 import VehicleSelector from "./VehicleSelector";
 import PeriodSelector from "./PeriodSelector";
 import Icon from "@/components/ui/Icon";
+import { VehicleMinimal } from "@/types/vehicle";
 
 type DashboardHeaderProps = {
-  vehicles: any[];
+  vehicles: VehicleMinimal[];
   selectedVehicleIds: number[];
   onVehicleChange: (ids: number[]) => void;
   onAddFill: () => void;

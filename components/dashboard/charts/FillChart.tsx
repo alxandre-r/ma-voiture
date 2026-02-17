@@ -69,15 +69,8 @@ export default function FillChart({ vehicles }: FillChartProps) {
 
   const visibleBars = useMemo(() => barsWithVisibility.filter(b => b.isVisible), [barsWithVisibility]);
 
-  if (!barsWithVisibility.length) {
-    return (
-      <div className="text-center py-8 text-gray-400">
-        <p>Aucune donnée disponible pour le graphique.</p>
-      </div>
-    );
-  }
-
   // ---- Dates min/max pour visible bars uniquement ----
+  // Toujours appeler le hook, mais gérer le cas vide
   const { minDate, maxDate } = useDateRange(visibleBars);
 
   const getX = (date: string | Date) =>
@@ -225,8 +218,15 @@ export default function FillChart({ vehicles }: FillChartProps) {
     return lines;
   }, [maxStackAmount]);
 
-
   const monthTicks = useMonthTicks(minDate, maxDate, getX, mobile, visibleBars);
+
+  if (!barsWithVisibility.length) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <p>Aucune donnée disponible pour le graphique.</p>
+      </div>
+    );
+  }
 
   // ---- Render ----
   return (

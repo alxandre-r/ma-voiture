@@ -79,15 +79,8 @@ export default function OdometerChart({ vehicles }: OdometerChartProps) {
       .filter(v => v.points.length > 0);
   }, [vehicles, selectedPeriod, mode]);
 
-  if (!processedVehicles.length) {
-    return (
-      <div className="text-center py-8 text-gray-400">
-        <p>Aucune donnée disponible pour le graphique.</p>
-      </div>
-    );
-  }
-
   const allPoints = processedVehicles.flatMap(v => v.points);
+  // Toujours appeler le hook, mais gérer le cas vide
   const { minDate, maxDate } = useDateRange(allPoints);
 
   const minValue = Math.min(...allPoints.map(p => p.odometer));
@@ -104,6 +97,14 @@ export default function OdometerChart({ vehicles }: OdometerChartProps) {
     padding.top + (1 - (value - minValue) / range) * innerHeight;
 
   const monthTicks = useMonthTicks(minDate, maxDate, getX, mobile);
+
+  if (!processedVehicles.length) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <p>Aucune donnée disponible pour le graphique.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full mt-6 relative bg-white dark:bg-gray-800 rounded-xl py-4 shadow-sm dark:shadow-xl px-2 lg:px-4">
