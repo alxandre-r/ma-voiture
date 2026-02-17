@@ -1,254 +1,367 @@
-/**
- * @file components/fill/OdometerChart.tsx
- * @fileoverview Professional, responsive line chart for odometer evolution.
- *
- * Features:
- *  - Smooth curve using Catmull-Rom -> cubic Bezier conversion
- *  - Points drawn as HTML elements (ensures perfect circles on any scale)
- *  - Responsive (ResizeObserver) and recalculation on container resize
- *  - Tooltip on hover showing value + month
- *  - Axis labels (Y left, X bottom), clean spacing and layout
- *
- * Usage:
- *  <OdometerChart data={[{ month: "2025-01", odometer: 12345 }, ... ]} />
- *
- * Notes:
- *  - Expects data ordered chronologically.
- *  - Styling uses Tailwind classes; adapt as needed.
- */
-
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useFills } from "@/contexts/FillContext";
+import { useContainerSize, useMonthTicks, useDateRange, useMobileDetection, Padding } from "./ChartHelper";
 
 interface OdometerPoint {
-  month: string;
+  date: string;
   odometer: number;
 }
 
+interface VehicleSeries {
+  vehicleId: string;
+  vehicleName: string;
+  color?: string;
+  points: OdometerPoint[];
+}
+
 interface OdometerChartProps {
-  data: OdometerPoint[];
+  vehicles: VehicleSeries[];
 }
 
-const MONTH_NAMES = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"];
+export default function OdometerChart({ vehicles }: OdometerChartProps) {
+  const { selectedPeriod } = useFills();
+  const [size, containerRef] = useContainerSize({ width: 600, height: 240 });
+  const [mode, setMode] = useState<"normal" | "comparatif">("normal");
+  const [hoveredPoint, setHoveredPoint] = useState<{
+    x: number;
+    y: number;
+    label: string;
+  } | null>(null);
 
-/** Convert YYYY-MM to "Mon YY" */
-function formatMonthShort(monthString: string) {
-  const parts = monthString.split("-");
-  if (parts.length >= 2 && parts[0].length === 4) {
-    const year = parts[0].slice(2);
-    const m = parseInt(parts[1], 10);
-    return `${MONTH_NAMES[m - 1]} ${year}`;
-  }
-  return monthString;
-}
+  const padding: Padding = { top: 30, bottom: 50, left: 60, right: 20 };
+  const containerHeight = 160;
+  const innerWidth = size.width - padding.left - padding.right;
+  const innerHeight = containerHeight;
+  const mobile = useMobileDetection();
 
-/**
- * Convert an array of points to a smooth cubic-bezier path using Catmull-Rom.
- * Returns an SVG path `d` string.
- *
- * Points are given as [{x,y}, ...] in pixel coordinates.
- */
-function catmullRomToBezier(points: { x: number; y: number }[]) {
-  if (points.length < 2) return "";
+  // --- Filtrage période
+  const processedVehicles = useMemo(() => {
+    const now = new Date();
+    let startDate: Date;
 
-  // For n points, build a path that starts at p0 and uses cubic bezier segments
-  const dParts: string[] = [];
-  dParts.push(`M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`);
+    switch (selectedPeriod) {
+      case "3m":
+        startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+        break;
+      case "6m":
+        startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+        break;
+      case "12m":
+        startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+        break;
+      default:
+        startDate = new Date(0);
+    }
 
-  // When there are only two points, just draw a line
-  if (points.length === 2) {
-    dParts.push(`L ${points[1].x.toFixed(2)} ${points[1].y.toFixed(2)}`);
-    return dParts.join(" ");
-  }
+    return vehicles
+      .map(v => {
+        const filtered = v.points.filter(p => {
+          const d = new Date(p.date);
+          return d >= startDate && d <= now;
+        });
 
-  // Catmull-Rom to Cubic Bezier for each segment
-  for (let i = 0; i < points.length - 1; i++) {
-    // p0 p1 p2 p3 for segment between p1 and p2
-    const p0 = points[i - 1] ?? points[i];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[i + 2] ?? p2;
+        if (mode === "comparatif" && filtered.length > 0) {
+          const base = filtered[0].odometer;
+          return {
+            ...v,
+            points: filtered.map(p => ({
+              ...p,
+              odometer: p.odometer - base,
+            })),
+          };
+        }
 
-    // tension 0.5 gives a good smooth curve
-    const t = 0.5;
+        return { ...v, points: filtered };
+      })
+      .filter(v => v.points.length > 0);
+  }, [vehicles, selectedPeriod, mode]);
 
-    const cp1x = p1.x + (p2.x - p0.x) * t / 6;
-    const cp1y = p1.y + (p2.y - p0.y) * t / 6;
-
-    const cp2x = p2.x - (p3.x - p1.x) * t / 6;
-    const cp2y = p2.y - (p3.y - p1.y) * t / 6;
-
-    dParts.push(
-      `C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`
+  if (!processedVehicles.length) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <p>Aucune donnée disponible pour le graphique.</p>
+      </div>
     );
   }
 
-  return dParts.join(" ");
-}
+  const allPoints = processedVehicles.flatMap(v => v.points);
+  const { minDate, maxDate } = useDateRange(allPoints);
 
-export default function OdometerChart({ data }: OdometerChartProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [size, setSize] = useState({ width: 600, height: 220 });
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const minValue = Math.min(...allPoints.map(p => p.odometer));
+  const maxValue = Math.max(...allPoints.map(p => p.odometer));
+  const range = Math.max(1, maxValue - minValue);
 
-  // chart layout configuration
-  const padding = { top: 12, bottom: 28, left: 44, right: 12 }; // px
-  const svgHeight = 140; // logical SVG inner height (pixels)
-  const pointRadius = 6; // px for HTML point element
+  const getX = (date: string | Date) =>
+    padding.left +
+    ((new Date(date).getTime() - minDate.getTime()) /
+      (maxDate.getTime() - minDate.getTime())) *
+      innerWidth;
 
-  // get min/max odometer
-  const maxOdom = data && data.length > 0 ? Math.max(...data.map((d) => d.odometer)) : 0;
-  const minOdom = data && data.length > 0 ? Math.min(...data.map((d) => d.odometer)) : 0;
-  const range = Math.max(1, maxOdom - minOdom);
+  const getY = (value: number) =>
+    padding.top + (1 - (value - minValue) / range) * innerHeight;
 
-  // Resize observer to compute container width/height
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const cr = entry.contentRect;
-        setSize({ width: Math.max(200, cr.width), height: Math.max(120, cr.height) });
-      }
-    });
-    ro.observe(el);
-    // initial sizing
-    const rect = el.getBoundingClientRect();
-    setSize({ width: Math.max(200, rect.width), height: Math.max(120, rect.height) });
-    return () => ro.disconnect();
-  }, []);
-
-  // compute inner drawing area
-  const innerWidth = Math.max(10, size.width - padding.left - padding.right);
-  const innerHeight = Math.max(10, svgHeight); // svgHeight is fixed logical drawing height
-
-  // map data -> pixel coordinates
-  const points = data.map((d, i) => {
-    const t = data.length === 1 ? 0 : i / (data.length - 1); // normalized 0..1
-    const x = padding.left + t * innerWidth;
-    const y = padding.top + (1 - (d.odometer - minOdom) / range) * innerHeight;
-    return { x, y, item: d };
-  });
-
-  // build path (smooth)
-  const pathD = catmullRomToBezier(points.map((p) => ({ x: p.x, y: p.y })));
-
-  // helper for tooltip position
-  const tooltip = hoverIndex !== null ? {
-    left: points[hoverIndex].x,
-    top: points[hoverIndex].y - 10,
-    text: `${formatMonthShort(points[hoverIndex].item.month)} — ${points[hoverIndex].item.odometer} km`
-  } : null;
+  const monthTicks = useMonthTicks(minDate, maxDate, getX, mobile);
 
   return (
-    <div className="odometer-chart mt-4 w-full">
-      <h4 className="text-sm font-medium mb-3">Évolution du kilométrage</h4>
+    <div className="w-full mt-6 relative bg-white dark:bg-gray-800 rounded-xl py-4 shadow-sm dark:shadow-xl px-2 lg:px-4">
+      <div className="flex items-center justify-between px-2 lg:px-4 mb-2">
+        {/* Titre */}
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          Evolution du kilométrage
+        </h3>
+        {/* Toggle comparatif */}
+        {processedVehicles.length > 1 && (
+        <motion.button
+          type="button"
+          role="switch"
+          aria-checked={mode === "comparatif"}
+          onClick={() =>
+            setMode(mode === "normal" ? "comparatif" : "normal")
+          }
+          whileTap={{ scale: 0.96, y: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="relative w-44 h-8 bg-gradient-to-br 
+          from-gray-50 to-gray-100 
+          dark:from-gray-800 dark:to-gray-900
+          rounded-full cursor-pointer flex items-center p-1 
+          border border-gray-100 dark:border-gray-700
+          hover:shadow-sm dark:hover:shadow-xl
+          transition-all"
+        >
+          <motion.div
+            className="absolute w-20 h-6 bg-gradient-to-tl 
+            from-custom-1 to-violet-400 
+            rounded-full shadow-md dark:shadow-xl"
+            animate={{ x: mode === "normal" ? 0 : 86 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          />
 
-      {/* container: we give it a reasonable min-height and rely on ResizeObserver */}
+          <div className="flex justify-between w-full px-3 text-xs font-medium z-20">
+            <span
+              className={
+                mode === "normal"
+                  ? "text-white"
+                  : "text-gray-700 dark:text-gray-300"
+              }
+            >
+              Total
+            </span>
+            <span
+              className={
+                mode === "comparatif"
+                  ? "text-white"
+                  : "text-gray-700 dark:text-gray-300"
+              }
+            >
+              Normalisé
+            </span>
+          </div>
+        </motion.button>
+        )}
+      </div>
+
       <div
         ref={containerRef}
-        className="relative w-full bg-transparent"
-        style={{ minHeight: 220, paddingLeft: 0, paddingRight: 0 }}
+        className="relative w-full"
+        style={{ minHeight: containerHeight + padding.top + padding.bottom }}
       >
-        {/* left Y labels */}
-        <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-gray-400 pr-2"
-             style={{ paddingTop: padding.top, paddingBottom: padding.bottom }}>
-          <span>{Math.round(maxOdom)} km</span>
-          <span>{Math.round(minOdom + range / 2)} km</span>
-          <span>{Math.round(minOdom)} km</span>
-        </div>
+        <svg width="100%" height={containerHeight + padding.top + padding.bottom}>
 
-        {/* The SVG line (fills width responsively) */}
-        <svg
-          width="100%"
-          height={svgHeight + padding.top + 6} // allow some room bottom for labels
-          viewBox={`0 0 ${size.width} ${svgHeight + padding.top + 6}`}
-          preserveAspectRatio="xMinYMin meet"
-          className="block"
-          style={{ marginLeft: 0 }}
-        >
-          {/* horizontal grid lines (3) */}
-          <g stroke="rgba(0,0,0,0.06)">
-            <line x1={padding.left} x2={size.width - padding.right} y1={padding.top} y2={padding.top} />
-            <line x1={padding.left} x2={size.width - padding.right} y1={padding.top + innerHeight / 2} y2={padding.top + innerHeight / 2} />
-            <line x1={padding.left} x2={size.width - padding.right} y1={padding.top + innerHeight} y2={padding.top + innerHeight} />
-          </g>
+          {/* Lignes véhicules morphing fluide */}
+          <AnimatePresence>
+            {processedVehicles.map((vehicle, index) => {
+              const color =
+                vehicle.color || `hsl(${(index * 120) % 360}, 70%, 50%)`;
 
-          {/* area fill under curve (optional subtle) */}
-          {pathD && (
-            <path
-              d={`${pathD} L ${points[points.length - 1].x.toFixed(2)} ${padding.top + innerHeight} L ${points[0].x.toFixed(2)} ${padding.top + innerHeight} Z`}
-              fill="rgba(242,110,82,0.08)"
-              stroke="none"
-            />
-          )}
+              const pts = vehicle.points.map(p => ({
+                id: `${vehicle.vehicleId}-${p.date}`,
+                x: getX(p.date),
+                y: getY(p.odometer),
+              }));
 
-          {/* main smooth line */}
-          <path d={pathD} fill="none" stroke="#F26E52" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+              return pts.map((point, i) => {
+                if (i === 0) return null;
 
-          {/* invisible thicker stroke to increase hover/touch target */}
-          <path d={pathD} fill="none" stroke="transparent" strokeWidth={20} strokeLinecap="round" />
+                const prev = pts[i - 1];
+                const segmentId = `${prev.id}-${point.id}`;
+                const offset = 50;
 
-          {/* X labels (we will also render HTML labels to avoid clamping issues) */}
-          {/* We keep SVG-only labels minimal; main labels below rendered in HTML for layout control */}
-        </svg>
+                return (
+                  <motion.line
+                    key={segmentId}
+                    stroke={color}
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    initial={{
+                      x1: prev.x - offset,
+                      y1: prev.y,
+                      x2: point.x - offset,
+                      y2: point.y,
+                      opacity: 0,
+                    }}
+                    animate={{
+                      x1: prev.x,
+                      y1: prev.y,
+                      x2: point.x,
+                      y2: point.y,
+                      opacity: 1,
+                    }}
+                    exit={{
+                      x1: prev.x - offset,
+                      y1: prev.y,
+                      x2: point.x - offset,
+                      y2: point.y,
+                      opacity: 0,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 140,
+                      damping: 20,
+                    }}
+                  />
+                );
+              });
+            })}
+          </AnimatePresence>
 
-        {/* HTML points positioned absolutely to stay perfectly circular */}
-        {points.map((p, idx) => (
-          <div
-            key={idx}
-            onMouseEnter={() => setHoverIndex(idx)}
-            onMouseLeave={() => setHoverIndex(null)}
-            onFocus={() => setHoverIndex(idx)}
-            onBlur={() => setHoverIndex(null)}
-            role="button"
-            tabIndex={0}
-            aria-label={`${data[idx].odometer} km on ${data[idx].month}`}
-            style={{
-              position: "absolute",
-              left: p.x - pointRadius,
-              top: p.y - pointRadius,
-              width: pointRadius * 2,
-              height: pointRadius * 2,
-              transform: "translate(0,0)",
-            }}
-          >
-            <div className="w-full h-full rounded-full bg-white border-2 border-custom-2 flex items-center justify-center">
-            </div>
-          </div>
-        ))}
+          {/* Points alignés sur ligne, animés */}
+          <AnimatePresence>
+            {processedVehicles.flatMap((vehicle) =>
+              vehicle.points.map((p) => {
+                const cx = getX(p.date);
+                const cy = getY(p.odometer);
+                const offset = 50;
+                const pointId = `${vehicle.vehicleId}-${p.date}`;
 
-        {/* X axis labels as HTML (full control) */}
-        <div className="absolute left-0 right-0 bottom-0 px-8" style={{ height: padding.bottom }}>
-          <div className="flex" style={{ marginLeft: padding.left }}>
-            {data.map((d, i) => (
-              <div
-                key={i}
-                className="text-xs text-gray-400 text-center"
-                style={{ width: `${100 / data.length}%` }}
+                return (
+                  <motion.circle
+                    key={pointId}
+                    r={3}
+                    fill={vehicle.color || "hsl(200,70%,50%)"}
+                    initial={{ cx: cx - offset, cy, opacity: 0 }}
+                    animate={{ cx, cy, opacity: 1 }}
+                    exit={{ cx: -offset, cy, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 140, damping: 20 }}
+                    onMouseEnter={() =>
+                      setHoveredPoint({
+                        x: cx,
+                        y: cy,
+                        label: `${vehicle.vehicleName}: ${p.odometer.toFixed(
+                          0
+                        )} km (${new Date(p.date).toLocaleDateString("fr-FR")})`,
+                      })
+                    }
+                    onMouseLeave={() => setHoveredPoint(null)}
+                  />
+                );
+              })
+            )}
+          </AnimatePresence>
+
+          {/* Axe X */}
+          <line
+            x1={padding.left}
+            x2={size.width - padding.right}
+            y1={innerHeight + padding.top}
+            y2={innerHeight + padding.top}
+            stroke="rgba(0,0,0,0.2)"
+          />
+
+          {/* Axe Y + ticks avec 3 lignes */}
+          {[0, 0.5, 1].map((f, i) => {
+            let value = minValue + f * range;
+
+            // Arrondir au millier le plus proche (ou modifier pour un autre pas)
+            const precision = 1000; 
+            value = Math.round(value / precision) * precision;
+
+            const y = padding.top + (1 - f) * innerHeight;
+
+            return (
+              <g key={i}>
+                {/* ligne horizontale de grille */}
+                <line
+                  x1={padding.left}
+                  x2={size.width - padding.right}
+                  y1={y}
+                  y2={y}
+                  stroke="rgba(0,0,0,0.05)"
+                />
+                {/* label Y */}
+                <text
+                  x={padding.left - 4}
+                  y={y + 4}
+                  textAnchor="end"
+                  className="text-xs fill-gray-400"
+                >
+                  {value} km
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Ticks X */}
+          <AnimatePresence>
+            {monthTicks.map(t => {
+              const offset = 50;
+              const xInitial = t.x - offset;
+
+              return (
+                <motion.g
+                  key={t.id}
+                  initial={{ x: xInitial, opacity: 0 }}
+                  animate={{ x: t.x, opacity: 1 }}
+                  exit={{ x: -offset, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 140, damping: 20 }}
+                >
+                  <line
+                    x1={0}
+                    x2={0}
+                    y1={innerHeight + padding.top}
+                    y2={innerHeight + padding.top + 6}
+                    stroke="rgba(0,0,0,0.2)"
+                  />
+                  {t.showLabel && (
+                    <text
+                      x={0}
+                      y={innerHeight + padding.top + 16}
+                      textAnchor="middle"
+                      className="text-xs fill-gray-400"
+                    >
+                      {t.label}
+                    </text>
+                  )}
+                </motion.g>
+              );
+            })}
+          </AnimatePresence>
+
+          {/* Tooltip hover */}
+          {hoveredPoint && (
+            <g>
+              <rect
+                x={hoveredPoint.x - hoveredPoint.label.length * 3}
+                y={Math.max(0, hoveredPoint.y - 28)}
+                width={hoveredPoint.label.length * 6 + 8}
+                height={20}
+                rx={4}
+                ry={4}
+                fill="black"
+                opacity={0.8}
+              />
+              <text
+                x={hoveredPoint.x - hoveredPoint.label.length * 3 + 4}
+                y={Math.max(0, hoveredPoint.y - 14)}
+                className="text-xs fill-white"
               >
-                <div className="truncate">{formatMonthShort(d.month).split(" ")[0]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tooltip (HTML, positioned near point) */}
-        {tooltip && (
-          <div
-            className="absolute z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full"
-            style={{
-              left: tooltip.left,
-              top: tooltip.top - 8,
-              minWidth: 100,
-            }}
-          >
-            <div className="bg-gray-800 text-white text-xs rounded px-2 py-1 shadow">
-              {tooltip.text}
-            </div>
-          </div>
-        )}
+                {hoveredPoint.label}
+              </text>
+            </g>
+          )}
+        </svg>
       </div>
     </div>
   );

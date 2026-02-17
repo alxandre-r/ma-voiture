@@ -13,9 +13,9 @@ const menuItems: {
   label: string;
   icon: Parameters<typeof Icon>[0]["name"];
 }[] = [
+    { id: "account", label: "Mon compte", icon: "user" },
   { id: "appearance", label: "Apparence", icon: "settings" },
   { id: "units", label: "Unités", icon: "conso" },
-  { id: "account", label: "Mon compte", icon: "user" },
   { id: "patchnotes", label: "Notes de version", icon: "notes" },
   { id: "privacy", label: "Confidentialité", icon: "secure" },
   { id: "logout", label: "Déconnexion", icon: "garage" },

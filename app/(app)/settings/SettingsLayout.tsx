@@ -11,16 +11,16 @@ import PrivacySection from "./sections/Privacy";
 import LogoutSection from "./sections/Logout";
 
 export type SettingsSection =
+  | "account"
   | "appearance"
   | "units"
-  | "account"
   | "patchnotes"
   | "privacy"
   | "logout";
 
 export default function SettingsLayout() {
   const [activeSection, setActiveSection] =
-    useState<SettingsSection>("appearance");
+    useState<SettingsSection>("account");
 
   return (
     <main>
@@ -37,9 +37,9 @@ export default function SettingsLayout() {
         </aside>
 
         <div className="lg:col-span-3">
+          {activeSection === "account" && <AccountSection />}
           {activeSection === "appearance" && <AppearanceSection />}
           {activeSection === "units" && <UnitsSection />}
-          {activeSection === "account" && <AccountSection />}
           {activeSection === "patchnotes" && <PatchnotesSection />}
           {activeSection === "privacy" && <PrivacySection />}
           {activeSection === "logout" && <LogoutSection />}

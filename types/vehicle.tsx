@@ -7,6 +7,7 @@ export interface Vehicle { // corresponds to the "vehicles_for_display" view in 
   make?: string | null;
   model?: string | null;
   year?: number | null;
+  color?: string | null;
   fuel_type?: string | null;
   odometer?: number | null;
   plate?: string | null;
@@ -27,4 +28,5 @@ export interface VehicleMinimal {
   make?: string | null;
   model?: string | null;
   odometer?: number | null;
+  color?: string | null;
 }

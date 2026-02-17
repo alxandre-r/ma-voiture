@@ -122,3 +122,8 @@ export function processFills(
 
   return sorted;
 }
+
+// Formatage monétaire
+export function formatCurrency(value: number | null | undefined) {
+  return value != null ? `${value.toFixed(2)} €` : "N/A";
+}

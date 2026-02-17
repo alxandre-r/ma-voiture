@@ -14,7 +14,7 @@ export default function UnitsSection() {
     <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
         <Icon name="conso" size={24} />
-        Unités de mesure
+        Unités de mesure (fonctionnalité à venir)
       </h2>
 
       <div className="space-y-6">

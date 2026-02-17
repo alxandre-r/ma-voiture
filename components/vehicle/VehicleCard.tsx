@@ -71,7 +71,10 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
 
           {/* --- Header : Véhicule --- */}
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-custom-2 text-white flex items-center justify-center text-2xl font-bold">
+            <div 
+              className="w-16 h-16 rounded-full text-white flex items-center justify-center text-2xl font-bold"
+              style={{ backgroundColor: vehicle.color || '#F26E52' }}
+            >
               {vehicle.make?.[0] || '🚗'}
             </div>
 

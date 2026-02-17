@@ -21,6 +21,7 @@ export default function VehicleModal({ open, onClose }: VehicleModalProps) {
       onClose={onClose}
       title="Ajouter un véhicule"
       size="md"
+      fullscreenOnMobile
     >
       <VehicleForm
         onCancel={onClose}

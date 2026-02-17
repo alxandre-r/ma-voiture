@@ -21,7 +21,9 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
     fuel_type: vehicle.fuel_type ?? '',
     odometer: vehicle.odometer ?? undefined,
     plate: vehicle.plate ?? '',
+    color: vehicle.color ?? '#000000',
   });
+
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +66,7 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
 
       {/* --- Header --- */}
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full bg-custom-2 text-white flex items-center justify-center text-2xl font-bold">
+        <div className="w-16 h-16 rounded-full text-white flex items-center justify-center text-2xl font-bold" style={{ backgroundColor: editData.color as string }}>
               {editData.make?.[0] || '🚗'}
         </div>
         <div className="flex-1 min-w-0">
@@ -145,11 +147,23 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
         </div>
 
         <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Conso Moy.</span>
-          <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-            {vehicle.calculated_consumption != null ? `${vehicle.calculated_consumption} L/100km` : '—'}
+          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+            Couleur
           </span>
+
+          <input
+            type="color"
+            value={(editData.color as string) ?? '#000000'}
+            onChange={e => onChangeField('color', e.target.value)}
+            className="
+              mt-2 h-10 w-16
+              rounded-lg border border-gray-300 dark:border-gray-600
+              bg-white dark:bg-gray-800
+              cursor-pointer
+            "
+          />
         </div>
+
       </div>
 
       {/* --- Actions --- */}

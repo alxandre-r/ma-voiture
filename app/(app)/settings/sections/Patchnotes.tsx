@@ -9,6 +9,21 @@ export default function PatchnotesSection() {
 
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
+    {
+      version: "1.0.4",
+      date: "17 Février 2026",
+      summary: "Refonte des graphiques du dashboard",
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>Refonte complète des graphiques du dashboard : nouveau design, nouvelles animations, infobulles et support multi-véhicules.</li>
+          <li>Ajout d&apos;un switch pour basculer entre la vue par plein et la vue mensuelle dans le graphique de consommation.</li>
+          <li>Ajout d&apos;un switch de temporalité pour choisir la période affichée dans les graphiques du dashboard (3 derniers mois, 6 derniers mois, 12 derniers mois).</li>
+          <li>Amélioration de l&apos;affichage mobile des graphiques.</li>
+          <li>Ajout de la possibilité de modifié la couleur d&apos;un véhicule. Cette couleur est utilisée dans les graphiques du dashboard.</li>
+        </ul>
+      ),
+      type: "minor",
+    },
       {
       version: "1.0.3",
       date: "11 Février 2026",

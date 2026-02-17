@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, make, model, year, fuel_type, odometer, plate } = body;
+    const { name, make, model, year, fuel_type, odometer, plate, color } = body;
 
     // Insertion en base
     const { data, error } = await supabase
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
         year,
         fuel_type,
         odometer,
+        color,
         plate
       }])
       .select()

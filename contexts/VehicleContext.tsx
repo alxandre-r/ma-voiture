@@ -42,6 +42,7 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
       name: v.name ?? null,
       make: v.make,
       model: v.model,
+      color: v.color ?? null,
       odometer: v.odometer ?? null,
     };
   }

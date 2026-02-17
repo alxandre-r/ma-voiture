@@ -24,6 +24,7 @@ interface VehicleFormData {
   year: string;
   fuel_type: string;
   odometer: string;
+  color?: string;
 }
 
 export default function VehicleForm({
@@ -42,6 +43,7 @@ export default function VehicleForm({
     year: '',
     fuel_type: 'Essence',
     odometer: '',
+    color: '',
   });
 
   /* ---------------------------- helpers ---------------------------- */
@@ -101,6 +103,7 @@ export default function VehicleForm({
         year: '',
         fuel_type: 'Essence',
         odometer: '',
+        color: '',
       });
 
       refreshVehicles();
@@ -231,27 +234,51 @@ export default function VehicleForm({
         </div>
       </div>
 
-      {/* Kilométrage */}
-      <div className="space-y-1">
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Kilométrage actuel <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="number"
-          name="odometer"
-          value={formData.odometer}
-          onChange={handleChange}
-          placeholder="35000"
-          min={0}
-          required
-          className="
-            w-full rounded-md border border-gray-300 dark:border-gray-700
-            bg-white dark:bg-gray-800 px-3 py-3 text-sm
-            focus:border-blue-500 focus:ring-1 focus:ring-blue-500
-            hover:border-gray-400 dark:hover:border-gray-600
-            transition-colors
-          "
-        />
+      {/* Kiolmétrage / Couleur (indicatif) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Kilométrage actuel <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="number"
+            name="odometer"
+            value={formData.odometer}
+            onChange={handleChange}
+            placeholder="35000"
+            min={0}
+            required
+            className="
+              w-full rounded-md border border-gray-300 dark:border-gray-700
+              bg-white dark:bg-gray-800 px-3 py-3 text-sm
+              focus:border-blue-500 focus:ring-1 focus:ring-blue-500
+              hover:border-gray-400 dark:hover:border-gray-600
+              transition-colors
+            "
+          />
+        </div>
+
+        {/* Couleur */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Couleur
+          </label>
+
+          <div className="flex items-center">
+            <input
+              type="color"
+              name="color"
+              value={formData.color || '#000000'}
+              onChange={handleChange}
+              className="
+                h-[46px] w-full
+                rounded-md border border-gray-300 dark:border-gray-700
+                bg-white dark:bg-gray-800
+                cursor-pointer
+              "
+            />
+          </div>
+        </div>
       </div>
 
       {/* Actions */}

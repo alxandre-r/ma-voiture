@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabaseServer';
 import { Vehicle } from '@/types/vehicle';
 
-const VALID_FIELDS = ['name', 'owner', 'make', 'model', 'year', 'fuel_type', 'manufacturer_consumption', 'odometer', 'plate', 'last_fill'];
+const VALID_FIELDS = ['name', 'owner', 'make', 'model', 'year', 'fuel_type', 'manufacturer_consumption', 'odometer', 'color', 'plate', 'last_fill'];
 
 export async function PATCH(request: Request) {
   try {
