@@ -1,15 +1,9 @@
 "use client";
 
 import Icon from "@/components/ui/Icon";
-import { SettingsSection } from "./SettingsLayout";
-
-type Props = {
-  activeSection: SettingsSection;
-  onChange: (section: SettingsSection) => void;
-};
 
 const menuItems: {
-  id: SettingsSection;
+  id: string;
   label: string;
   icon: Parameters<typeof Icon>[0]["name"];
 }[] = [
@@ -21,7 +15,7 @@ const menuItems: {
   { id: "logout", label: "Déconnexion", icon: "garage" },
 ];
 
-export default function SettingsMenu({ activeSection, onChange }: Props) {
+export default function SettingsMenu({ activeSection, onChange }: { activeSection: string; onChange: (section: string) => void }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sticky top-6">
       <nav className="grid grid-cols-2 md:flex md:flex-col gap-2 md:gap-0 md:space-y-2">
@@ -32,8 +26,8 @@ export default function SettingsMenu({ activeSection, onChange }: Props) {
       className={`w-full flex flex-row items-center gap-3 p-3 rounded-lg transition-colors hover:cursor-pointer
         ${
         activeSection === item.id
-        ? "bg-custom-1 text-white"
-        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+        ? "bg-custom-1 text-white scale-105"
+        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-98 transition-colors"
         }`}
       >
       <Icon

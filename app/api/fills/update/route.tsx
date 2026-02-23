@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 /**
  * PATCH /api/fills/update
@@ -41,7 +41,7 @@ export async function PATCH(request: Request) {
     // Validate required field
     if (!body.id) {
       return NextResponse.json(
-        { error: 'Le champ id est requis' },
+        { error: 'Le champ id est requis' } ,
         { status: 400 }
       );
     }
@@ -82,6 +82,7 @@ export async function PATCH(request: Request) {
     
     if (error) {
       console.error('Error updating fill:', error);
+      console.error('Request body:', body);
       return NextResponse.json(
         { error: 'Erreur lors de la mise à jour du plein' },
         { status: 500 }

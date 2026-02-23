@@ -5,7 +5,7 @@
  * This endpoint handles the password change process with proper validation and security.
  */
 
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {

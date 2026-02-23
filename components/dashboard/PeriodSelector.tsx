@@ -1,14 +1,13 @@
 import { motion } from "framer-motion";
-import { useFills, PeriodType } from "@/contexts/FillContext";
+import { PeriodType } from "@/app/(app)/dashboard/DashboardClient";
 
-const periodOptions: { label: string; value: PeriodType }[] = [
+const periodOptions: { label: string; value: string }[] = [
   { label: "3 mois", value: "3m" },
   { label: "6 mois", value: "6m" },
   { label: "12 mois", value: "12m" },
 ];
 
-export default function PeriodSelector() {
-  const { selectedPeriod, setSelectedPeriod } = useFills();
+export default function PeriodSelector({ selectedPeriod, setSelectedPeriod }: { selectedPeriod: PeriodType; setSelectedPeriod: (period: PeriodType) => void }) {
 
   return (
     <div className="w-full sm:w-auto">
@@ -31,7 +30,7 @@ export default function PeriodSelector() {
           return (
             <button
               key={opt.value}
-              onClick={() => setSelectedPeriod(opt.value)}
+              onClick={() => setSelectedPeriod(opt.value as PeriodType)}
               className="
                 relative
                 flex-1 sm:flex-none

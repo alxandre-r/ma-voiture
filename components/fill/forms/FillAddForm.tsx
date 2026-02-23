@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFills } from '@/contexts/FillContext';
 import { FillFormData } from '@/types/fill';
 import { VehicleMinimal } from '@/types/vehicle';
 import { Modal } from '@/components/ui/Modal';
-import { useNotifications } from '@/contexts/NotificationContext';
+import { useFillActions } from '@/hooks/fill/useFillActions';
 
 export interface FillFormProps {
   isOpen: boolean;
@@ -24,16 +23,10 @@ export default function FillFormModal({
   vehicles = null,
   initialVehicleId
 }: FillFormProps) {
-  const { addFillOptimistic, refreshFills, selectedVehicleIds } = useFills();
-  const [loading, setLoading] = useState(false);
-  const { showSuccess, showError } = useNotifications();
+  const { addFill, adding, calculateFillValues } = useFillActions();
 
-  // --- Détermine l'ID du véhicule par défaut ---
   const getDefaultVehicleId = (): number => {
-    if (selectedVehicleIds && vehicles) {
-      const match = vehicles.find(v => selectedVehicleIds.includes(v.vehicle_id));
-      if (match) return match.vehicle_id;
-    }
+    if (initialVehicleId) return initialVehicleId;
     if (vehicles && vehicles.length === 1) return vehicles[0].vehicle_id;
     return 0;
   };
@@ -41,10 +34,10 @@ export default function FillFormModal({
   const [formData, setFormData] = useState<FillFormData>({
     vehicle_id: initialVehicleId ?? getDefaultVehicleId(),
     date: new Date().toISOString().split('T')[0],
-    odometer: '',
-    liters: '',
-    amount: '',
-    price_per_liter: '',
+    odometer: 0,
+    liters: 0,
+    amount: 0,
+    price_per_liter: 0,
     notes: ''
   });
 
@@ -61,7 +54,7 @@ export default function FillFormModal({
     if (selectedVehicle?.odometer != null) {
       setFormData(prev => ({
         ...prev,
-        odometer: selectedVehicle.odometer!.toString()
+        odometer: selectedVehicle.odometer!
       }));
     }
   }, [formData.vehicle_id, vehicles]);
@@ -74,95 +67,45 @@ const handleChange = (
 
   // convertir vehicle_id en number
   if (name === 'vehicle_id') {
-    setFormData({ ...formData, vehicle_id: parseInt(value, 10) });
+    const newFormData = { ...formData, vehicle_id: parseInt(value, 10) };
+    setFormData(calculateFillValues(newFormData));
     return;
   }
 
   if (type === 'checkbox') {
-    setFormData({ ...formData, [name]: (e.target as HTMLInputElement).checked });
+    const newFormData = { ...formData, [name]: (e.target as HTMLInputElement).checked };
+    setFormData(calculateFillValues(newFormData));
     return;
   }
 
   const newFormData = { ...formData, [name]: value };
-
-  // --- calculs auto ---
-  const liters = parseFloat(newFormData.liters);
-  const amount = parseFloat(newFormData.amount);
-  const pricePerLiter = parseFloat(newFormData.price_per_liter);
-
-  if (name === 'liters' && amount > 0 && liters > 0) {
-    newFormData.price_per_liter = (amount / liters).toFixed(3);
-  }
-
-  if (name === 'price_per_liter' && amount > 0 && pricePerLiter > 0) {
-    newFormData.liters = (amount / pricePerLiter).toFixed(2);
-  }
-
-  if (name === 'amount') {
-    if (newFormData.liters && parseFloat(newFormData.liters) > 0) {
-      newFormData.price_per_liter = (amount / parseFloat(newFormData.liters)).toFixed(3);
-    } else if (newFormData.price_per_liter && parseFloat(newFormData.price_per_liter) > 0) {
-      newFormData.liters = (amount / parseFloat(newFormData.price_per_liter)).toFixed(2);
-    }
-  }
-
-  setFormData(newFormData);
+  setFormData(calculateFillValues(newFormData));
 };
 
   // --- Soumission du formulaire ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setMessage(null);
 
     try {
-      if (formData.vehicle_id === 0) showError('Veuillez sélectionner un véhicule');
-      if (!formData.date) showError('Veuillez entrer une date');
-      if (!formData.amount) showError('Veuillez entrer le montant total');
-      if (!formData.liters && !formData.price_per_liter) showError('Veuillez entrer soit les litres, soit le prix au litre');
+      const success = await addFill(formData);
+      if (success) {
+        setFormData(prev => ({
+          ...prev,
+          date: new Date().toISOString().split('T')[0],
+          odometer: 0,
+          liters: 0,
+          amount: 0,
+          price_per_liter: 0,
+          notes: ''
+        }));
 
-      const fillData = {
-        vehicle_id: formData.vehicle_id,
-        owner: '',
-        date: formData.date,
-        odometer: formData.odometer ? parseInt(formData.odometer, 10) : null,
-        liters: formData.liters ? parseFloat(formData.liters) : null,
-        amount: formData.amount ? parseFloat(formData.amount) : null,
-        price_per_liter: formData.price_per_liter ? parseFloat(formData.price_per_liter) : null,
-        notes: formData.notes || null,
-        created_at: new Date().toISOString()
-      };
-
-      const res = await fetch('/api/fills/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fillData)
-      });
-
-      const data = await res.json();
-      if (!res.ok) showError(data.error || 'Erreur lors de l\'ajout du plein');
-
-      addFillOptimistic({ ...data.fill, ...fillData, vehicle_id: data.fill.vehicle_id || Date.now() });
-      showSuccess('Plein ajouté avec succès');
-
-      setFormData(prev => ({
-        ...prev,
-        date: new Date().toISOString().split('T')[0],
-        odometer: '',
-        liters: '',
-        amount: '',
-        price_per_liter: '',
-        notes: ''
-      }));
-
-      refreshFills();
-
-      if (onSuccess) onSuccess();
-      onClose();
+        if (onSuccess) onSuccess();
+        if (autoCloseOnSuccess) onClose();
+      }
     } catch (err: unknown) {
-      showError(err instanceof Error ? err.message : 'Une erreur inconnue est survenue');
-    } finally {
-      setLoading(false);
+      // Error handling is already done in the addFill function
+      console.error('Error adding fill:', err);
     }
   };
 
@@ -347,7 +290,7 @@ const handleChange = (
         <button
           type="button"
           onClick={onClose}
-          disabled={loading}
+          disabled={adding}
           className="
             px-4 py-2 text-sm rounded-md
             border border-gray-300 dark:border-gray-600
@@ -360,7 +303,7 @@ const handleChange = (
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={adding}
           className="
             px-5 py-2 text-sm font-medium rounded-md
             bg-custom-1 text-white
@@ -369,7 +312,7 @@ const handleChange = (
             transition-colors
           "
         >
-          {loading ? 'Enregistrement...' : 'Ajouter le plein'}
+          {adding ? 'Enregistrement...' : 'Ajouter le plein'}
         </button>
       </div>
 

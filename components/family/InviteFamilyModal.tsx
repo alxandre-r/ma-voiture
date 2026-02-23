@@ -15,7 +15,8 @@ interface InviteFamilyModalProps {
   onClose: () => void;
   inviteLink: string;
   inviteCode: string;
-  onCopy: () => void;
+  onCopyLink: () => void;
+  onCopyCode: () => void;
   isLoading: boolean;
 }
 
@@ -24,7 +25,8 @@ export const InviteFamilyModal: React.FC<InviteFamilyModalProps> = ({
   onClose,
   inviteLink,
   inviteCode,
-  onCopy,
+  onCopyLink,
+  onCopyCode,
   isLoading,
 }) => {
   return (
@@ -42,7 +44,7 @@ export const InviteFamilyModal: React.FC<InviteFamilyModalProps> = ({
             className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-white text-sm"
           />
           <button
-            onClick={onCopy}
+            onClick={onCopyLink}
             disabled={isLoading}
             className={`px-4 py-2 bg-custom-1 text-white rounded-md hover:bg-custom-1-hover hover:cursor-pointer transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
@@ -61,7 +63,7 @@ export const InviteFamilyModal: React.FC<InviteFamilyModalProps> = ({
             className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-800 dark:text-white text-sm"
           />
           <button
-            onClick={onCopy}
+            onClick={onCopyCode}
             disabled={isLoading}
             className={`px-4 py-2 bg-custom-1 text-white rounded-md hover:bg-custom-1-hover hover:cursor-pointer transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import SettingsMenu from "./SettingsMenu";
+import { User } from '@/types/user';
 
+import SettingsMenu from "./SettingsMenu";
 import AppearanceSection from "./sections/Appearance";
 import UnitsSection from "./sections/Units";
 import AccountSection from "./sections/Account";
@@ -10,17 +11,9 @@ import PatchnotesSection from "./sections/Patchnotes";
 import PrivacySection from "./sections/Privacy";
 import LogoutSection from "./sections/Logout";
 
-export type SettingsSection =
-  | "account"
-  | "appearance"
-  | "units"
-  | "patchnotes"
-  | "privacy"
-  | "logout";
-
-export default function SettingsLayout() {
+export default function SettingsLayout({ user }: { user: User }) {
   const [activeSection, setActiveSection] =
-    useState<SettingsSection>("account");
+    useState("account");
 
   return (
     <main>
@@ -37,7 +30,7 @@ export default function SettingsLayout() {
         </aside>
 
         <div className="lg:col-span-3">
-          {activeSection === "account" && <AccountSection />}
+          {activeSection === "account" && <AccountSection user={user} />}
           {activeSection === "appearance" && <AppearanceSection />}
           {activeSection === "units" && <UnitsSection />}
           {activeSection === "patchnotes" && <PatchnotesSection />}

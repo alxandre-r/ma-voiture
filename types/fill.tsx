@@ -15,18 +15,16 @@ export interface Fill {
   vehicle_name?: string | null;
 }
 
-
-//Form data structure for submitting a fill
+// Form data structure for submitting a fill
 export interface FillFormData {
   vehicle_id: number;
   date: string;
-  odometer: string;
-  liters: string;
-  amount: string;
-  price_per_liter: string;
+  odometer: number;
+  liters: number;
+  amount: number;
+  price_per_liter: number;
   notes?: string;
 }
-
 
 // Computed statistics for fills
 export interface FillStats {

@@ -12,14 +12,8 @@ export interface Vehicle { // corresponds to the "vehicles_for_display" view in 
   odometer?: number | null;
   plate?: string | null;
   created_at?: string | null;
-  last_fill?: string | null;          // timestamptz
+  last_fill_date: string | null;          // timestamptz
   calculated_consumption?: number | null; // L/100km
-}
-
-export interface VehicleForDisplay extends Vehicle {
-  last_fill_date?: string | null;    // timestamptz
-  last_fill_amount?: number | null;  // litres
-  last_fill_odometer?: number | null; // km
 }
 
 export interface VehicleMinimal {

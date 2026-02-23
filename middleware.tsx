@@ -8,7 +8,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function middleware(req: NextRequest) {
   const supabase = await createSupabaseServerClient();

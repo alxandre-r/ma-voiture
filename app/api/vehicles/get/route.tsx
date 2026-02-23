@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 /**
  * GET /api/vehicles/get

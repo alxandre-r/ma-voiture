@@ -1,5 +1,13 @@
 'use client';
 
+/**
+ * FillContext - Gestion d'état global pour les pleins de carburant
+ * 
+ * ⚠️ NOTE: Ce contexte n'est plus utilisé pour la feature History.
+ * La page history utilise maintenant le SSR (Server-Side Rendering) pour de meilleures performances.
+ * Ce contexte reste utilisé dans les tests et pourrait être utilisé ailleurs dans l'application.
+ */
+
 import {
   createContext,
   useContext,

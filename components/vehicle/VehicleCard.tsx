@@ -1,20 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 import VehicleEditForm from './forms/VehicleEditForm';
-import { VehicleForDisplay } from '@/types/vehicle';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import Icon from '@/components/ui/Icon';
-import { useVehicles } from '@/contexts/VehicleContext';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { Vehicle } from '@/types/vehicle';
 
-interface VehicleCardProps {
-  vehicle: VehicleForDisplay;
-}
-
-export default function VehicleCard({ vehicle }: VehicleCardProps) {
-  const { refreshVehicles } = useVehicles();
+export default function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const { showSuccess, showError } = useNotifications();
+  const router = useRouter();
 
   const [editing, setEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -45,7 +42,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression du véhicule');
       showSuccess('Véhicule supprimé avec succès !');
-      refreshVehicles();
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erreur inconnue';
       showError(`❌ ${msg}`);
@@ -55,6 +52,8 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
     }
   };
 
+  console.log('Rendering VehicleCard for:', vehicle);
+
   return (
     <div className="vehicle-card">
       {editing ? (
@@ -62,7 +61,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           vehicle={vehicle}
           onCancelEdit={() => setEditing(false)}
           onSaved={() => {
-            refreshVehicles();
+            router.refresh();
             setEditing(false);
           }}
         />

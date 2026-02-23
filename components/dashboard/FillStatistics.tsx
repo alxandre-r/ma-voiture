@@ -17,7 +17,7 @@ export default function FillStatistics({ filteredStats }: FillStatisticsProps) {
     <div className="flex gap-2 sm:grid sm:grid-cols-2 lg:grid-cols-3">
 
       {/* Consommation moyenne */}
-      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition hover:shadow-md dark:border-none">
+      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition dark:border-none">
         <p className="hidden lg:block text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
           Consommation moyenne
         </p>
@@ -33,7 +33,7 @@ export default function FillStatistics({ filteredStats }: FillStatisticsProps) {
       </div>
 
       {/* Coût total */}
-      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition hover:shadow-md dark:border-none">
+      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition dark:border-none">
         <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
           Coût total
         </p>
@@ -43,7 +43,7 @@ export default function FillStatistics({ filteredStats }: FillStatisticsProps) {
       </div>
 
       {/* Prix moyen / L */}
-      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition hover:shadow-md dark:border-none">
+      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition dark:border-none">
         <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
           Prix moyen / L
         </p>

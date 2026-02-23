@@ -5,7 +5,7 @@
  * This endpoint allows a user to join an existing family using a valid invitation token.
  */
 
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {

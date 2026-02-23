@@ -10,6 +10,7 @@
 import React, { useState, useEffect } from 'react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { MemberCardSkeleton } from './MemberCardSkeleton';
 
 interface FamilyMember {
   user_id: string;
@@ -106,10 +107,13 @@ export const FamilyMemberList: React.FC<FamilyMemberListProps> = ({
     }
   };
 
+  // Render skeleton
   if (loading) {
     return (
-      <div className="text-center py-4">
-        <p className="text-gray-600 dark:text-gray-300">Chargement des membres...</p>
+      <div className="space-y-4">
+        <MemberCardSkeleton />
+        <MemberCardSkeleton />
+        <MemberCardSkeleton />
       </div>
     );
   }

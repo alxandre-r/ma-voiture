@@ -24,22 +24,6 @@ export default function FillEditForm({
   const v = <T,>(key: keyof Fill): T =>
     (editData[key] as T) ?? (fill[key] as T);
 
-  /* ---------- recalculs croisés ---------- */
-
-  const updateFromLiters = (liters?: number) => {
-    const amount = v<number>('amount');
-    if (liters && amount && liters > 0) {
-      onChangeField('price_per_liter', Number((amount / liters).toFixed(3)));
-    }
-  };
-
-  const updateFromPrice = (price?: number) => {
-    const amount = v<number>('amount');
-    if (price && amount && price > 0) {
-      onChangeField('liters', Number((amount / price).toFixed(2)));
-    }
-  };
-
   return (
     <div className="bg-white dark:bg-gray-800 px-4 py-4 rounded-lg border border-custom-1/40 dark:border-custom-1-dark/40 space-y-4">
 
@@ -95,9 +79,7 @@ export default function FillEditForm({
               step="0.001"
               value={v<number>('price_per_liter') ?? ''}
               onChange={(e) => {
-                const price = Number(e.target.value);
-                onChangeField('price_per_liter', price);
-                updateFromPrice(price);
+                onChangeField('price_per_liter', Number(e.target.value));
               }}
               className="w-full pr-8 bg-transparent border-b border-gray-300 focus:outline-none"
             />
@@ -114,9 +96,7 @@ export default function FillEditForm({
               step="0.01"
               value={v<number>('liters') ?? ''}
               onChange={(e) => {
-                const liters = Number(e.target.value);
-                onChangeField('liters', liters);
-                updateFromLiters(liters);
+                onChangeField('liters', Number(e.target.value));
               }}
               className="w-full pr-8 bg-transparent border-b border-gray-300 focus:outline-none"
             />

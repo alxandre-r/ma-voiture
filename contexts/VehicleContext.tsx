@@ -1,5 +1,13 @@
 'use client';
 
+/**
+ * VehicleContext - Gestion d'état global pour les véhicules
+ * 
+ * ⚠️ NOTE: Ce contexte n'est plus utilisé pour la feature History.
+ * La page history utilise maintenant le SSR (Server-Side Rendering) pour de meilleures performances.
+ * Ce contexte reste utilisé pour la page Garage et les formulaires d'ajout/modification de véhicules.
+ */
+
 import {
   createContext,
   useContext,
@@ -7,12 +15,11 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
-import { useFamily } from '@/contexts/FamilyContext';
 import { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 interface VehicleContextType {
-  vehicles: VehicleMinimal[];      // utilisé partout (dashboard, switcher…)
-  vehiclesFull: Vehicle[];          // utilisé par Garage
+  vehicles: VehicleMinimal[];
+  vehiclesFull: Vehicle[];
   selectedVehicleId: number | null;
   loading: boolean;
   error: string | null;
@@ -23,18 +30,20 @@ interface VehicleContextType {
 
 const VehicleContext = createContext<VehicleContextType | undefined>(undefined);
 
-export function VehicleProvider({ children }: { children: ReactNode }) {
+interface VehicleProviderProps {
+  children: ReactNode;
+  userId: string; // on passe maintenant le userId côté client
+}
+
+export function VehicleProvider({ children, userId }: VehicleProviderProps) {
   const [vehicles, setVehicles] = useState<VehicleMinimal[]>([]);
   const [vehiclesFull, setVehiclesFull] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { userRole } = useFamily();
-
   /**
    * Normalise un Vehicle complet en VehicleMinimal
-   * TODO(cleanup): séparer la logique minimal / full dans un service dédié
    */
   function normalizeVehicle(v: Vehicle): VehicleMinimal {
     return {
@@ -48,34 +57,29 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   }
 
   const fetchVehicles = async () => {
+    if (!userId) {
+      setVehicles([]);
+      setVehiclesFull([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const endpoint = userRole
-        ? '/api/vehicles/get/family_vehicles'
-        : '/api/vehicles/get';
+      // GET véhicules utilisateur
+      const resUser = await fetch(`/api/vehicles/get`);
+      const userVehicles: Vehicle[] = (await resUser.json()) || [];
 
-      const res = await fetch(endpoint);
-      const body = await res.json().catch(() => ({}));
+      // GET véhicules famille côté client
+      const resFamily = await fetch(`/api/familyVehicles?userId=${userId}`);
+      const familyVehicles: Vehicle[] = resFamily.ok ? await resFamily.json() : [];
 
-      if (!res.ok) {
-        setError(body?.error ?? `Request failed (${res.status})`);
-        setVehicles([]);
-        setVehiclesFull([]);
-        return;
-      }
+      const allVehicles = [...userVehicles, ...familyVehicles];
 
-      const rawVehicles: Vehicle[] = Array.isArray(body?.vehicles)
-        ? body.vehicles
-        : Array.isArray(body)
-        ? body
-        : Array.isArray(body?.data)
-        ? body.data
-        : [];
-
-      setVehiclesFull(rawVehicles);
-      setVehicles(rawVehicles.map(normalizeVehicle));
+      setVehiclesFull(allVehicles);
+      setVehicles(allVehicles.map(normalizeVehicle));
     } catch (err) {
       setError((err as Error).message || 'Unknown error');
       setVehicles([]);
@@ -90,17 +94,15 @@ export function VehicleProvider({ children }: { children: ReactNode }) {
   };
 
   const addVehicleOptimistic = (vehicle: Vehicle) => {
-    // Optimiste sur les deux représentations
     setVehiclesFull(prev => [vehicle, ...prev]);
     setVehicles(prev => [normalizeVehicle(vehicle), ...prev]);
   };
 
   useEffect(() => {
     fetchVehicles();
-  }, [userRole]);
+  }, [userId]);
 
   return (
-    console.log('VehicleProvider render with vehicles:', vehiclesFull),
     <VehicleContext.Provider
       value={{
         vehicles,

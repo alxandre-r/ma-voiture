@@ -2,12 +2,15 @@
 
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useFills } from "@/contexts/FillContext";
 import { useContainerSize, useMonthTicks, useDateRange, useMobileDetection, clampTooltipX, Padding } from "./ChartHelper";
 
 interface FillPoint {
   date: string;
   amount: number;
+  vehicleId: string;
+  vehicleName: string;
+  color?: string;
+  isVisible: boolean;
 }
 
 interface VehicleFillSeries {
@@ -22,7 +25,6 @@ interface FillChartProps {
 }
 
 export default function FillChart({ vehicles }: FillChartProps) {
-  const { selectedPeriod } = useFills();
   const [size, containerRef] = useContainerSize({ width: 600, height: 240 });
   const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; label: string } | null>(null);
   const [mode, setMode] = useState<"plein" | "mensuel">("mensuel");
@@ -34,45 +36,23 @@ export default function FillChart({ vehicles }: FillChartProps) {
   const mobile = useMobileDetection();
   const radiusTop = 12;
 
-  // ---- Barres filtrées et visibles ----
-  const filteredVehicles = useMemo(() => {
-    const now = new Date();
-    let startDate: Date;
-    switch (selectedPeriod) {
-      case "3m": startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1); break;
-      case "6m": startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1); break;
-      case "12m": startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1); break;
-      default: startDate = new Date(0);
-    }
+  // === Toutes les barres déjà filtrées par selectedPeriod dans le hook ===
+  const barsWithVisibility: FillPoint[] = useMemo(
+    () => vehicles.flatMap(v => v.points),
+    [vehicles]
+  );
 
-    return vehicles.map(v => {
-      const filteredPoints = v.points.filter(p => {
-        const d = new Date(p.date);
-        return d >= startDate && d <= now;
-      });
-      return {
-        ...v,
-        points: filteredPoints.map(p => ({
-          ...p,
-          vehicleId: v.vehicleId,
-          vehicleName: v.vehicleName,
-          color: v.color,
-          isVisible: true,
-        }))
-      };
-    });
-  }, [vehicles, selectedPeriod]);
-
-  const barsWithVisibility = useMemo(() => {
-    return filteredVehicles.flatMap(v => v.points);
-  }, [filteredVehicles]);
+  if (!barsWithVisibility.length) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <p>Aucune donnée disponible pour le graphique.</p>
+      </div>
+    );
+  }
 
   const visibleBars = useMemo(() => barsWithVisibility.filter(b => b.isVisible), [barsWithVisibility]);
 
-  // ---- Dates min/max pour visible bars uniquement ----
-  // Toujours appeler le hook, mais gérer le cas vide
   const { minDate, maxDate } = useDateRange(visibleBars);
-
   const getX = (date: string | Date) =>
     padding.left + ((new Date(date).getTime() - minDate.getTime()) / (maxDate.getTime() - minDate.getTime())) * innerWidth;
   const getY = (amount: number, maxAmount: number) => padding.top + innerHeight * (1 - amount / maxAmount);
@@ -94,6 +74,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
     ? Math.min(6, innerWidth / (visibleBars.length * 1.2))
     : Math.min(20, innerWidth / (visibleBars.length * 1.2));
 
+  // === Création des bars ===
   type Bar = {
     id: string;
     color?: string;
@@ -187,9 +168,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
     return totals;
   }, [bars]);
 
-  const clampTooltip = (x: number, textLength: number) => {
-    return clampTooltipX(x, textLength, size, padding);
-  };
+  const clampTooltip = (x: number, textLength: number) => clampTooltipX(x, textLength, size, padding);
 
   const yLines = useMemo(() => {
     const maxLines = 3;
@@ -197,8 +176,6 @@ export default function FillChart({ vehicles }: FillChartProps) {
     if (maxStackAmount <= 0) return [];
 
     const rawStep = maxStackAmount / maxLines;
-
-    // On arrondit à une valeur "propre"
     const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
     const normalized = rawStep / magnitude;
 
@@ -209,62 +186,40 @@ export default function FillChart({ vehicles }: FillChartProps) {
     else niceStep = 10;
 
     const step = niceStep * magnitude;
-
     const lines: number[] = [];
-    for (let v = step; v <= maxStackAmount; v += step) {
-      lines.push(v);
-    }
+    for (let v = step; v <= maxStackAmount; v += step) lines.push(v);
 
     return lines;
   }, [maxStackAmount]);
 
   const monthTicks = useMonthTicks(minDate, maxDate, getX, mobile, visibleBars);
 
-  if (!barsWithVisibility.length) {
-    return (
-      <div className="text-center py-8 text-gray-400">
-        <p>Aucune donnée disponible pour le graphique.</p>
-      </div>
-    );
-  }
-
   // ---- Render ----
   return (
     <div className="w-full mt-6 relative bg-white dark:bg-gray-800 rounded-xl py-4 shadow-sm dark:shadow-xl px-2 lg:px-4">
-    {/* Header avec titre et toggle */}
-    <div className="flex items-center justify-between px-2 lg:px-4 mb-2">
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-        Pleins enregistrés
-      </h3>
-
-      {/* Toggle comparatif / mensuel */}
-      <motion.button
-        type="button"
-        role="switch"
-        aria-checked={mode === "mensuel"}
-        onClick={() => setMode(mode === "plein" ? "mensuel" : "plein")}
-        whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        className="relative w-44 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full cursor-pointer 
-        flex items-center p-1 border border-gray-100 hover:shadow-sm transition-all 
-        dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900"
-      >
-        <motion.div
-          className="absolute w-20 h-6 bg-gradient-to-tl from-custom-1 to-violet-400 rounded-full shadow-md dark:shadow-xl"
-          animate={{ x: mode === "plein" ? 0 : 86 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        />
-
-        <div className="flex justify-between w-full px-3 text-xs font-medium z-20">
-          <span className={mode === "plein" ? "text-white" : "text-gray-700 dark:text-gray-300"}>
-            Par plein
-          </span>
-          <span className={mode === "mensuel" ? "text-white" : "text-gray-700 dark:text-gray-300"}>
-            Par mois
-          </span>
-        </div>
-      </motion.button>
-    </div>
+      {/* Header et toggle */}
+      <div className="flex items-center justify-between px-2 mb-2">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Pleins enregistrés</h3>
+        <motion.button
+          type="button"
+          role="switch"
+          aria-checked={mode === "mensuel"}
+          onClick={() => setMode(mode === "plein" ? "mensuel" : "plein")}
+          whileTap={{ scale: 0.98 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="relative w-44 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full cursor-pointer flex items-center p-1 border border-gray-100 hover:shadow-sm transition-all dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900"
+        >
+          <motion.div
+            className="absolute w-20 h-6 bg-gradient-to-tl from-custom-1 to-violet-400 rounded-full shadow-md dark:shadow-xl"
+            animate={{ x: mode === "plein" ? 0 : 86 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          />
+          <div className="flex justify-between w-full px-3 text-xs font-medium z-20">
+            <span className={mode === "plein" ? "text-white" : "text-gray-700 dark:text-gray-300"}>Par plein</span>
+            <span className={mode === "mensuel" ? "text-white" : "text-gray-700 dark:text-gray-300"}>Par mois</span>
+          </div>
+        </motion.button>
+      </div>
 
       <div ref={containerRef} className="relative w-full" style={{ minHeight: containerHeight + padding.top + padding.bottom }}>
         <svg width="100%" height={containerHeight + padding.top + padding.bottom}>
@@ -357,7 +312,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
                   className="text-xs fill-white font-medium"
                   transition={{ type: "spring", stiffness: 140, damping: 20 }}
                 >
-                  {mobile ? total.toFixed(0) : total.toFixed(2)}€
+                  {mobile ? Number(total).toFixed(0) : Number(total).toFixed(2)}€
                 </motion.text>
               );
             }
@@ -396,20 +351,36 @@ export default function FillChart({ vehicles }: FillChartProps) {
 
           {/* Ticks et labels X animés */}
           <AnimatePresence>
-            {monthTicks.map(t => {
-              const xInitial = t.isVisible ? t.x : -50;
+            {monthTicks.map((t, i) => {
+              const xOffset = 50;
+              const nextTick = monthTicks[i + 1];
+              const labelX = nextTick ? (t.x + nextTick.x) / 2 : t.x;
 
               return (
                 <motion.g
                   key={t.id}
-                  initial={{ x: xInitial, opacity: 0 }}
+                  initial={{ x: t.x - xOffset, opacity: 0 }}
                   animate={{ x: t.x, opacity: t.isVisible ? 1 : 0 }}
-                  exit={{ x: -50, opacity: 0 }}
+                  exit={{ x: -xOffset, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 140, damping: 20 }}
                 >
-                  <line x1={0} x2={0} y1={innerHeight + padding.top} y2={innerHeight + padding.top + 6} stroke="rgba(0,0,0,0.2)" />
+                  {/* Tick vertical */}
+                  <line
+                    x1={0}
+                    x2={0}
+                    y1={innerHeight + padding.top}
+                    y2={innerHeight + padding.top + 6}
+                    stroke="rgba(0,0,0,0.2)"
+                  />
+
+                  {/* Label centré entre deux ticks */}
                   {t.showLabel && (
-                    <text x={0} y={innerHeight + padding.top + 16} textAnchor="middle" className="text-xs fill-gray-400">
+                    <text
+                      x={labelX - t.x}
+                      y={innerHeight + padding.top + 16}
+                      textAnchor="middle"
+                      className="text-xs fill-gray-400"
+                    >
                       {t.label}
                     </text>
                   )}
@@ -417,6 +388,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
               );
             })}
           </AnimatePresence>
+
 
           {/* Hover */}
           {hoveredPoint && (

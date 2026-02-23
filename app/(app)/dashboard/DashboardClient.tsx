@@ -1,101 +1,109 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
-import DashboardHeader from '@/components/dashboard/Header';
-import FillFormModal from '@/components/fill/forms/FillAddForm';
-import Charts from '@/components/dashboard/Charts';
-import LatestFills from '@/components/dashboard/LatestFills';
-import FillStatistics from '@/components/dashboard/FillStatistics';
-import Loader from '@/components/ui/Loader';
-import DashboardLandingPage from './DashboardLandingPage';
+import DashboardHeader from "@/components/dashboard/Header";
+import FillFormModal from "@/components/fill/forms/FillAddForm";
+import Charts from "@/components/dashboard/Charts";
+import LatestFills from "@/components/dashboard/LatestFills";
+import FillStatistics from "@/components/dashboard/FillStatistics";
 
-import { useVehicles } from '@/contexts/VehicleContext';
-import { useFills } from '@/contexts/FillContext';
-import { useFillChartData } from '@/hooks/dashboard/useChartData';
+import { Vehicle } from "@/types/vehicle";
+import { Fill } from "@/types/fill";
+import { useFillChartData } from "@/hooks/dashboard/useChartData";
 
-export default function DashboardClient() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
+export type PeriodType = '1m' | '3m' | '6m' | '12m';
 
-  const { vehicles, selectedVehicleId, setSelectedVehicleId } = useVehicles();
-  const { fills, setVehicles: setFillsVehicles, setSelectedVehicleIds: setFillSelectedVehicleIds } = useFills();
+interface DashboardClientProps {
+  userVehicles: Vehicle[];
+}
 
-  const [selectedVehicleIds, setSelectedVehicleIds] = useState<number[]>([]);
-  const initialized = useRef(false);
-
+export default function DashboardClient({ userVehicles }: DashboardClientProps) {
+  const [fills, setFills] = useState<Fill[]>([]);
+  const [loadingFills, setLoadingFills] = useState(true);
   const [fillModalOpen, setFillModalOpen] = useState(false);
   const [fillVehicleId, setFillVehicleId] = useState<number | null>(null);
 
-  // ---------------- URL deep-link ----------------
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('6m');
+  const [selectedVehicleIds, setSelectedVehicleIds] = useState<number[]>([]);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const allVehicles = useMemo(() => [...userVehicles], [userVehicles]);
+
   useEffect(() => {
-    if (searchParams.get('addFill') === 'true') {
+    if (allVehicles.length > 0) {
+      setSelectedVehicleIds(allVehicles.map(v => v.vehicle_id));
+    }
+  }, [allVehicles]);
+
+  // URL deep-link
+  useEffect(() => {
+    if (searchParams.get("addFill") === "true") {
       setFillModalOpen(true);
-      const vid = searchParams.get('vehicleId');
+      const vid = searchParams.get("vehicleId");
       if (vid) setFillVehicleId(Number(vid));
-      router.replace('/dashboard', { scroll: false });
+      router.replace("/dashboard", { scroll: false });
     }
   }, [searchParams, router]);
 
-  // ---------------- Initialisation contexts ----------------
-  useEffect(() => {
-    if (initialized.current || !vehicles.length) return;
+  // 🔄 Refresh function
+  const refreshFills = useCallback(async () => {
+    if (!allVehicles.length) return;
+    setLoadingFills(true);
+    try {
+      const res = await fetch(
+        `/api/fills/get?vehicleIds=${allVehicles.map(v => v.vehicle_id).join(',')}`
+      );
+      const body = await res.json();
+      if (res.ok && body.fills) setFills(body.fills);
+    } catch (err) {
+      console.error('Erreur fetching fills:', err);
+    } finally {
+      setLoadingFills(false);
+    }
+  }, [allVehicles]);
 
-    setFillsVehicles(vehicles);
-    const initialIds = vehicles.map(v => v.vehicle_id);
-    setSelectedVehicleIds(initialIds);
-    setFillSelectedVehicleIds(initialIds);
-    setSelectedVehicleId(initialIds[0] ?? null);
-    initialized.current = true;
-  }, [vehicles, setFillsVehicles, setFillSelectedVehicleIds, setSelectedVehicleId]);
+  // Initial fetch
+  useEffect(() => { refreshFills(); }, [refreshFills]);
 
-  // ---------------- Vehicle switch handler ----------------
-  const handleVehicleChange = (ids: number[]) => {
-    setSelectedVehicleIds(ids);
-    setFillSelectedVehicleIds(ids);
-    setSelectedVehicleId(ids[0] ?? null);
-  };
-
-  // ---------------- Hook Chart Data ----------------
-  const { vehiclesForChart, filteredStats, hasData } = useFillChartData();
-
-  // ----------------- Render -----------------
-  if (!vehicles.length) return <DashboardLandingPage />;
-
-  const showEmptyHint = selectedVehicleIds.length === 1 &&
-    fills !== undefined &&
-    !fills.some(f => f.vehicle_id === selectedVehicleIds[0]);
+  // Chart data basé sur sélection réelle
+  const { vehiclesForChart, filteredStats } = useFillChartData({
+    allVehicles,
+    fills,
+    selectedVehicleIds,
+    selectedPeriod,
+  });
 
   return (
-    <>
-      <section className="space-y-6">
-        <DashboardHeader
-          vehicles={vehicles}
-          selectedVehicleIds={selectedVehicleIds}
-          onVehicleChange={handleVehicleChange}
-          onAddFill={() => setFillModalOpen(true)}
-          showEmptyHint={showEmptyHint}
-        />
+    <section className="space-y-6">
+      <DashboardHeader
+        vehicles={allVehicles}
+        selectedVehicleIds={selectedVehicleIds}
+        onVehicleChange={setSelectedVehicleIds}
+        onAddFill={() => setFillModalOpen(true)}
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={setSelectedPeriod}
+      />
 
-        {filteredStats && <FillStatistics filteredStats={filteredStats} />}
-
-        {hasData ? (
-          <Charts vehiclesForChart={vehiclesForChart} />
-        ) : null}
-
-        {selectedVehicleIds.length !== 1 ||
-         (fills !== undefined && fills.some(f => selectedVehicleIds.includes(f.vehicle_id))) ? (
-          fills === undefined ? <Loader /> : <LatestFills />
-        ) : null}
-      </section>
+      <FillStatistics filteredStats={filteredStats} />
+      <Charts vehiclesForChart={vehiclesForChart} />
+      
+      <LatestFills
+        fills={fills}
+        loading={loadingFills}
+        onRefresh={refreshFills}
+      />
 
       <FillFormModal
         isOpen={fillModalOpen}
         onClose={() => setFillModalOpen(false)}
-        vehicles={vehicles}
+        vehicles={allVehicles}
         initialVehicleId={fillVehicleId ?? undefined}
+        onSuccess={refreshFills}
       />
-    </>
+    </section>
   );
 }

@@ -13,8 +13,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { NotificationProvider } from '@/contexts/NotificationContext';
-import { FamilyProvider } from '@/contexts/FamilyContext';
 
 // Load Geist fonts with Latin subset
 const geistSans = Geist({
@@ -54,16 +52,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           defaultTheme="system"
           enableSystem={true}
         >
-          {/* Notification provider for global notifications */}
-          <NotificationProvider>
-            {/* Family provider for family context */}
-            <FamilyProvider>
-              {/* Main content container */}
-              <div className="text-gray-800 dark:text-white bg-white dark:bg-gray-950 min-h-screen">
-                {children}
-              </div>
-            </FamilyProvider>
-          </NotificationProvider>
+            {/* Main content container */}
+            <div className="text-gray-800 dark:text-white bg-white dark:bg-gray-950 min-h-screen">
+              {children}
+            </div>
         </ThemeProvider>
       </body>
     </html>

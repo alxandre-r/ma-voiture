@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { Vehicle } from '@/types/vehicle';
 
 const VALID_FIELDS = ['name', 'owner', 'make', 'model', 'year', 'fuel_type', 'manufacturer_consumption', 'odometer', 'color', 'plate', 'last_fill'];

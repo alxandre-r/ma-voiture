@@ -1,27 +1,19 @@
 'use client';
 
-import { FillProvider } from '@/contexts/FillContext';
-import { useVehicles } from '@/contexts/VehicleContext';
-import FillHistoryList from '@/components/fill/display/FillHistoryList';
+import { useState, useEffect, useCallback } from 'react';
+import FillHistoryList from '@/components/fill/FillHistoryList';
+import { Vehicle, VehicleMinimal } from '@/types/vehicle';
+import { Fill } from '@/types/fill';
 
-export default function HistoriqueClient() {
-  const { vehicles, loading, error } = useVehicles();
+interface HistoriqueClientProps {
+  vehicles: (Vehicle | VehicleMinimal)[];
+  fills: Fill[];
+}
 
-  // Tant que les véhicules ne sont pas encore récupérés, on affiche un loader
-  if (loading) {
-    return <div className="text-center py-8">Chargement des véhicules...</div>;
-  }
+export default function HistoriqueClient({ vehicles, fills: initialFills }: HistoriqueClientProps) {
+  const [fills, setFills] = useState<Fill[]>(initialFills || []);
+  const [loading, setLoading] = useState(false);
 
-  // Si erreur lors du fetch des véhicules
-  if (error) {
-    return (
-      <div className="bg-red-100 p-4 rounded text-red-700">
-        Erreur: {error}
-      </div>
-    );
-  }
-
-  // Si aucun véhicule n'est présent
   if (!vehicles || vehicles.length === 0) {
     return (
       <div className="text-center py-8">
@@ -30,10 +22,35 @@ export default function HistoriqueClient() {
     );
   }
 
-  // Mount FillProvider uniquement quand vehicles sont disponibles
+  // --- Fonction pour re-fetch les fills ---
+  const refreshFills = useCallback(async () => {
+    if (vehicles.length === 0) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/fills/get?vehicleIds=${vehicles.map(v => v.vehicle_id).join(',')}`);
+      const body = await res.json();
+      if (res.ok && body.fills) {
+        setFills(body.fills);
+      }
+    } catch (err) {
+      console.error('Erreur fetching fills:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [vehicles]);
+
+  // --- Initial fetch si initialFills vide ---
+  useEffect(() => {
+    if (!initialFills || initialFills.length === 0) {
+      refreshFills();
+    }
+  }, [initialFills, refreshFills]);
+
   return (
-    <FillProvider vehiclesProp={vehicles}>
-      <FillHistoryList />
-    </FillProvider>
+    <FillHistoryList
+      vehicles={vehicles}
+      fills={fills}
+      onRefresh={refreshFills} // <-- passé à chaque FillRowContainer
+    />
   );
 }

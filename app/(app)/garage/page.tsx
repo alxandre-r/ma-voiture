@@ -1,18 +1,25 @@
 /**
  * @file src/app/garage/page.tsx
- * @fileoverview Garage page showing the user's vehicles. Ability to add vehicles.
+ * @fileoverview SSR page pour afficher le garage de l'utilisateur. Utilise un VehicleProvider pour gérer les données des véhicules
+ * Fetch initial data côté serveur via lib/data/vehicles.ts
  */
 
-import { Suspense } from 'react';
-import { VehicleProvider } from '@/contexts/VehicleContext';
+import React from "react";
+import { redirect } from 'next/navigation';
+
+import { getCurrentUserInfo } from "@/lib/data/user/getCurrentUserInfo";
+import { getUserVehicles } from "@/lib/data/vehicles/getUserVehicles";
+import { getFamilyVehicles } from "@/lib/data/vehicles/getFamilyVehicles";
+
 import GarageClient from './GarageClient';
 
-export default function GaragePage() {
-  return (
-    <VehicleProvider>
-      <Suspense fallback={<div className="py-8 text-center">Chargement…</div>}>
-        <GarageClient />
-      </Suspense>
-    </VehicleProvider>
-  );
+
+export default async function GaragePage() {
+    const user = await getCurrentUserInfo();
+    if (!user) redirect("/");
+    
+    const vehicles = await getUserVehicles(user.id);
+    const familyVehicles = await getFamilyVehicles(user.id, user.family_id);
+
+    return <GarageClient userVehicles={vehicles} familyVehicles={familyVehicles} />;
 }

@@ -5,7 +5,7 @@
  * This endpoint allows the family owner to remove a member from the family.
  */
 
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(

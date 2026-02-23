@@ -10,6 +10,23 @@ export default function PatchnotesSection() {
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
     {
+      version: "1.1.0",
+      date: "23 Février 2026",
+      summary: "Optimisation de la performance et UX",
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>Optimisation côté server pour charger les pages plus rapidement, valable pour toutes les pages</li>
+          <li>Ajouts de placeholders lorsque les données sont en chargement</li>
+          <li>Amélioration de l&apos;affichage de l&apos;historique des pleins (pages Dashboard et Consommations)</li>
+          <li>Ajout de retour visuel lors de diverses actions</li>
+          <li>Correction de bug à la copie du token d&apos;invitation de la famille</li>
+          <li>Correction des droits pour les membres de la famille sur les véhicules partagés</li>
+          <li>Changer le mode d&apos;affichage par défaut du graphique de l&apos;évolution du kilométrage de &apos;Total&apos; à &apos;Normalisé&apos;</li>
+        </ul>
+      ),
+      type: "minor",
+    },
+    {
       version: "1.0.4",
       date: "17 Février 2026",
       summary: "Refonte des graphiques du dashboard",

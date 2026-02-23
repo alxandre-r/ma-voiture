@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function GET(request: Request) {
   const supabase = await createSupabaseServerClient();
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('fills_for_display')
-      .select('fill_id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at')
+      .select('id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at')
       .order('date', { ascending: false });
 
     if (vehicleIds.length > 0) {
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     }
 
     const transformedFills = fills.map((fill) => ({
-      id: fill.fill_id,
+      id: fill.id,
       vehicle_id: fill.vehicle_id,
       vehicle_name: fill.vehicle_name,
       owner_id: fill.owner_id,

@@ -7,7 +7,7 @@
 "use client";
 
 import { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
+import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
 
 export default function SignUpForm() {
   const supabase = createSupabaseBrowserClient();

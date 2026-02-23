@@ -9,7 +9,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
+import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
 
 /**
  * LogoutButton Component

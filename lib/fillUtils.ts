@@ -125,5 +125,5 @@ export function processFills(
 
 // Formatage monétaire
 export function formatCurrency(value: number | null | undefined) {
-  return value != null ? `${value.toFixed(2)} €` : "N/A";
+  return typeof value === 'number' ? `${value.toFixed(2)} €` : "N/A";
 }

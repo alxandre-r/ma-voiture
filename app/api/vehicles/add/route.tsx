@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { Vehicle } from '@/types/vehicle';
 
 export async function POST(request: Request) {

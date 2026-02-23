@@ -63,10 +63,10 @@ export function useMonthTicks(
   return useMemo(() => {
     const ticks: MonthTick[] = [];
     const d = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
-    const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+    const end = new Date(maxDate.getFullYear(), maxDate.getMonth() + 3, 1);
     let count = 0;
 
-    while (d <= end) {
+    while (d < end) {
       const id = `${d.getFullYear()}-${d.getMonth()}`;
       const label = d.toLocaleDateString("fr-FR", { month: "short" });
       const showLabel = mobile ? count % 2 === 0 : true;

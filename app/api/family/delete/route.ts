@@ -5,7 +5,7 @@
  * This endpoint handles the process of deleting a family (only available to owners).
  */
 
-import { createSupabaseServerClient } from '@/lib/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(request: Request) {

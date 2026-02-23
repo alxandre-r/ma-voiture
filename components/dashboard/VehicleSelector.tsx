@@ -48,13 +48,12 @@ export default function VehicleSelector({
   };
 
   const label = () => {
-    if (value.length === 0) return 'Sélectionnez un ou plusieurs véhicules';
     if (value.length === vehicles.length) return 'Tous les véhicules';
     if (value.length === 1) {
       const v = vehicles.find(v => v.vehicle_id === value[0]);
       return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
     }
-    return `${value.length} véhicules sélectionnés`;
+    return `Tous les véhicules`;
   };
 
   return (
@@ -76,11 +75,7 @@ export default function VehicleSelector({
         "
       >
         <span
-          className={`truncate ${
-            value.length === 0
-              ? 'text-gray-400 dark:text-gray-500'
-              : 'font-medium text-gray-900 dark:text-gray-100'
-          }`}
+          className={`truncate font-medium text-gray-900 dark:text-gray-100`}
         >
           {label()}
         </span>
