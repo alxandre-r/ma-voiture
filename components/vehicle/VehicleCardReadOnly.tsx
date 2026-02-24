@@ -51,7 +51,7 @@ export default function VehicleCardReadOnly({ vehicle }: { vehicle: Vehicle }) {
               Dernier plein
             </span>
             <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-              {vehicle.last_fill ? new Date(vehicle.last_fill).toLocaleDateString('fr-FR') : '—'}
+              {vehicle.last_fill_date ? new Date(vehicle.last_fill_date).toLocaleDateString('fr-FR') : '—'}
             </span>
           </div>
         </div>
