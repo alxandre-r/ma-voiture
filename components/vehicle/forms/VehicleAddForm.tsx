@@ -10,7 +10,6 @@
 import { useMemo, useState } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
-import { useVehicles } from '@/contexts/VehicleContext';
 
 interface VehicleFormProps {
   onCancel?: () => void;
@@ -29,7 +28,6 @@ interface VehicleFormData {
 }
 
 export default function VehicleForm({ onCancel, onSuccess, autoCloseOnSuccess }: VehicleFormProps) {
-  const { addVehicleOptimistic, refreshVehicles } = useVehicles();
   const { showSuccess, showError } = useNotifications();
 
   const [loading, setLoading] = useState(false);
@@ -85,11 +83,6 @@ export default function VehicleForm({ onCancel, onSuccess, autoCloseOnSuccess }:
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      addVehicleOptimistic({
-        ...data.vehicle,
-        created_at: new Date().toISOString(),
-      });
-
       showSuccess('Véhicule ajouté avec succès');
 
       setFormData({
@@ -102,7 +95,6 @@ export default function VehicleForm({ onCancel, onSuccess, autoCloseOnSuccess }:
         color: '',
       });
 
-      refreshVehicles();
       onSuccess?.();
 
       if (autoCloseOnSuccess && onCancel) {
