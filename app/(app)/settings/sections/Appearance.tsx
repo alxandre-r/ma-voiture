@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
-import Icon from "@/components/ui/Icon";
+import { useTheme } from 'next-themes';
+
+import Icon from '@/components/ui/Icon';
 
 export default function AppearanceSection() {
   const { theme, setTheme } = useTheme();

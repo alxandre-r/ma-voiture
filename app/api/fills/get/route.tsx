@@ -4,21 +4,19 @@
  */
 
 import { NextResponse } from 'next/server';
+
 import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function GET(request: Request) {
   const supabase = await createSupabaseServerClient();
-  
+
   // Get authenticated user
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  
+
   if (!user) {
-    return NextResponse.json(
-      { error: 'Non autorisé - utilisateur non connecté' },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: 'Non autorisé - utilisateur non connecté' }, { status: 401 });
   }
 
   try {
@@ -27,13 +25,15 @@ export async function GET(request: Request) {
     const vehicleIds = vehicleIdsParam
       ? vehicleIdsParam
           .split(',')
-          .map(id => Number(id))
-          .filter(id => Number.isInteger(id) && id > 0)
+          .map((id) => Number(id))
+          .filter((id) => Number.isInteger(id) && id > 0)
       : [];
 
     let query = supabase
       .from('fills_for_display')
-      .select('id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at')
+      .select(
+        'id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at',
+      )
       .order('date', { ascending: false });
 
     if (vehicleIds.length > 0) {
@@ -46,7 +46,10 @@ export async function GET(request: Request) {
 
     if (error) {
       console.error('Supabase error:', error);
-      return NextResponse.json({ error: 'Erreur lors de la récupération des pleins' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Erreur lors de la récupération des pleins' },
+        { status: 500 },
+      );
     }
 
     const transformedFills = fills.map((fill) => ({
@@ -65,11 +68,13 @@ export async function GET(request: Request) {
       created_at: fill.created_at,
     }));
 
-    return NextResponse.json({
-      fills: transformedFills,
-      count: transformedFills.length
-    }, { status: 200 });
-
+    return NextResponse.json(
+      {
+        fills: transformedFills,
+        count: transformedFills.length,
+      },
+      { status: 200 },
+    );
   } catch (err) {
     console.error('Unexpected error:', err);
     return NextResponse.json({ error: 'Erreur serveur inattendue' }, { status: 500 });

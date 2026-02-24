@@ -4,10 +4,11 @@
  * This component utilizes the Modal component in order to provide the form for adding a new vehicle in it.
  */
 
-"use client";
+'use client';
 
-import { Modal } from "@/components/ui/Modal";
-import VehicleForm from "./forms/VehicleAddForm";
+import { Modal } from '@/components/ui/Modal';
+
+import VehicleForm from './forms/VehicleAddForm';
 
 interface VehicleModalProps {
   open: boolean;
@@ -16,18 +17,8 @@ interface VehicleModalProps {
 
 export default function VehicleModal({ open, onClose }: VehicleModalProps) {
   return (
-    <Modal
-      isOpen={open}
-      onClose={onClose}
-      title="Ajouter un véhicule"
-      size="md"
-      fullscreenOnMobile
-    >
-      <VehicleForm
-        onCancel={onClose}
-        onSuccess={onClose}
-        autoCloseOnSuccess
-      />
+    <Modal isOpen={open} onClose={onClose} title="Ajouter un véhicule" size="md" fullscreenOnMobile>
+      <VehicleForm onCancel={onClose} onSuccess={onClose} autoCloseOnSuccess />
     </Modal>
   );
 }

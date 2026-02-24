@@ -1,28 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
 import { useNotifications } from '@/contexts/NotificationContext';
 
-export function JoinFamilyForm({ onFamilyJoined }: { onFamilyJoined?: (family: {
-  id: string;
-  name: string;
-  created_at: string;
-  owner: string;
-  userRole: string;
-}) => void }) {
+export function JoinFamilyForm({
+  onFamilyJoined,
+}: {
+  onFamilyJoined?: (family: {
+    id: string;
+    name: string;
+    created_at: string;
+    owner: string;
+    userRole: string;
+  }) => void;
+}) {
   const [token, setToken] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const router = useRouter();
   const { showNotification } = useNotifications();
 
   const handleJoinFamily = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token.trim()) {
-      showNotification('Veuillez entrer un code d\'invitation', 'error');
+      showNotification("Veuillez entrer un code d'invitation", 'error');
       return;
     }
 
@@ -45,15 +50,16 @@ export function JoinFamilyForm({ onFamilyJoined }: { onFamilyJoined?: (family: {
       }
 
       showNotification('Vous avez rejoint la famille avec succès !', 'success');
-      
+
       if (onFamilyJoined) {
         onFamilyJoined(data.family);
       }
-      
+
       router.push('/family');
     } catch (error) {
       console.error('Error joining family:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Erreur lors de la jointure de la famille';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erreur lors de la jointure de la famille';
       showNotification(errorMessage, 'error');
       setError(errorMessage);
     } finally {
@@ -87,9 +93,7 @@ export function JoinFamilyForm({ onFamilyJoined }: { onFamilyJoined?: (family: {
         type="submit"
         disabled={isLoading}
         className={`w-full px-4 py-2 bg-custom-1 rounded-md text-gray-800 dark:bg-custom-1 text-white font-medium transition-colors hover:cursor-pointer ${
-          isLoading 
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-custom-1-hover'
+          isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-custom-1-hover'
         }`}
       >
         {isLoading ? 'Rejointure en cours...' : 'Rejoindre la famille'}

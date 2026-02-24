@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
 
-import { User } from "@/types/user";
-import { useNotifications } from "@/contexts/NotificationContext";
-import Icon from "@/components/ui/Icon";
+import Icon from '@/components/ui/Icon';
+import { useNotifications } from '@/contexts/NotificationContext';
+
+import type { User } from '@/types/user';
 
 export default function AccountSection({ user }: { user: User }) {
   const router = useRouter();
@@ -23,8 +24,8 @@ export default function AccountSection({ user }: { user: User }) {
   const [form, setForm] = useState({
     name: user.name,
     email: user.email,
-    oldPassword: "",
-    newPassword: "",
+    oldPassword: '',
+    newPassword: '',
   });
 
   // Transition non bloquante (Next 13+)
@@ -35,11 +36,11 @@ export default function AccountSection({ user }: { user: User }) {
   ============================== */
   const saveProfile = async () => {
     if (!form.name.trim()) {
-      return showNotification("Le nom ne peut pas être vide", "error");
+      return showNotification('Le nom ne peut pas être vide', 'error');
     }
 
     if (!form.email.trim()) {
-      return showNotification("Email invalide", "error");
+      return showNotification('Email invalide', 'error');
     }
 
     const previousUser = localUser;
@@ -54,9 +55,9 @@ export default function AccountSection({ user }: { user: User }) {
     setEditing(false);
 
     try {
-      const res = await fetch("/api/users/update-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/users/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.name,
           email: form.email,
@@ -64,10 +65,10 @@ export default function AccountSection({ user }: { user: User }) {
       });
 
       if (!res.ok) {
-        throw new Error("Erreur lors de la mise à jour");
+        throw new Error('Erreur lors de la mise à jour');
       }
 
-      showNotification("Profil mis à jour", "success");
+      showNotification('Profil mis à jour', 'success');
 
       // 2️⃣ Revalidation serveur non bloquante
       startTransition(() => {
@@ -76,10 +77,7 @@ export default function AccountSection({ user }: { user: User }) {
     } catch (error) {
       // rollback si erreur
       setLocalUser(previousUser);
-      showNotification(
-        error instanceof Error ? error.message : "Erreur",
-        "error"
-      );
+      showNotification(error instanceof Error ? error.message : 'Erreur', 'error');
     }
   };
 
@@ -88,13 +86,13 @@ export default function AccountSection({ user }: { user: User }) {
   ============================== */
   const changePassword = async () => {
     if (!form.oldPassword || !form.newPassword) {
-      return showNotification("Tous les champs sont requis", "error");
+      return showNotification('Tous les champs sont requis', 'error');
     }
 
     try {
-      const res = await fetch("/api/users/change-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/users/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           oldPassword: form.oldPassword,
           newPassword: form.newPassword,
@@ -104,14 +102,11 @@ export default function AccountSection({ user }: { user: User }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      showNotification("Mot de passe mis à jour", "success");
+      showNotification('Mot de passe mis à jour', 'success');
       setShowPassword(false);
-      setForm((f) => ({ ...f, oldPassword: "", newPassword: "" }));
+      setForm((f) => ({ ...f, oldPassword: '', newPassword: '' }));
     } catch (error) {
-      showNotification(
-        error instanceof Error ? error.message : "Erreur",
-        "error"
-      );
+      showNotification(error instanceof Error ? error.message : 'Erreur', 'error');
     }
   };
 
@@ -154,17 +149,13 @@ export default function AccountSection({ user }: { user: User }) {
               <input
                 className="input px-3 py-3 border-b border-gray-400 dark:border-gray-700 w-full text-xl font-semibold focus:outline-none"
                 value={form.name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, name: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
               <input
                 type="email"
                 className="input px-3 py-3 border-b border-gray-400 dark:border-gray-700 w-full focus:outline-none"
                 value={form.email}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, email: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               />
 
               <div className="flex gap-3 pt-3">
@@ -201,13 +192,8 @@ export default function AccountSection({ user }: { user: User }) {
 
       {/* META */}
       <div className="text-sm text-gray-500 space-y-1">
-        {localUser.has_family && (
-          <p>Membre de la famille {localUser.family_name}</p>
-        )}
-        <p>
-          Compte créé le{" "}
-          {new Date(localUser.created_at).toLocaleDateString()}
-        </p>
+        {localUser.has_family && <p>Membre de la famille {localUser.family_name}</p>}
+        <p>Compte créé le {new Date(localUser.created_at).toLocaleDateString()}</p>
       </div>
 
       {/* PASSWORD */}
@@ -228,18 +214,14 @@ export default function AccountSection({ user }: { user: User }) {
               placeholder="Ancien mot de passe"
               className="input rounded-lg px-3 py-3 border border-gray-300 dark:border-gray-700"
               value={form.oldPassword}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, oldPassword: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, oldPassword: e.target.value }))}
             />
             <input
               type="password"
               placeholder="Nouveau mot de passe"
               className="input rounded-lg px-3 py-3 border border-gray-300 dark:border-gray-700"
               value={form.newPassword}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, newPassword: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, newPassword: e.target.value }))}
             />
 
             <div className="flex gap-3">

@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+
 import Icon from '@/components/ui/Icon';
-import { Fill } from '@/types/fill';
-import { Vehicle, VehicleMinimal } from '@/types/vehicle';
+
+import type { Fill } from '@/types/fill';
+import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 export interface FillFiltersProps {
   fills: Fill[] | null;
@@ -59,27 +61,25 @@ export default function FillFilters({
   }, []);
 
   const uniqueVehicles = vehicles.filter(
-    (v): v is Vehicle => typeof (v as Vehicle).vehicle_id === 'number'
+    (v): v is Vehicle => typeof (v as Vehicle).vehicle_id === 'number',
   );
 
   const toggleVehicle = (id: number) => {
-    setVehicleFilter(prev =>
-      prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]
-    );
+    setVehicleFilter((prev) => (prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]));
   };
 
   const toggleAll = () => {
     if (vehicleFilter.length === uniqueVehicles.length) {
       setVehicleFilter([]);
     } else {
-      setVehicleFilter(uniqueVehicles.map(v => v.vehicle_id));
+      setVehicleFilter(uniqueVehicles.map((v) => v.vehicle_id));
     }
   };
 
   const vehicleButtonText = () => {
     if (vehicleFilter.length === 0) return 'Tous les véhicules';
     if (vehicleFilter.length === 1) {
-      const v = uniqueVehicles.find(v => v.vehicle_id === vehicleFilter[0]);
+      const v = uniqueVehicles.find((v) => v.vehicle_id === vehicleFilter[0]);
       return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
     }
     return `${vehicleFilter.length} véhicules sélectionnés`;
@@ -90,9 +90,9 @@ export default function FillFilters({
     ? Array.from(
         new Set(
           fills
-            .map(f => (f.date ? new Date(f.date).getFullYear().toString() : null))
-            .filter((y): y is string => !!y)
-        )
+            .map((f) => (f.date ? new Date(f.date).getFullYear().toString() : null))
+            .filter((y): y is string => !!y),
+        ),
       ).sort((a, b) => b.localeCompare(a))
     : [];
 
@@ -101,12 +101,11 @@ export default function FillFilters({
         new Set(
           fills
             .filter(
-              f =>
-                yearFilter === 'all' ||
-                new Date(f.date!).getFullYear().toString() === yearFilter
+              (f) =>
+                yearFilter === 'all' || new Date(f.date!).getFullYear().toString() === yearFilter,
             )
-            .map(f => new Date(f.date!).getMonth())
-        )
+            .map((f) => new Date(f.date!).getMonth()),
+        ),
       ).sort((a, b) => a - b)
     : [];
 
@@ -132,9 +131,7 @@ export default function FillFilters({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Filtres & Tri
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Filtres & Tri</h3>
 
           {activeFiltersCount > 0 && (
             <span className="text-xs px-2 py-0.5 rounded-full bg-custom-1/20 dark:bg-custom-1/30 text-custom-1 dark:text-custom-1-dark font-medium">
@@ -145,7 +142,7 @@ export default function FillFilters({
 
         {/* Mobile toggle */}
         <button
-          onClick={() => setFiltersOpen(o => !o)}
+          onClick={() => setFiltersOpen((o) => !o)}
           className="md:hidden px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 flex items-center gap-2"
         >
           {filtersOpen ? <Icon name="arrow-up" size={16} /> : <Icon name="arrow-down" size={16} />}
@@ -166,14 +163,12 @@ export default function FillFilters({
 
           <button
             type="button"
-            onClick={() => setDropdownOpen(o => !o)}
+            onClick={() => setDropdownOpen((o) => !o)}
             disabled={loading || !fills?.length}
             className="flex justify-between items-center w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
           >
             <span
-              className={`truncate ${
-                vehicleFilter.length === 0 ? 'text-gray-400' : 'font-medium'
-              }`}
+              className={`truncate ${vehicleFilter.length === 0 ? 'text-gray-400' : 'font-medium'}`}
             >
               {vehicleButtonText()}
             </span>
@@ -193,8 +188,7 @@ export default function FillFilters({
               <DropdownItem
                 label="Tous les véhicules"
                 checked={
-                  vehicleFilter.length === uniqueVehicles.length &&
-                  uniqueVehicles.length > 0
+                  vehicleFilter.length === uniqueVehicles.length && uniqueVehicles.length > 0
                 }
                 onClick={toggleAll}
               />
@@ -202,7 +196,7 @@ export default function FillFilters({
               <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
               <div className="max-h-64 overflow-y-auto">
-                {uniqueVehicles.map(v => (
+                {uniqueVehicles.map((v) => (
                   <DropdownItem
                     key={v.vehicle_id}
                     label={v.name || `${v.make} ${v.model}`}
@@ -221,14 +215,14 @@ export default function FillFilters({
             <label className="block text-sm font-medium mb-1">Année</label>
             <select
               value={yearFilter}
-              onChange={e => {
+              onChange={(e) => {
                 setYearFilter(e.target.value);
                 setMonthFilter('all');
               }}
               className="w-full px-3 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
             >
               <option value="all">-</option>
-              {uniqueYears.map(y => (
+              {uniqueYears.map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>
@@ -240,11 +234,11 @@ export default function FillFilters({
             <label className="block text-sm font-medium mb-1">Mois</label>
             <select
               value={monthFilter}
-              onChange={e => setMonthFilter(e.target.value)}
+              onChange={(e) => setMonthFilter(e.target.value)}
               className="w-full px-3 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
             >
               <option value="all">-</option>
-              {monthsToDisplay.map(m => (
+              {monthsToDisplay.map((m) => (
                 <option key={m} value={m}>
                   {formatMonth(m)}
                 </option>
@@ -259,7 +253,7 @@ export default function FillFilters({
           <div className="flex gap-2">
             <select
               value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
+              onChange={(e) => setSortBy(e.target.value)}
               className="flex-1 px-3 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
             >
               <option value="date">Date</option>
@@ -268,9 +262,7 @@ export default function FillFilters({
             </select>
 
             <button
-              onClick={() =>
-                setSortDirection(d => (d === 'asc' ? 'desc' : 'asc'))
-              }
+              onClick={() => setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'))}
               className="px-3 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-custom-2 hover:bg-custom-2-hover flex items-center justify-center"
             >
               <Icon
@@ -300,16 +292,12 @@ function DropdownItem({
     <button
       onClick={onClick}
       className={`flex items-center gap-3 w-full px-4 py-3 text-left transition ${
-        checked
-          ? 'bg-custom-1/10 dark:bg-custom-1/10'
-          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+        checked ? 'bg-custom-1/10 dark:bg-custom-1/10' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
       }`}
     >
       <span
         className={`w-4 h-4 rounded border flex items-center justify-center ${
-          checked
-            ? 'bg-custom-1 border-custom-1'
-            : 'border-gray-400 dark:border-gray-500'
+          checked ? 'bg-custom-1 border-custom-1' : 'border-gray-400 dark:border-gray-500'
         }`}
       >
         <Icon

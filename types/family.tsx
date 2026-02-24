@@ -3,7 +3,8 @@ export type FamilyRole = 'owner' | 'member';
 export interface Family {
   id: string;
   name: string;
-  owner: string;       // User ID
+  owner_id: string;
+  invite_token: string;
   created_at: string;
 }
 

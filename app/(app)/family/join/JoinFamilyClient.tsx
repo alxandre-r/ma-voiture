@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useNotifications } from '@/contexts/NotificationContext';
+import React, { useState, useEffect } from 'react';
+
 import { useFamily } from '@/contexts/FamilyContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface FamilyInvite {
   id: string;
@@ -32,7 +33,7 @@ export default function JoinFamilyClient() {
   useEffect(() => {
     const urlToken = searchParams.get('token');
     if (!urlToken) {
-      setError('Token d\'invitation manquant');
+      setError("Token d'invitation manquant");
       setIsLoading(false);
       return;
     }
@@ -60,7 +61,8 @@ export default function JoinFamilyClient() {
 
         setFamilyData(familyJson);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Erreur lors du chargement de la famille';
+        const message =
+          err instanceof Error ? err.message : 'Erreur lors du chargement de la famille';
         setError(message);
       } finally {
         setIsLoading(false);
@@ -130,9 +132,7 @@ export default function JoinFamilyClient() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow p-6 text-center">
-          <h2 className="text-xl font-semibold text-red-600">
-            Invitation invalide
-          </h2>
+          <h2 className="text-xl font-semibold text-red-600">Invitation invalide</h2>
           <p className="mt-3 text-gray-600 dark:text-gray-400">
             {error ?? 'Impossible de charger les informations de la famille.'}
           </p>
@@ -170,8 +170,7 @@ export default function JoinFamilyClient() {
                 {new Date(familyData.created_at).toLocaleDateString()}
               </p>
               <p>
-                <span className="font-medium">Propriétaire :</span>{' '}
-                {familyData.owner_user.name}
+                <span className="font-medium">Propriétaire :</span> {familyData.owner_user.name}
               </p>
             </div>
           </div>
@@ -198,9 +197,7 @@ export default function JoinFamilyClient() {
           </div>
 
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-red-600">
-              {error}
-            </div>
+            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-red-600">{error}</div>
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { useEffect, useRef } from 'react';
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -123,7 +123,12 @@ interface AuroraProps {
 }
 
 export default function Aurora(props: AuroraProps) {
-  const { colorStops = ['#7E47FF', '#F26E52', '#47BFFF'], amplitude = 1.0, blend = 0.5, theme = 'dark' } = props;
+  const {
+    colorStops = ['#7E47FF', '#F26E52', '#47BFFF'],
+    amplitude = 1.0,
+    blend = 0.5,
+    theme = 'dark',
+  } = props;
   const propsRef = useRef<AuroraProps>(props);
   propsRef.current = props;
 
@@ -136,7 +141,7 @@ export default function Aurora(props: AuroraProps) {
     const renderer = new Renderer({
       alpha: true,
       premultipliedAlpha: true,
-      antialias: true
+      antialias: true,
     });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -162,7 +167,7 @@ export default function Aurora(props: AuroraProps) {
       delete geometry.attributes.uv;
     }
 
-    const colorStopsArray = colorStops.map(hex => {
+    const colorStopsArray = colorStops.map((hex) => {
       const c = new Color(hex);
       return [c.r, c.g, c.b];
     });
@@ -176,8 +181,8 @@ export default function Aurora(props: AuroraProps) {
         uColorStops: { value: colorStopsArray },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: blend },
-        uTheme: { value: theme === 'light' ? 1.0 : 0.0 }
-      }
+        uTheme: { value: theme === 'light' ? 1.0 : 0.0 },
+      },
     });
 
     const mesh = new Mesh(gl, { geometry, program });
@@ -212,7 +217,7 @@ export default function Aurora(props: AuroraProps) {
       }
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [amplitude, theme]);
+  }, [amplitude, blend, colorStops, theme]);
 
   return <div ref={ctnDom} className="w-full h-full" />;
 }

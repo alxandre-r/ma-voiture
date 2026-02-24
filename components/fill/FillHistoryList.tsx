@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { Vehicle, VehicleMinimal } from '@/types/vehicle';
-import { Fill } from '@/types/fill';
+
 import FillRowContainer from '@/components/fill/FillRowContainer';
+
 import FillFilters from '../history/FillFilters';
+
+import type { Fill } from '@/types/fill';
+import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 interface FillHistoryListProps {
   vehicles?: (Vehicle | VehicleMinimal)[];
@@ -12,7 +15,11 @@ interface FillHistoryListProps {
   onRefresh?: () => void; // callback pour refresh parent / API
 }
 
-export default function FillHistoryList({ vehicles = [], fills = [], onRefresh }: FillHistoryListProps) {
+export default function FillHistoryList({
+  vehicles = [],
+  fills = [],
+  onRefresh,
+}: FillHistoryListProps) {
   const allVehicles = vehicles;
 
   // --- Filter State ---
@@ -35,21 +42,17 @@ export default function FillHistoryList({ vehicles = [], fills = [], onRefresh }
     let result = [...fills];
 
     if (filters.vehicleFilter.length > 0) {
-      result = result.filter(f =>
-        filters.vehicleFilter.includes(f.vehicle_id)
-      );
+      result = result.filter((f) => filters.vehicleFilter.includes(f.vehicle_id));
     }
 
     if (filters.yearFilter !== 'all') {
       result = result.filter(
-        f => new Date(f.date).getFullYear().toString() === filters.yearFilter
+        (f) => new Date(f.date).getFullYear().toString() === filters.yearFilter,
       );
     }
 
     if (filters.monthFilter !== 'all') {
-      result = result.filter(
-        f => new Date(f.date).getMonth().toString() === filters.monthFilter
-      );
+      result = result.filter((f) => new Date(f.date).getMonth().toString() === filters.monthFilter);
     }
 
     if (filters.sortBy === 'date') {
@@ -61,13 +64,13 @@ export default function FillHistoryList({ vehicles = [], fills = [], onRefresh }
       result.sort((a, b) =>
         filters.sortDirection === 'asc'
           ? (a.amount ?? 0) - (b.amount ?? 0)
-          : (b.amount ?? 0) - (a.amount ?? 0)
+          : (b.amount ?? 0) - (a.amount ?? 0),
       );
     } else if (filters.sortBy === 'price_per_liter') {
       result.sort((a, b) =>
         filters.sortDirection === 'asc'
           ? (a.price_per_liter ?? 0) - (b.price_per_liter ?? 0)
-          : (b.price_per_liter ?? 0) - (a.price_per_liter ?? 0)
+          : (b.price_per_liter ?? 0) - (a.price_per_liter ?? 0),
       );
     }
 
@@ -75,19 +78,25 @@ export default function FillHistoryList({ vehicles = [], fills = [], onRefresh }
   }, [fills, filters]);
 
   // --- Statistics ---
-  const totalLiters = useMemo(() => filteredFills.reduce((sum, f) => sum + (f.liters ?? 0), 0), [filteredFills]);
-  const totalCost = useMemo(() => filteredFills.reduce((sum, f) => sum + (f.amount ?? 0), 0), [filteredFills]);
+  const totalLiters = useMemo(
+    () => filteredFills.reduce((sum, f) => sum + (f.liters ?? 0), 0),
+    [filteredFills],
+  );
+  const totalCost = useMemo(
+    () => filteredFills.reduce((sum, f) => sum + (f.amount ?? 0), 0),
+    [filteredFills],
+  );
   const totalKilometers = useMemo(() => {
     if (!filteredFills.length) return 0;
-    const odometers = filteredFills.map(f => f.odometer).filter((o): o is number => o != null);
+    const odometers = filteredFills.map((f) => f.odometer).filter((o): o is number => o != null);
     return odometers.length ? Math.max(...odometers) - Math.min(...odometers) : 0;
   }, [filteredFills]);
   const avgPricePerLiter = totalLiters > 0 ? totalCost / totalLiters : 0;
-  const formatCurrency = (value?: number | null) => value == null ? 'N/A' : `${value.toFixed(2)} €`;
+  const formatCurrency = (value?: number | null) =>
+    value == null ? 'N/A' : `${value.toFixed(2)} €`;
 
   return (
     <div className="fill-history">
-
       <div className="mb-4">
         <FillFilters
           fills={fills ?? null}
@@ -123,13 +132,11 @@ export default function FillHistoryList({ vehicles = [], fills = [], onRefresh }
       )}
 
       {filteredFills.length === 0 && (
-        <div className="text-center py-8 text-gray-400">
-          Aucun plein trouvé pour le moment.
-        </div>
+        <div className="text-center py-8 text-gray-400">Aucun plein trouvé pour le moment.</div>
       )}
 
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 px-2 sm:px-4 space-y-2">
-        {filteredFills.map(fill => (
+        {filteredFills.map((fill) => (
           <FillRowContainer
             key={fill.id}
             fill={fill}

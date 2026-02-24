@@ -3,8 +3,9 @@
  * @description Unified endpoint for updating user profile (name + email)
  */
 
-import { createSupabaseServerClient } from "@/lib/supabase/supabaseServer";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function POST(request: Request) {
   try {
@@ -16,8 +17,8 @@ export async function POST(request: Request) {
 
     if (authError || !user) {
       return NextResponse.json(
-        { error: "Non autorisé - utilisateur non connecté" },
-        { status: 401 }
+        { error: 'Non autorisé - utilisateur non connecté' },
+        { status: 401 },
       );
     }
 
@@ -27,41 +28,28 @@ export async function POST(request: Request) {
 
     // Validation minimale
     if (!name && !email) {
-      return NextResponse.json(
-        { error: "Aucune donnée à mettre à jour" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Aucune donnée à mettre à jour' }, { status: 400 });
     }
     if (name !== undefined && name.length === 0) {
-      return NextResponse.json(
-        { error: "Nom invalide" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Nom invalide' }, { status: 400 });
     }
     if (email !== undefined) {
-      const isValidEmail =
-        email.includes("@") && email.includes(".") && email.length > 5;
+      const isValidEmail = email.includes('@') && email.includes('.') && email.length > 5;
 
       if (!isValidEmail) {
-        return NextResponse.json(
-          { error: "Adresse email invalide" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Adresse email invalide' }, { status: 400 });
       }
     }
 
     // Récupérer l'utilisateur actuel en base
     const { data: dbUser, error: fetchError } = await supabase
-      .from("users")
-      .select("name, email")
-      .eq("id", user.id)
+      .from('users')
+      .select('name, email')
+      .eq('id', user.id)
       .single();
 
     if (fetchError || !dbUser) {
-      return NextResponse.json(
-        { error: "Utilisateur introuvable" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 });
     }
 
     const updates: { name?: string; email?: string } = {};
@@ -77,8 +65,8 @@ export async function POST(request: Request) {
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json(
-        { success: true, message: "Aucune modification détectée" },
-        { status: 200 }
+        { success: true, message: 'Aucune modification détectée' },
+        { status: 200 },
       );
     }
 
@@ -89,40 +77,34 @@ export async function POST(request: Request) {
       });
 
       if (emailError) {
-        console.error("Erreur Supabase auth.updateUser:", emailError);
+        console.error('Erreur Supabase auth.updateUser:', emailError);
         return NextResponse.json(
           { error: "Erreur lors de la mise à jour de l'email" },
-          { status: 500 }
+          { status: 500 },
         );
       }
     }
 
     // Update table users
-    const { error: updateError } = await supabase
-      .from("users")
-      .update(updates)
-      .eq("id", user.id);
+    const { error: updateError } = await supabase.from('users').update(updates).eq('id', user.id);
 
     if (updateError) {
-      console.error("Erreur update users:", updateError);
+      console.error('Erreur update users:', updateError);
       return NextResponse.json(
-        { error: "Erreur lors de la mise à jour du profil" },
-        { status: 500 }
+        { error: 'Erreur lors de la mise à jour du profil' },
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: "Profil mis à jour avec succès",
+        message: 'Profil mis à jour avec succès',
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
-    console.error("Erreur serveur update-profile:", error);
-    return NextResponse.json(
-      { error: "Erreur serveur" },
-      { status: 500 }
-    );
+    console.error('Erreur serveur update-profile:', error);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }

@@ -5,13 +5,14 @@
  * This endpoint handles updating family name and other properties.
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function PATCH(request: Request) {
   try {
     const supabase = await createSupabaseServerClient();
-    
+
     // Get authenticated user
     const {
       data: { user },
@@ -20,7 +21,7 @@ export async function PATCH(request: Request) {
     if (!user) {
       return NextResponse.json(
         { error: 'Non autorisé - utilisateur non connecté' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -28,24 +29,18 @@ export async function PATCH(request: Request) {
 
     // Validate family ID
     if (!familyId) {
-      return NextResponse.json(
-        { error: 'L\'ID de la famille est requis' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "L'ID de la famille est requis" }, { status: 400 });
     }
 
     // Validate family name
     if (!name || name.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'Le nom de la famille est requis' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Le nom de la famille est requis' }, { status: 400 });
     }
 
     if (name.length > 100) {
       return NextResponse.json(
         { error: 'Le nom de la famille ne doit pas dépasser 100 caractères' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -59,15 +54,15 @@ export async function PATCH(request: Request) {
 
     if (memberError || !familyMember) {
       return NextResponse.json(
-        { error: 'Vous ne faites pas partie de cette famille ou elle n\'existe pas' },
-        { status: 403 }
+        { error: "Vous ne faites pas partie de cette famille ou elle n'existe pas" },
+        { status: 403 },
       );
     }
 
     if (familyMember.role !== 'owner') {
       return NextResponse.json(
         { error: 'Seul le propriétaire peut modifier les informations de la famille' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -85,24 +80,23 @@ export async function PATCH(request: Request) {
       console.error('Erreur Supabase lors de la mise à jour de la famille:', familyError);
       return NextResponse.json(
         { error: 'Erreur lors de la mise à jour de la famille' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
-      { 
+      {
         success: true,
         message: 'Famille mise à jour avec succès',
-        family: familyData 
+        family: familyData,
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error) {
     console.error('Erreur serveur lors de la mise à jour de la famille:', error);
     return NextResponse.json(
       { error: 'Erreur serveur lors de la mise à jour de la famille' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

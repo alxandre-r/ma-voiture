@@ -1,14 +1,20 @@
-import { motion } from "framer-motion";
-import { PeriodType } from "@/app/(app)/dashboard/DashboardClient";
+import { motion } from 'framer-motion';
+
+import type { PeriodType } from '@/app/(app)/dashboard/DashboardClient';
 
 const periodOptions: { label: string; value: string }[] = [
-  { label: "3 mois", value: "3m" },
-  { label: "6 mois", value: "6m" },
-  { label: "12 mois", value: "12m" },
+  { label: '3 mois', value: '3m' },
+  { label: '6 mois', value: '6m' },
+  { label: '12 mois', value: '12m' },
 ];
 
-export default function PeriodSelector({ selectedPeriod, setSelectedPeriod }: { selectedPeriod: PeriodType; setSelectedPeriod: (period: PeriodType) => void }) {
-
+export default function PeriodSelector({
+  selectedPeriod,
+  setSelectedPeriod,
+}: {
+  selectedPeriod: PeriodType;
+  setSelectedPeriod: (period: PeriodType) => void;
+}) {
   return (
     <div className="w-full sm:w-auto">
       <motion.div
@@ -52,7 +58,7 @@ export default function PeriodSelector({ selectedPeriod, setSelectedPeriod }: { 
                     shadow-md
                   "
                   transition={{
-                    type: "spring",
+                    type: 'spring',
                     stiffness: 300,
                     damping: 25,
                   }}
@@ -61,9 +67,7 @@ export default function PeriodSelector({ selectedPeriod, setSelectedPeriod }: { 
 
               <span
                 className={`relative z-10 transition-colors duration-200 ${
-                  isActive
-                    ? "text-white"
-                    : "text-gray-700 dark:text-gray-300"
+                  isActive ? 'text-white' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 {opt.label}

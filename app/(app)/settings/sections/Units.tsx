@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Icon from "@/components/ui/Icon";
+import { useState } from 'react';
+
+import Icon from '@/components/ui/Icon';
 
 export default function UnitsSection() {
   const [units, setUnits] = useState({
-    distance: "km",
-    fuel: "L",
-    consumption: "L/100km",
+    distance: 'km',
+    fuel: 'L',
+    consumption: 'L/100km',
   });
 
   return (
@@ -25,9 +26,7 @@ export default function UnitsSection() {
           </label>
           <select
             value={units.distance}
-            onChange={(e) =>
-              setUnits({ ...units, distance: e.target.value })
-            }
+            onChange={(e) => setUnits({ ...units, distance: e.target.value })}
             className="p-4 rounded-lg border w-full lg:w-[360px] bg-gray-50 border-gray-300
               dark:bg-gray-900 dark:border-gray-600 hover:cursor-pointer
               focus:ring-2 focus:ring-custom-1 focus:outline-none"
@@ -44,9 +43,7 @@ export default function UnitsSection() {
           </label>
           <select
             value={units.fuel}
-            onChange={(e) =>
-              setUnits({ ...units, fuel: e.target.value })
-            }
+            onChange={(e) => setUnits({ ...units, fuel: e.target.value })}
             className="p-4 rounded-lg border w-full lg:w-[360px] bg-gray-50 border-gray-300
               dark:bg-gray-900 dark:border-gray-600 hover:cursor-pointer
               focus:ring-2 focus:ring-custom-1 focus:outline-none"
@@ -63,9 +60,7 @@ export default function UnitsSection() {
           </label>
           <select
             value={units.consumption}
-            onChange={(e) =>
-              setUnits({ ...units, consumption: e.target.value })
-            }
+            onChange={(e) => setUnits({ ...units, consumption: e.target.value })}
             className="p-4 rounded-lg border w-full lg:w-[360px] bg-gray-50 border-gray-300
               dark:bg-gray-900 dark:border-gray-600 hover:cursor-pointer
               focus:ring-2 focus:ring-custom-1 focus:outline-none"
@@ -77,8 +72,8 @@ export default function UnitsSection() {
 
         <div className="bg-custom-1/10 dark:bg-custom-1-dark/10 p-4 rounded-lg border border-custom-1/20 dark:border-custom-1-dark/20">
           <p className="text-sm text-custom-1 dark:text-custom-1-dark">
-            <strong>Note :</strong> Les unités sont appliquées à tous vos
-            véhicules et historiques de consommation.
+            <strong>Note :</strong> Les unités sont appliquées à tous vos véhicules et historiques
+            de consommation.
           </p>
         </div>
       </div>

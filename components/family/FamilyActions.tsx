@@ -1,9 +1,10 @@
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+
+import { RenameFamilyModal } from '@/components/family/RenameFamilyModal';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { useFamily } from '@/contexts/FamilyContext';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { useRouter } from 'next/navigation';
-import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
-import { RenameFamilyModal } from '@/components/family/RenameFamilyModal';
 
 interface FamilyActionsProps {
   familyId: string;
@@ -47,7 +48,7 @@ export const FamilyActions: React.FC<FamilyActionsProps> = ({
     } catch (error) {
       showNotification(
         error instanceof Error ? error.message : 'Erreur lors du renommage de la famille',
-        'error'
+        'error',
       );
     } finally {
       setIsLoading(false);
@@ -67,7 +68,7 @@ export const FamilyActions: React.FC<FamilyActionsProps> = ({
     } catch (error) {
       showNotification(
         error instanceof Error ? error.message : 'Erreur lors de la sortie de la famille',
-        'error'
+        'error',
       );
     } finally {
       setIsLoading(false);
@@ -87,7 +88,7 @@ export const FamilyActions: React.FC<FamilyActionsProps> = ({
     } catch (error) {
       showNotification(
         error instanceof Error ? error.message : 'Erreur lors de la suppression de la famille',
-        'error'
+        'error',
       );
     } finally {
       setIsLoading(false);

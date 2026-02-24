@@ -1,23 +1,24 @@
 /**
  * @file components/LogoutButton.tsx
  * @fileoverview Logout button component for user authentication.
- * 
+ *
  * This component handles user logout by calling Supabase auth.signOut()
  * and redirecting to the home page.
  */
 
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
+import { useRouter } from 'next/navigation';
+
+import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
 
 /**
  * LogoutButton Component
- * 
+ *
  * Button that initiates user logout process.
  * Clears session and redirects to home page.
  */
-export default function LogoutButton({ className = "" }: { className?: string }) {
+export default function LogoutButton({ className = '' }: { className?: string }) {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
@@ -27,7 +28,7 @@ export default function LogoutButton({ className = "" }: { className?: string })
    */
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/");
+    router.push('/');
   };
 
   return (

@@ -1,32 +1,33 @@
 /**
  * @file components/auth/SignInForm.tsx
  * @fileoverview Sign-in form component for user authentication.
- * 
+ *
  * This component handles user login by collecting email and password,
  * validating credentials with Supabase, and redirecting to dashboard on success.
  */
 
-"use client";
+'use client';
 
-import { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
+import { useState } from 'react';
+
+import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
 
 /**
  * SignInForm Component
- * 
+ *
  * Handles user authentication via email/password.
  * On successful login, redirects to dashboard.
  * Displays error messages for failed login attempts.
  */
 export default function SignInForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   /**
    * Handles form submission for user login.
-   * 
+   *
    * @param {React.FormEvent} e - Form submission event
    */
   const handleSignIn = async (e: React.FormEvent) => {
@@ -44,7 +45,8 @@ export default function SignInForm() {
       setErrorMsg(error.message);
       setLoading(false);
     } else {
-      const redirectUrl = new URLSearchParams(window.location.search).get("redirect") || "/dashboard";
+      const redirectUrl =
+        new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
       window.location.href = redirectUrl;
     }
   };
@@ -52,7 +54,9 @@ export default function SignInForm() {
   return (
     <form onSubmit={handleSignIn} className="space-y-4 px-6 w-full max-w-md">
       <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">Connexion</h2>
-      {errorMsg && <p className="text-center text-red-500 dark:text-red-400 font-semibold">{errorMsg}</p>}
+      {errorMsg && (
+        <p className="text-center text-red-500 dark:text-red-400 font-semibold">{errorMsg}</p>
+      )}
 
       <input
         type="email"
@@ -79,7 +83,7 @@ export default function SignInForm() {
             Connexion en cours...
           </span>
         ) : (
-          "Se connecter"
+          'Se connecter'
         )}
       </button>
     </form>

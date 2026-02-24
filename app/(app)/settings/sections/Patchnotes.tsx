@@ -1,125 +1,157 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Icon from "@/components/ui/Icon";
-import Link from "next/link";
-import { VersionBlock, VersionBlockProps } from "@/components/patchnotes/versionBlock";
+import Link from 'next/link';
+
+import { VersionBlock } from '@/components/patchnotes/versionBlock';
+import Icon from '@/components/ui/Icon';
+
+import type { VersionBlockProps } from '@/components/patchnotes/versionBlock';
 
 export default function PatchnotesSection() {
-
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
     {
-      version: "1.1.0",
-      date: "23 Février 2026",
-      summary: "Optimisation de la performance et UX",
+      version: '1.1.0',
+      date: '23 Février 2026',
+      summary: 'Optimisation de la performance et UX',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li>Optimisation côté server pour charger les pages plus rapidement, valable pour toutes les pages</li>
+          <li>
+            Optimisation côté server pour charger les pages plus rapidement, valable pour toutes les
+            pages
+          </li>
           <li>Ajouts de placeholders lorsque les données sont en chargement</li>
-          <li>Amélioration de l&apos;affichage de l&apos;historique des pleins (pages Dashboard et Consommations)</li>
+          <li>
+            Amélioration de l&apos;affichage de l&apos;historique des pleins (pages Dashboard et
+            Consommations)
+          </li>
           <li>Ajout de retour visuel lors de diverses actions</li>
           <li>Correction de bug à la copie du token d&apos;invitation de la famille</li>
           <li>Correction des droits pour les membres de la famille sur les véhicules partagés</li>
-          <li>Changer le mode d&apos;affichage par défaut du graphique de l&apos;évolution du kilométrage de &apos;Total&apos; à &apos;Normalisé&apos;</li>
+          <li>
+            Changer le mode d&apos;affichage par défaut du graphique de l&apos;évolution du
+            kilométrage de &apos;Total&apos; à &apos;Normalisé&apos;
+          </li>
         </ul>
       ),
-      type: "minor",
+      type: 'minor',
     },
     {
-      version: "1.0.4",
-      date: "17 Février 2026",
-      summary: "Refonte des graphiques du dashboard",
+      version: '1.0.4',
+      date: '17 Février 2026',
+      summary: 'Refonte des graphiques du dashboard',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li>Refonte complète des graphiques du dashboard : nouveau design, nouvelles animations, infobulles et support multi-véhicules.</li>
-          <li>Ajout d&apos;un switch pour basculer entre la vue par plein et la vue mensuelle dans le graphique de consommation.</li>
-          <li>Ajout d&apos;un switch de temporalité pour choisir la période affichée dans les graphiques du dashboard (3 derniers mois, 6 derniers mois, 12 derniers mois).</li>
+          <li>
+            Refonte complète des graphiques du dashboard : nouveau design, nouvelles animations,
+            infobulles et support multi-véhicules.
+          </li>
+          <li>
+            Ajout d&apos;un switch pour basculer entre la vue par plein et la vue mensuelle dans le
+            graphique de consommation.
+          </li>
+          <li>
+            Ajout d&apos;un switch de temporalité pour choisir la période affichée dans les
+            graphiques du dashboard (3 derniers mois, 6 derniers mois, 12 derniers mois).
+          </li>
           <li>Amélioration de l&apos;affichage mobile des graphiques.</li>
-          <li>Ajout de la possibilité de modifié la couleur d&apos;un véhicule. Cette couleur est utilisée dans les graphiques du dashboard.</li>
+          <li>
+            Ajout de la possibilité de modifié la couleur d&apos;un véhicule. Cette couleur est
+            utilisée dans les graphiques du dashboard.
+          </li>
         </ul>
       ),
-      type: "minor",
+      type: 'minor',
     },
-      {
-      version: "1.0.3",
-      date: "11 Février 2026",
-      summary: "Améliorations des fonctionnalités liées au compte utilisateur.", 
+    {
+      version: '1.0.3',
+      date: '11 Février 2026',
+      summary: 'Améliorations des fonctionnalités liées au compte utilisateur.',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li>A l&apos;inscription, ajout d&apos;un champ pour le nom de l&apos;utilisateur. Ce nom est utilisé pour les fonctionnalités de famille et modifiable depuis la page Paramètres &gt; Mon compte.</li>
-          <li>Possibilité de supprimer son compte depuis la page Paramètres &gt; Confidentialité. Cette action supprime l&apos;utilisateur de la base de données et invalide sa session.</li>
+          <li>
+            A l&apos;inscription, ajout d&apos;un champ pour le nom de l&apos;utilisateur. Ce nom
+            est utilisé pour les fonctionnalités de famille et modifiable depuis la page Paramètres
+            &gt; Mon compte.
+          </li>
+          <li>
+            Possibilité de supprimer son compte depuis la page Paramètres &gt; Confidentialité.
+            Cette action supprime l&apos;utilisateur de la base de données et invalide sa session.
+          </li>
         </ul>
       ),
-      type: "minor",
+      type: 'minor',
     },
-   {
-      version: "1.0.2",
-      date: "09 Février 2026",
-      summary: "Améliorations mineures.", 
+    {
+      version: '1.0.2',
+      date: '09 Février 2026',
+      summary: 'Améliorations mineures.',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li>Page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">Historique</Link> : 
-          Amélioration de l&apos;affichage mobile des filtres. Ajout des kilomètres parcourus dans les statistiques. </li>
+          <li>
+            Page{' '}
+            <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">
+              Historique
+            </Link>{' '}
+            : Amélioration de l&apos;affichage mobile des filtres. Ajout des kilomètres parcourus
+            dans les statistiques.{' '}
+          </li>
           <li> Rework visuel de l&apos;édition d&apos;un plein, support mobile.</li>
         </ul>
       ),
-      type: "minor",
+      type: 'minor',
     },
     {
-      version: "1.0.1",
-      date: "08 Février 2026",
+      version: '1.0.1',
+      date: '08 Février 2026',
       summary: "Amélioration de l'expérience utilisateur et correction de bugs mineurs.",
       details: (
         <ul className="list-disc list-inside space-y-1">
           <li>
-            Ajout d&apos;un indice pour ajouter un plein quand un véhicule n&apos;en a pas dans le{" "}
+            Ajout d&apos;un indice pour ajouter un plein quand un véhicule n&apos;en a pas dans le{' '}
             <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
               garage
             </Link>
             . Le bouton ouvre le formulaire d&apos;ajout de plein automatiquement pour ce véhicule.
           </li>
           <li>
-            Ajout d&apos;un affichage spécifique quand le{" "}
+            Ajout d&apos;un affichage spécifique quand le{' '}
             <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
               garage
-            </Link>{" "}
+            </Link>{' '}
             est vide.
           </li>
           <li>
-            Ajout d&apos;un affichage spécifique dans le{" "}
+            Ajout d&apos;un affichage spécifique dans le{' '}
             <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">
               dashboard
-            </Link>{" "}
+            </Link>{' '}
             quand l&apos;utilisateur a un véhicule mais aucun plein.
           </li>
-                    <li>
-            Reworked la page Mon Compte dans les paramètres. L&apos;utilisateur peut maintenant y modifier son nom.
-          </li>
           <li>
-            Ajuster la largeur de plusieurs inputs et boutons dans les paramètres.
+            Reworked la page Mon Compte dans les paramètres. L&apos;utilisateur peut maintenant y
+            modifier son nom.
           </li>
+          <li>Ajuster la largeur de plusieurs inputs et boutons dans les paramètres.</li>
           <li>
             Ajuster la couleur du badge véhicule dans le
-              <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
-                garage
-              </Link>
-              .
+            <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
+              garage
+            </Link>
+            .
           </li>
           <li>
-            Correction de bugs : Correction du selecteur de véhicule dans la page Dashboard. Correction d&apos;un bug lié à la fonctionnalité famille.
+            Correction de bugs : Correction du selecteur de véhicule dans la page Dashboard.
+            Correction d&apos;un bug lié à la fonctionnalité famille.
           </li>
-          <li>
-            Amélioration de l&apos;affichage mobile pour l&apos;ensemble des pages.
-          </li>
-
+          <li>Amélioration de l&apos;affichage mobile pour l&apos;ensemble des pages.</li>
         </ul>
       ),
-      type: "minor",
+      type: 'minor',
     },
     {
-      version: "1.0.0",
-      date: "04 Février 2026",
+      version: '1.0.0',
+      date: '04 Février 2026',
       summary:
         "Introduction des patchnotes. Refonte de la base de données, simplification du backend, refonte des composants véhicules, et amélioration de l'expérience utilisateur.",
       details: (
@@ -131,25 +163,35 @@ export default function PatchnotesSection() {
               <li>
                 <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">
                   Dashboard
-                </Link>{" "}
+                </Link>{' '}
                 : landing page si aucun véhicule.
               </li>
               <li>
-                Bouton qui ouvre directement le formulaire.{" "}
-                <Link href="/garage?addVehicle=true" className="text-indigo-600 dark:text-indigo-400 underline">
+                Bouton qui ouvre directement le formulaire.{' '}
+                <Link
+                  href="/garage?addVehicle=true"
+                  className="text-indigo-600 dark:text-indigo-400 underline"
+                >
                   Essayez
                 </Link>
                 !
               </li>
               <li>
-                Refonte visuelle des <strong>VehicleCards</strong> et du formulaire d&apos;édition de véhicule.{" "}
+                Refonte visuelle des <strong>VehicleCards</strong> et du formulaire d&apos;édition
+                de véhicule.{' '}
                 <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
                   Voir le garage
                 </Link>
                 .
               </li>
-              <li>Modal de formulaire d&apos;ajout et d&apos;édition basé sur le composant générique Modal.</li>
-              <li>Ajout de la page patchnotes dans les paramètres, avec résumé et détails des changements.</li>
+              <li>
+                Modal de formulaire d&apos;ajout et d&apos;édition basé sur le composant générique
+                Modal.
+              </li>
+              <li>
+                Ajout de la page patchnotes dans les paramètres, avec résumé et détails des
+                changements.
+              </li>
             </ul>
           </div>
 
@@ -157,10 +199,21 @@ export default function PatchnotesSection() {
           <div>
             <h4 className="text-lg font-semibold mb-1">Base de données / Vues</h4>
             <ul className="list-disc list-inside space-y-1">
-              <li>Suppression de toutes les vues existantes et création de 3 nouvelles vues pour le front : <code>vehicle</code>, <code>fill</code>, <code>family</code>.</li>
-              <li>Modification de la plupart des tables, intégration de <code>family_id</code> dans la table <code>users</code>.</li>
-              <li>Calcul automatique du <code>last_fill</code> du véhicule directement en base.</li>
-              <li>Calcul automatique du <code>calculated_consumption</code> des véhicules directement en base.</li>
+              <li>
+                Suppression de toutes les vues existantes et création de 3 nouvelles vues pour le
+                front : <code>vehicle</code>, <code>fill</code>, <code>family</code>.
+              </li>
+              <li>
+                Modification de la plupart des tables, intégration de <code>family_id</code> dans la
+                table <code>users</code>.
+              </li>
+              <li>
+                Calcul automatique du <code>last_fill</code> du véhicule directement en base.
+              </li>
+              <li>
+                Calcul automatique du <code>calculated_consumption</code> des véhicules directement
+                en base.
+              </li>
             </ul>
           </div>
 
@@ -178,37 +231,63 @@ export default function PatchnotesSection() {
             <h4 className="text-lg font-semibold mb-1">Composants et types</h4>
             <ul className="list-disc list-inside space-y-1">
               <li>Normalisation des commentaires et overview dans les fichiers véhicules.</li>
-              <li><code>VehicleEditForm</code> : appels API indépendants et refonte visuelle.</li>
+              <li>
+                <code>VehicleEditForm</code> : appels API indépendants et refonte visuelle.
+              </li>
               <li>Refonte de la page paramètres qui utilise maintenant un fichier par section.</li>
             </ul>
           </div>
         </div>
       ),
-      type: "major",
+      type: 'major',
     },
     {
-      version: "À venir",
-      date: "",
-      summary: "Prochaines fonctionnalités et améliorations prévues",
+      version: 'À venir',
+      date: '',
+      summary: 'Prochaines fonctionnalités et améliorations prévues',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">Dashboard & Véhicules</li>
-          <li>Bug fix : charts ne fonctionnent pas correctement en multi sélection de véhicules.</li>
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">
+            Dashboard & Véhicules
+          </li>
+          <li>
+            Bug fix : charts ne fonctionnent pas correctement en multi sélection de véhicules.
+          </li>
 
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Notifications & Historique</li>
-          <li>Utiliser les <strong>Notifications</strong> dans la page <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">History</Link> (Edit, Delete).</li>
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
+            Notifications & Historique
+          </li>
+          <li>
+            Utiliser les <strong>Notifications</strong> dans la page{' '}
+            <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">
+              History
+            </Link>{' '}
+            (Edit, Delete).
+          </li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
-          <li>Page <strong>Famille</strong> : Restreindre l&apos;invitation au propriétaire uniquement.</li>
+          <li>
+            Page <strong>Famille</strong> : Restreindre l&apos;invitation au propriétaire
+            uniquement.
+          </li>
           <li>Correction du formulaire d&apos;invitation</li>
 
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Nouvelles fonctionnalités</li>
-          <li>Implémenter l&apos;<strong>assurance de véhicule</strong> avec informations et historique.</li>
-          <li>Ajouter les <strong>statistiques de coûts</strong> par véhicule et par flotte.</li>
-          <li>Prise en charge des <strong>véhicules électriques</strong>.</li>
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
+            Nouvelles fonctionnalités
+          </li>
+          <li>
+            Implémenter l&apos;<strong>assurance de véhicule</strong> avec informations et
+            historique.
+          </li>
+          <li>
+            Ajouter les <strong>statistiques de coûts</strong> par véhicule et par flotte.
+          </li>
+          <li>
+            Prise en charge des <strong>véhicules électriques</strong>.
+          </li>
         </ul>
       ),
-      type: "todo",
+      type: 'todo',
     },
   ];
 

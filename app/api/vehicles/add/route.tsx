@@ -4,15 +4,20 @@
  */
 
 import { NextResponse } from 'next/server';
+
 import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
-import { Vehicle } from '@/types/vehicle';
+
+import type { Vehicle } from '@/types/vehicle';
 
 export async function POST(request: Request) {
   try {
     const supabase = await createSupabaseServerClient();
 
     // Récupération de l'utilisateur connecté
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
     if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -23,17 +28,19 @@ export async function POST(request: Request) {
     // Insertion en base
     const { data, error } = await supabase
       .from('vehicles')
-      .insert([{
-        owner_id: user.id,
-        name,
-        make,
-        model,
-        year,
-        fuel_type,
-        odometer,
-        color,
-        plate
-      }])
+      .insert([
+        {
+          owner_id: user.id,
+          name,
+          make,
+          model,
+          year,
+          fuel_type,
+          odometer,
+          color,
+          plate,
+        },
+      ])
       .select()
       .single<Vehicle>();
 

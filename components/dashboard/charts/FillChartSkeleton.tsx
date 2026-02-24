@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface FillChartSkeletonProps {
   barsCount?: number;
@@ -21,8 +21,8 @@ export default function FillChartSkeleton({ barsCount = 8 }: FillChartSkeletonPr
       }
     };
     updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
   const innerWidth = containerWidth - padding.left - padding.right;
@@ -30,13 +30,12 @@ export default function FillChartSkeleton({ barsCount = 8 }: FillChartSkeletonPr
 
   // Barres déterministes pour éviter le mismatch SSR/CSR
   const heights = Array.from({ length: barsCount }, (_, i) => 40 + (i % 4) * 15);
-    const bars = heights.map((h, i) => {
+  const bars = heights.map((h, i) => {
     const barWidth = Math.min(20, innerWidth / (barsCount * 1.5));
-    const x = padding.left + (i * innerWidth) / (barsCount - 1) - barWidth / 2; 
+    const x = padding.left + (i * innerWidth) / (barsCount - 1) - barWidth / 2;
     const y = padding.top + innerHeight - h;
     return { x, y, width: barWidth, height: h };
-    });
-
+  });
 
   return (
     <div

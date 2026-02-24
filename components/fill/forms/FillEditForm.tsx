@@ -1,7 +1,8 @@
 'use client';
 
-import { Fill } from '@/types/fill';
 import Icon from '@/components/ui/Icon';
+
+import type { Fill } from '@/types/fill';
 
 export interface FillEditFormProps {
   fill: Fill;
@@ -20,16 +21,12 @@ export default function FillEditForm({
   onCancelEdit,
   saving,
 }: FillEditFormProps) {
-
-  const v = <T,>(key: keyof Fill): T =>
-    (editData[key] as T) ?? (fill[key] as T);
+  const v = <T,>(key: keyof Fill): T => (editData[key] as T) ?? (fill[key] as T);
 
   return (
     <div className="bg-white dark:bg-gray-800 px-4 py-4 rounded-lg border border-custom-1/40 dark:border-custom-1-dark/40 space-y-4">
-
       {/* Ligne principale */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-end">
-
         {/* Date + Odomètre */}
         <div className="lg:col-span-3 space-y-2">
           <input
@@ -119,7 +116,7 @@ export default function FillEditForm({
             disabled={saving}
             className="px-4 py-2 rounded text-sm bg-custom-1 text-white hover:bg-custom-1/90 flex items-center gap-2 cursor-pointer"
           >
-            <Icon name="check" className='invert dark:invert-0' size={14} />
+            <Icon name="check" className="invert dark:invert-0" size={14} />
             {saving ? 'Sauvegarde…' : 'Valider'}
           </button>
         </div>

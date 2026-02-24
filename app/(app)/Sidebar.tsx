@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React from 'react';
 
 // ----- Types -----
 type MenuItem = {
@@ -14,16 +14,16 @@ type MenuItem = {
 
 // ----- Configuration -----
 const MENU_ITEMS: MenuItem[] = [
-  { name: "Tableau de bord", path: "/dashboard", icon: "/icons/dashboard.svg" },
-  { name: "Garage", path: "/garage", icon: "/icons/garage.svg" },
-  { name: "Consommations", path: "/historique", icon: "/icons/conso.svg" },
-  { name: "Famille", path: "/family", icon: "/icons/responsive.svg" },
+  { name: 'Tableau de bord', path: '/dashboard', icon: '/icons/dashboard.svg' },
+  { name: 'Garage', path: '/garage', icon: '/icons/garage.svg' },
+  { name: 'Consommations', path: '/historique', icon: '/icons/conso.svg' },
+  { name: 'Famille', path: '/family', icon: '/icons/responsive.svg' },
 ];
 
 const BOTTOM_ITEM: MenuItem = {
-  name: "Paramètres",
-  path: "/settings",
-  icon: "/icons/settings.svg",
+  name: 'Paramètres',
+  path: '/settings',
+  icon: '/icons/settings.svg',
 };
 
 // ----- Reusable item component -----
@@ -40,22 +40,18 @@ function SidebarItem({
     <Link
       href={item.path}
       className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 focus:outline-none ${
-      active ? "bg-gradient-to-tr from-orange-400 to-custom-2" : "hover:bg-gray-800"
+        active ? 'bg-gradient-to-tr from-orange-400 to-custom-2' : 'hover:bg-gray-800'
       }`}
-      aria-current={active ? "page" : undefined}
+      aria-current={active ? 'page' : undefined}
     >
       <Image
-      src={item.icon}
-      width={22}
-      height={22}
-      alt={item.name}
-      className={`invert transition-transform duration-200 ease-in-out ${
-        rotateOnActive
-        ? active
-          ? "rotate-90"
-          : "group-hover:rotate-90"
-        : ""
-      }`}
+        src={item.icon}
+        width={22}
+        height={22}
+        alt={item.name}
+        className={`invert transition-transform duration-200 ease-in-out ${
+          rotateOnActive ? (active ? 'rotate-90' : 'group-hover:rotate-90') : ''
+        }`}
       />
       <span className="truncate">{item.name}</span>
     </Link>
@@ -64,7 +60,7 @@ function SidebarItem({
 
 // ----- Sidebar -----
 export default function Sidebar() {
-  const pathname = usePathname() ?? "/";
+  const pathname = usePathname() ?? '/';
 
   const isActive = (path: string) => pathname.startsWith(path);
 
@@ -82,11 +78,7 @@ export default function Sidebar() {
 
       {/* Bottom-aligned settings (always at bottom thanks to mt-auto) */}
       <div className="mt-auto">
-        <SidebarItem
-          item={BOTTOM_ITEM}
-          active={isActive(BOTTOM_ITEM.path)}
-          rotateOnActive
-        />
+        <SidebarItem item={BOTTOM_ITEM} active={isActive(BOTTOM_ITEM.path)} rotateOnActive />
       </div>
     </aside>
   );

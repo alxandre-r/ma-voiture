@@ -1,20 +1,20 @@
 // src/app/dashboard/page.tsx
-import React from "react";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
+import React from 'react';
 
-import { getCurrentUserInfo } from "@/lib/data/user/getCurrentUserInfo";
-import { getUserVehicles } from "@/lib/data/vehicles/getUserVehicles";
-import { getFamilyVehicles } from "@/lib/data/vehicles/getFamilyVehicles";
+import { getCurrentUserInfo } from '@/lib/data/user/getCurrentUserInfo';
+import { getFamilyVehicles } from '@/lib/data/vehicles/getFamilyVehicles';
+import { getUserVehicles } from '@/lib/data/vehicles/getUserVehicles';
 
-import DashboardClient from "./DashboardClient";
+import DashboardClient from './DashboardClient';
 
 export default async function DashboardPage() {
   const user = await getCurrentUserInfo();
-  if (!user) redirect("/");
+  if (!user) redirect('/');
 
   const vehicles = await getUserVehicles(user.id);
   if (!vehicles || vehicles.length === 0) {
-    redirect("/dashboard/landing");
+    redirect('/dashboard/landing');
   }
 
   if (user.has_family) {

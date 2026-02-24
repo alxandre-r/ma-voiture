@@ -1,15 +1,17 @@
 /**
  * @file components/vehicle/forms/VehicleAddForm.tsx
  * @fileoverview Vehicle form component for adding new vehicles.
- * 
+ *
  * This component provides the inline form for adding a new vehicle as well as API calls.
  */
 
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useVehicles } from '@/contexts/VehicleContext';
+
 import { useNotifications } from '@/contexts/NotificationContext';
+
+import { useVehicles } from '@/contexts/VehicleContext';
 
 interface VehicleFormProps {
   onCancel?: () => void;
@@ -27,11 +29,7 @@ interface VehicleFormData {
   color?: string;
 }
 
-export default function VehicleForm({
-  onCancel,
-  onSuccess,
-  autoCloseOnSuccess,
-}: VehicleFormProps) {
+export default function VehicleForm({ onCancel, onSuccess, autoCloseOnSuccess }: VehicleFormProps) {
   const { addVehicleOptimistic, refreshVehicles } = useVehicles();
   const { showSuccess, showError } = useNotifications();
 
@@ -52,7 +50,6 @@ export default function VehicleForm({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const isFormValid = useMemo(() => {
     if (!formData.make.trim()) return false;
@@ -126,8 +123,7 @@ export default function VehicleForm({
       {/* Nom (facultatif) */}
       <div className="space-y-1">
         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Nom du véhicule{' '}
-          <span className="text-xs text-gray-400">(facultatif)</span>
+          Nom du véhicule <span className="text-xs text-gray-400">(facultatif)</span>
         </label>
         <input
           name="name"
@@ -190,9 +186,7 @@ export default function VehicleForm({
       {/* Année / Carburant (indicatif) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Année
-          </label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Année</label>
           <input
             type="number"
             name="year"
@@ -211,9 +205,7 @@ export default function VehicleForm({
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Carburant
-          </label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Carburant</label>
           <select
             name="fuel_type"
             value={formData.fuel_type}
@@ -228,8 +220,12 @@ export default function VehicleForm({
           >
             <option value="Essence">Essence</option>
             <option value="Diesel">Diesel</option>
-            <option value="Électrique" className="cursor-not-allowed" disabled>Électrique (à venir)</option>
-            <option value="Hybride" className="cursor-not-allowed" disabled>Hybride (à venir)</option>
+            <option value="Électrique" className="cursor-not-allowed" disabled>
+              Électrique (à venir)
+            </option>
+            <option value="Hybride" className="cursor-not-allowed" disabled>
+              Hybride (à venir)
+            </option>
           </select>
         </div>
       </div>
@@ -260,9 +256,7 @@ export default function VehicleForm({
 
         {/* Couleur */}
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Couleur
-          </label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Couleur</label>
 
           <div className="flex items-center">
             <input

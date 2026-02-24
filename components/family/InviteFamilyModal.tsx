@@ -8,6 +8,7 @@
 'use client';
 
 import React from 'react';
+
 import { Modal } from '@/components/ui/Modal';
 
 interface InviteFamilyModalProps {
@@ -33,7 +34,8 @@ export const InviteFamilyModal: React.FC<InviteFamilyModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title="Inviter un membre">
       <div className="space-y-4">
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          Partagez ce lien d&#39;invitation pour permettre à de nouveaux membres de rejoindre votre famille :
+          Partagez ce lien d&#39;invitation pour permettre à de nouveaux membres de rejoindre votre
+          famille :
         </p>
 
         <div className="flex pb-4 gap-2">

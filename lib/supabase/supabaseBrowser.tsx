@@ -7,10 +7,10 @@
  * via les cookies que le server client (createServerClient) peut lire.
  */
 
-import { createBrowserClient } from "@supabase/ssr";
+import { createBrowserClient } from '@supabase/ssr';
 
 export const createSupabaseBrowserClient = () =>
   createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );

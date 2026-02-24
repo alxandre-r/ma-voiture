@@ -4,7 +4,6 @@ export default function FillRowSkeleton() {
   return (
     <div className="bg-white dark:bg-gray-900 px-2 sm:px-4 py-4 border-b border-gray-100 dark:border-gray-700 animate-pulse">
       <div className="flex items-center justify-between gap-1">
-
         {/* Left items */}
         <div className="flex w-full items-center gap-1">
           {/* DATE */}

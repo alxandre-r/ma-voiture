@@ -4,10 +4,24 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
-import { Vehicle } from '@/types/vehicle';
 
-const VALID_FIELDS = ['name', 'owner', 'make', 'model', 'year', 'fuel_type', 'manufacturer_consumption', 'odometer', 'color', 'plate', 'last_fill'];
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+
+import type { Vehicle } from '@/types/vehicle';
+
+const VALID_FIELDS = [
+  'name',
+  'owner',
+  'make',
+  'model',
+  'year',
+  'fuel_type',
+  'manufacturer_consumption',
+  'odometer',
+  'color',
+  'plate',
+  'last_fill',
+];
 
 export async function PATCH(request: Request) {
   try {
@@ -33,7 +47,7 @@ export async function PATCH(request: Request) {
 
     // Filter valid fields
     const updateData = Object.fromEntries(
-      Object.entries(inputData).filter(([key]) => VALID_FIELDS.includes(key))
+      Object.entries(inputData).filter(([key]) => VALID_FIELDS.includes(key)),
     );
 
     if (Object.keys(updateData).length === 0) {
@@ -71,7 +85,10 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ message: 'Vehicle updated successfully', vehicle: data }, { status: 200 });
+    return NextResponse.json(
+      { message: 'Vehicle updated successfully', vehicle: data },
+      { status: 200 },
+    );
   } catch (err) {
     console.error('Unexpected error in /vehicles/update:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

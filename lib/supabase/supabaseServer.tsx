@@ -6,8 +6,8 @@
  */
 'use server';
 
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 /**
  * Retourne un Supabase client côté serveur lié aux cookies de la requête.
@@ -31,6 +31,6 @@ export const createSupabaseServerClient = async () => {
           /* next gère la suppression si besoin */
         },
       },
-    }
+    },
   );
 };

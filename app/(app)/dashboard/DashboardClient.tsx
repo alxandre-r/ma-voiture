@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 
-import DashboardHeader from "@/components/dashboard/Header";
-import FillFormModal from "@/components/fill/forms/FillAddForm";
-import Charts from "@/components/dashboard/Charts";
-import LatestFills from "@/components/dashboard/LatestFills";
-import FillStatistics from "@/components/dashboard/FillStatistics";
+import Charts from '@/components/dashboard/Charts';
+import FillStatistics from '@/components/dashboard/FillStatistics';
+import DashboardHeader from '@/components/dashboard/Header';
+import LatestFills from '@/components/dashboard/LatestFills';
+import FillFormModal from '@/components/fill/forms/FillAddForm';
+import { useFillChartData } from '@/hooks/dashboard/useChartData';
 
-import { Vehicle } from "@/types/vehicle";
-import { Fill } from "@/types/fill";
-import { useFillChartData } from "@/hooks/dashboard/useChartData";
+import type { Fill } from '@/types/fill';
+import type { Vehicle } from '@/types/vehicle';
 
 export type PeriodType = '1m' | '3m' | '6m' | '12m';
 
@@ -35,17 +35,17 @@ export default function DashboardClient({ userVehicles }: DashboardClientProps) 
 
   useEffect(() => {
     if (allVehicles.length > 0) {
-      setSelectedVehicleIds(allVehicles.map(v => v.vehicle_id));
+      setSelectedVehicleIds(allVehicles.map((v) => v.vehicle_id));
     }
   }, [allVehicles]);
 
   // URL deep-link
   useEffect(() => {
-    if (searchParams.get("addFill") === "true") {
+    if (searchParams.get('addFill') === 'true') {
       setFillModalOpen(true);
-      const vid = searchParams.get("vehicleId");
+      const vid = searchParams.get('vehicleId');
       if (vid) setFillVehicleId(Number(vid));
-      router.replace("/dashboard", { scroll: false });
+      router.replace('/dashboard', { scroll: false });
     }
   }, [searchParams, router]);
 
@@ -55,7 +55,7 @@ export default function DashboardClient({ userVehicles }: DashboardClientProps) 
     setLoadingFills(true);
     try {
       const res = await fetch(
-        `/api/fills/get?vehicleIds=${allVehicles.map(v => v.vehicle_id).join(',')}`
+        `/api/fills/get?vehicleIds=${allVehicles.map((v) => v.vehicle_id).join(',')}`,
       );
       const body = await res.json();
       if (res.ok && body.fills) setFills(body.fills);
@@ -67,7 +67,9 @@ export default function DashboardClient({ userVehicles }: DashboardClientProps) 
   }, [allVehicles]);
 
   // Initial fetch
-  useEffect(() => { refreshFills(); }, [refreshFills]);
+  useEffect(() => {
+    refreshFills();
+  }, [refreshFills]);
 
   // Chart data basé sur sélection réelle
   const { vehiclesForChart, filteredStats } = useFillChartData({
@@ -90,12 +92,8 @@ export default function DashboardClient({ userVehicles }: DashboardClientProps) 
 
       <FillStatistics filteredStats={filteredStats} />
       <Charts vehiclesForChart={vehiclesForChart} />
-      
-      <LatestFills
-        fills={fills}
-        loading={loadingFills}
-        onRefresh={refreshFills}
-      />
+
+      <LatestFills fills={fills} loading={loadingFills} onRefresh={refreshFills} />
 
       <FillFormModal
         isOpen={fillModalOpen}

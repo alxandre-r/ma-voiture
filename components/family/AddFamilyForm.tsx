@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import React, { useState, useRef } from 'react';
+
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useFormSubmitOnEnter } from '@/hooks/useFormSubmitOnEnter';
 
@@ -46,23 +47,27 @@ export const AddFamilyForm: React.FC<FamilyFormProps> = ({ onFamilyCreated }) =>
 
       // Refresh the page to show the family
       router.refresh();
-
     } catch (error) {
       console.error('Error creating family:', error);
-      showNotification(error instanceof Error ? error.message : 'Erreur lors de la création de la famille', 'error');
+      showNotification(
+        error instanceof Error ? error.message : 'Erreur lors de la création de la famille',
+        'error',
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   // Add Enter key support
-  useFormSubmitOnEnter(inputRef, () => {
-    if (name.trim()) {
-      handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
-    }
-  }, isLoading);
-
-
+  useFormSubmitOnEnter(
+    inputRef,
+    () => {
+      if (name.trim()) {
+        handleSubmit(new Event('submit') as unknown as React.FormEvent<HTMLFormElement>);
+      }
+    },
+    isLoading,
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,9 +91,7 @@ export const AddFamilyForm: React.FC<FamilyFormProps> = ({ onFamilyCreated }) =>
         type="submit"
         disabled={isLoading}
         className={`w-full px-4 py-2 bg-custom-2 rounded-md text-gray-800 dark:bg-custom-2 text-white font-medium transition-colors hover:cursor-pointer ${
-          isLoading 
-            ? 'opacity-50 cursor-not-allowed'
-            : 'hover:bg-custom-2-hover'
+          isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-custom-2-hover'
         }`}
       >
         {isLoading ? 'Création en cours...' : 'Créer la famille'}

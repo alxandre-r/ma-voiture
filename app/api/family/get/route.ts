@@ -1,5 +1,6 @@
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function GET(request: Request) {
   try {
@@ -18,29 +19,36 @@ export async function GET(request: Request) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Non autorisé - utilisateur non connecté' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Non autorisé - utilisateur non connecté' },
+        { status: 401 },
+      );
     }
 
     // Récupérer la famille via la vue family_for_display
     const { data, error } = await supabase
       .from('family_for_display')
-      .select(`
+      .select(
+        `
         family_id,
         family_name,
         family_created_at,
         family_owner_id,
         owner_email:email,
         owner_name:user_name
-      `)
+      `,
+      )
       .eq('invite_token', inviteToken)
       .eq('role', 'owner')
       .limit(1)
       .single();
 
-
     if (error) {
       console.error('Erreur Supabase:', error);
-      return NextResponse.json({ error: 'Erreur lors de la récupération de la famille' }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Erreur lors de la récupération de la famille' },
+        { status: 500 },
+      );
     }
 
     if (!data) {
@@ -57,7 +65,6 @@ export async function GET(request: Request) {
         name: data.owner_name,
       },
     });
-
   } catch (err) {
     console.error('Erreur serveur:', err);
     return NextResponse.json({ error: 'Erreur interne serveur' }, { status: 500 });

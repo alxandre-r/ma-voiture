@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import LogoutButton from "@/components/LogoutButton";
-import Icon from "@/components/ui/Icon";
+import LogoutButton from '@/components/LogoutButton';
+import Icon from '@/components/ui/Icon';
 
 export default function LogoutSection() {
   return (
@@ -11,7 +11,8 @@ export default function LogoutSection() {
         Déconnexion
       </h2>
       <p className="text-gray-500 dark:text-gray-400 mb-6">
-        Vous pouvez vous déconnecter de votre compte à tout moment. Vous devrez vous reconnecter pour accéder à vos données.
+        Vous pouvez vous déconnecter de votre compte à tout moment. Vous devrez vous reconnecter
+        pour accéder à vos données.
       </p>
       <LogoutButton className="w-full lg:w-[360px]" />
     </section>

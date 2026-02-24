@@ -4,16 +4,17 @@
  *              then attempts to sign in the user client-side for immediate access.
  */
 
-"use client";
+'use client';
 
-import { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/supabaseBrowser";
+import { useState } from 'react';
+
+import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
 
 export default function SignUpForm() {
   const supabase = createSupabaseBrowserClient();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,9 +26,9 @@ export default function SignUpForm() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/sign-up", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/auth/sign-up', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
 
@@ -43,17 +44,18 @@ export default function SignUpForm() {
 
       if (signInError) {
         setIsError(true);
-        setMessage("Compte créé mais échec de connexion automatique : " + signInError.message);
+        setMessage('Compte créé mais échec de connexion automatique : ' + signInError.message);
         setLoading(false);
         return;
       }
 
-      const redirectUrl = new URLSearchParams(window.location.search).get("redirect") || "/dashboard";
+      const redirectUrl =
+        new URLSearchParams(window.location.search).get('redirect') || '/dashboard';
       window.location.href = redirectUrl;
     } catch (err) {
-      console.error("Erreur signup client:", err);
+      console.error('Erreur signup client:', err);
       setIsError(true);
-      setMessage("Erreur inattendue, réessayez.");
+      setMessage('Erreur inattendue, réessayez.');
     } finally {
       setLoading(false);
     }
@@ -61,9 +63,13 @@ export default function SignUpForm() {
 
   return (
     <form onSubmit={handleSignUp} className="space-y-4 px-6 w-full max-w-md">
-      <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">Créer un compte</h2>
+      <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">
+        Créer un compte
+      </h2>
       {message && (
-        <p className={`text-center font-semibold ${isError ? "text-red-500 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>
+        <p
+          className={`text-center font-semibold ${isError ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}
+        >
           {message}
         </p>
       )}

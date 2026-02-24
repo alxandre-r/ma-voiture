@@ -1,15 +1,17 @@
 // components/dashboard/LatestFills.tsx
 'use client';
 
-import FillRowContainer from "@/components/fill/FillRowContainer";
-import FillRowSkeleton from "@/components/fill/FillRowSkeleton";
-import Link from "next/link";
-import { Fill } from "@/types/fill";
+import Link from 'next/link';
+
+import FillRowContainer from '@/components/fill/FillRowContainer';
+import FillRowSkeleton from '@/components/fill/FillRowSkeleton';
+
+import type { Fill } from '@/types/fill';
 
 interface LatestFillsProps {
   fills: Fill[];
   loading: boolean;
-  onRefresh?: () => void; 
+  onRefresh?: () => void;
 }
 
 export default function LatestFills({ fills, loading, onRefresh }: LatestFillsProps) {
@@ -26,14 +28,9 @@ export default function LatestFills({ fills, loading, onRefresh }: LatestFillsPr
       {fills.length > 0 && (
         <div className="pb-5 overflow-x-auto">
           {fills.slice(0, 4).map((fill) => (
-            <FillRowContainer
-              key={fill.id}
-              fill={fill}
-              showVehicleName
-              onRefresh={onRefresh}
-            />
+            <FillRowContainer key={fill.id} fill={fill} showVehicleName onRefresh={onRefresh} />
           ))}
-          
+
           <div className="mt-8 text-center">
             <Link
               href="/historique"
@@ -42,7 +39,6 @@ export default function LatestFills({ fills, loading, onRefresh }: LatestFillsPr
               Voir l&apos;historique complet ({fills.length} pleins)
             </Link>
           </div>
-
         </div>
       )}
     </div>

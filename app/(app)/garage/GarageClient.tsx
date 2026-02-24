@@ -1,14 +1,21 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+
+import Icon from '@/components/ui/Icon';
 import VehicleList from '@/components/vehicle/VehicleList';
 import AddVehicleModal from '@/components/vehicle/VehicleModal';
-import Icon from '@/components/ui/Icon';
-import { Vehicle } from '@/types/vehicle';
 
+import type { Vehicle } from '@/types/vehicle';
 
-export default function GarageClient({ userVehicles, familyVehicles }: { userVehicles: Vehicle[], familyVehicles: Vehicle[] }) {
+export default function GarageClient({
+  userVehicles,
+  familyVehicles,
+}: {
+  userVehicles: Vehicle[];
+  familyVehicles: Vehicle[];
+}) {
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,8 +35,8 @@ export default function GarageClient({ userVehicles, familyVehicles }: { userVeh
         </h1>
 
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-xl">
-          Ajoutez votre premier véhicule pour commencer à suivre vos pleins,
-          votre consommation et vos statistiques.
+          Ajoutez votre premier véhicule pour commencer à suivre vos pleins, votre consommation et
+          vos statistiques.
         </p>
 
         <button
@@ -40,10 +47,7 @@ export default function GarageClient({ userVehicles, familyVehicles }: { userVeh
           Ajouter un véhicule
         </button>
 
-        <AddVehicleModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <AddVehicleModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     );
   }
@@ -63,10 +67,7 @@ export default function GarageClient({ userVehicles, familyVehicles }: { userVeh
         <span className="font-medium">Ajouter un véhicule</span>
       </button>
 
-      <AddVehicleModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      <AddVehicleModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>
   );
 }

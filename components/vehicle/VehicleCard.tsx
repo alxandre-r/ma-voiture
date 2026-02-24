@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
 
-import VehicleEditForm from './forms/VehicleEditForm';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import Icon from '@/components/ui/Icon';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { Vehicle } from '@/types/vehicle';
+
+import VehicleEditForm from './forms/VehicleEditForm';
+
+import type { Vehicle } from '@/types/vehicle';
 
 export default function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const { showSuccess, showError } = useNotifications();
@@ -67,10 +69,9 @@ export default function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
         />
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 flex flex-col gap-5 transition-colors">
-
           {/* --- Header : Véhicule --- */}
           <div className="flex items-center gap-4">
-            <div 
+            <div
               className="w-16 h-16 rounded-full text-white flex items-center justify-center text-2xl font-bold"
               style={{ backgroundColor: vehicle.color || '#F26E52' }}
             >
@@ -130,17 +131,25 @@ export default function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
           {/* --- Stats principales : badges verticaux --- */}
           <div className="flex flex-wrap gap-3">
             <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Kilométrage</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">{vehicle.odometer?.toLocaleString() ?? '—'} km</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+                Kilométrage
+              </span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                {vehicle.odometer?.toLocaleString() ?? '—'} km
+              </span>
             </div>
             <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Conso Moy.</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+                Conso Moy.
+              </span>
               <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
                 {vehicle.calculated_consumption ?? '—'} L/100km
               </span>
             </div>
             <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Dernier plein</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+                Dernier plein
+              </span>
               <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
                 {vehicle.last_fill_date
                   ? new Date(vehicle.last_fill_date).toLocaleDateString('fr-FR')
@@ -149,32 +158,35 @@ export default function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
             </div>
           </div>
 
-            {/* --- Timeline mini : suivi du véhicule --- */}
-            <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between gap-2 text-sm text-gray-600 dark:text-gray-400">
+          {/* --- Timeline mini : suivi du véhicule --- */}
+          <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between gap-2 text-sm text-gray-600 dark:text-gray-400">
             <div>{vehicle.owner_name && `Propriétaire : ${vehicle.owner_name}`}</div>
-            <div>Créé le : {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString('fr-FR') : '—'}</div>
+            <div>
+              Créé le :{' '}
+              {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString('fr-FR') : '—'}
             </div>
+          </div>
 
-            {/* --- Si pas de plein enregistré : hint pour ajouter un plein --- */}
-            {!vehicle.last_fill_date && (
-              <div className="mt-4 p-4 rounded-lg border border-dashed border-custom-2 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 text-center">
-                <p className="font-semibold text-gray-700 dark:text-gray-300">
-                  Aucun plein enregistré pour ce véhicule
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  Ajoutez votre premier plein pour commencer le suivi.
-                </p>
-                <button
-                  onClick={() => {
-                    window.location.href = `/dashboard?addFill=true&vehicleId=${vehicle.vehicle_id}`;
-                  }}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-custom-2 text-white rounded-md hover:bg-custom-2-hover transition-all text-sm font-medium hover:cursor-pointer"
-                >
-                  <Icon name="add" size={16} className="invert dark:invert-0" />
-                  Ajouter un plein
-                </button>
-              </div>
-            )}
+          {/* --- Si pas de plein enregistré : hint pour ajouter un plein --- */}
+          {!vehicle.last_fill_date && (
+            <div className="mt-4 p-4 rounded-lg border border-dashed border-custom-2 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 text-center">
+              <p className="font-semibold text-gray-700 dark:text-gray-300">
+                Aucun plein enregistré pour ce véhicule
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Ajoutez votre premier plein pour commencer le suivi.
+              </p>
+              <button
+                onClick={() => {
+                  window.location.href = `/dashboard?addFill=true&vehicleId=${vehicle.vehicle_id}`;
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-custom-2 text-white rounded-md hover:bg-custom-2-hover transition-all text-sm font-medium hover:cursor-pointer"
+              >
+                <Icon name="add" size={16} className="invert dark:invert-0" />
+                Ajouter un plein
+              </button>
+            </div>
+          )}
         </div>
       )}
 

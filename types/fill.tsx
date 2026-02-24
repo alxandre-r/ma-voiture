@@ -3,7 +3,7 @@ export interface Fill {
   id?: number;
   vehicle_id: number;
   owner: string;
-  date: string;                 // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   odometer: number;
   liters: number;
   amount: number;

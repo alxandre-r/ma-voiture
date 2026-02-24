@@ -1,7 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Family, FamilyWithMembers, FamilyRole } from '@/types/family';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import type { Family, FamilyWithMembers, FamilyRole } from '@/types/family';
+import type { ReactNode } from 'react';
 
 interface FamilyContextType {
   family: FamilyWithMembers | null;
@@ -42,10 +44,11 @@ export const FamilyProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         setFamily(null);
         setUserRole(null);
       }
-
     } catch (error) {
       console.error('Error fetching family data:', error);
-      setError(error instanceof Error ? error.message : 'Erreur lors de la récupération de la famille');
+      setError(
+        error instanceof Error ? error.message : 'Erreur lors de la récupération de la famille',
+      );
       setFamily(null);
       setUserRole(null);
     } finally {
@@ -76,7 +79,6 @@ export const FamilyProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       await fetchFamilyData();
 
       return data.family;
-
     } catch (error) {
       console.error('Error creating family:', error);
       setError(error instanceof Error ? error.message : 'Erreur lors de la création de la famille');
@@ -109,10 +111,11 @@ export const FamilyProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       await fetchFamilyData();
 
       return data.family;
-
     } catch (error) {
       console.error('Error updating family:', error);
-      setError(error instanceof Error ? error.message : 'Erreur lors de la mise à jour de la famille');
+      setError(
+        error instanceof Error ? error.message : 'Erreur lors de la mise à jour de la famille',
+      );
       return null;
     } finally {
       setIsLoading(false);
@@ -142,7 +145,6 @@ export const FamilyProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       await fetchFamilyData();
 
       return true;
-
     } catch (error) {
       console.error('Error leaving family:', error);
       setError(error instanceof Error ? error.message : 'Erreur lors de la sortie de la famille');
@@ -175,10 +177,11 @@ export const FamilyProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       await fetchFamilyData();
 
       return true;
-
     } catch (error) {
       console.error('Error deleting family:', error);
-      setError(error instanceof Error ? error.message : 'Erreur lors de la suppression de la famille');
+      setError(
+        error instanceof Error ? error.message : 'Erreur lors de la suppression de la famille',
+      );
       return false;
     } finally {
       setIsLoading(false);

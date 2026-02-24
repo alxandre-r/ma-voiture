@@ -5,13 +5,14 @@
  * This endpoint retrieves all members of a family including their details.
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function GET() {
   try {
     const supabase = await createSupabaseServerClient();
-    
+
     // Get authenticated user
     const {
       data: { user },
@@ -20,7 +21,7 @@ export async function GET() {
     if (!user) {
       return NextResponse.json(
         { error: 'Non autorisé - utilisateur non connecté' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -33,8 +34,8 @@ export async function GET() {
 
     if (memberError || !familyMember) {
       return NextResponse.json(
-        { error: 'Vous ne faites partie d\'aucune famille' },
-        { status: 404 }
+        { error: "Vous ne faites partie d'aucune famille" },
+        { status: 404 },
       );
     }
 
@@ -48,24 +49,23 @@ export async function GET() {
       console.error('Erreur Supabase lors de la récupération des membres:', membersError);
       return NextResponse.json(
         { error: 'Erreur lors de la récupération des membres de la famille' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
-      { 
+      {
         members: members,
         currentUserRole: familyMember.role,
-        currentUserId: user.id
+        currentUserId: user.id,
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error) {
     console.error('Erreur serveur lors de la récupération des membres:', error);
     return NextResponse.json(
       { error: 'Erreur serveur lors de la récupération des membres' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

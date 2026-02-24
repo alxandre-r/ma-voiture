@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { formatCurrency } from "@/lib/fillUtils";
+import { formatCurrency } from '@/lib/fillUtils';
 
 type FillStatisticsProps = {
   filteredStats: {
@@ -15,7 +15,6 @@ export default function FillStatistics({ filteredStats }: FillStatisticsProps) {
 
   return (
     <div className="flex gap-2 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-
       {/* Consommation moyenne */}
       <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 p-2 sm:p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition dark:border-none">
         <p className="hidden lg:block text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
@@ -51,7 +50,6 @@ export default function FillStatistics({ filteredStats }: FillStatisticsProps) {
           {formatCurrency(filteredStats.avg_price_per_liter)}
         </p>
       </div>
-
     </div>
   );
 }

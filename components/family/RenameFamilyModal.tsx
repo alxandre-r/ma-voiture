@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+
 import { Modal } from '@/components/ui/Modal';
 import { useFormSubmitOnEnter } from '@/hooks/useFormSubmitOnEnter';
 
@@ -32,7 +33,7 @@ export const RenameFamilyModal: React.FC<RenameFamilyModalProps> = ({
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+
     if (!newName.trim()) {
       return;
     }
@@ -52,17 +53,24 @@ export const RenameFamilyModal: React.FC<RenameFamilyModalProps> = ({
   };
 
   // Add Enter key support
-  useFormSubmitOnEnter(inputRef, () => {
-    if (newName.trim()) {
-      handleSubmit();
-    }
-  }, isLoading);
+  useFormSubmitOnEnter(
+    inputRef,
+    () => {
+      if (newName.trim()) {
+        handleSubmit();
+      }
+    },
+    isLoading,
+  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Renommer la famille" size="sm">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="new-family-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label
+            htmlFor="new-family-name"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
             Nouveau nom de la famille
           </label>
           <input
@@ -94,7 +102,9 @@ export const RenameFamilyModal: React.FC<RenameFamilyModalProps> = ({
             type="submit"
             disabled={isLoading || !newName.trim() || newName.trim() === currentName}
             className={`px-4 py-2 text-white rounded-md transition-colors bg-custom-1 hover:bg-custom-1-dark ${
-              (isLoading || !newName.trim() || newName.trim() === currentName) ? 'opacity-50 cursor-not-allowed' : 'hover:cursor-pointer'
+              isLoading || !newName.trim() || newName.trim() === currentName
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:cursor-pointer'
             }`}
           >
             {isLoading ? (

@@ -2,23 +2,17 @@
 
 /**
  * FillContext - Gestion d'état global pour les pleins de carburant
- * 
+ *
  * ⚠️ NOTE: Ce contexte n'est plus utilisé pour la feature History.
  * La page history utilise maintenant le SSR (Server-Side Rendering) pour de meilleures performances.
  * Ce contexte reste utilisé dans les tests et pourrait être utilisé ailleurs dans l'application.
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  ReactNode,
-} from 'react';
-import { Fill, FillStats } from '@/types/fill';
-import { VehicleMinimal } from '@/types/vehicle';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+
+import type { Fill, FillStats } from '@/types/fill';
+import type { VehicleMinimal } from '@/types/vehicle';
+import type { ReactNode } from 'react';
 
 /* =========================
    🆕 Period Types
@@ -121,9 +115,7 @@ export function FillProvider({
 
     setVehicles(vehiclesProp);
 
-    const ids = vehiclesProp
-      .map(v => Number(v.vehicle_id))
-      .filter(id => Number.isFinite(id));
+    const ids = vehiclesProp.map((v) => Number(v.vehicle_id)).filter((id) => Number.isFinite(id));
 
     setSelectedVehicleIds(ids);
     setSelectedVehicleId(ids[0] ?? null);
@@ -137,13 +129,13 @@ export function FillProvider({
 
   const getVehicleName = useCallback(
     (vehicleId: number): string => {
-      const v = vehicles.find(v => v.vehicle_id === vehicleId);
+      const v = vehicles.find((v) => v.vehicle_id === vehicleId);
       if (!v) return `Véhicule #${vehicleId}`;
       if (v.name) return v.name;
       if (v.make || v.model) return `${v.make ?? ''} ${v.model ?? ''}`.trim();
       return `Véhicule #${vehicleId}`;
     },
-    [vehicles]
+    [vehicles],
   );
 
   /* =========================
@@ -157,15 +149,13 @@ export function FillProvider({
     const totalCost = data.reduce((sum, f) => sum + (f.amount ?? 0), 0);
 
     const sorted = [...data].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
     const lastFill = sorted[sorted.length - 1];
 
     let avgConsumption = 0;
-    const fillsWithOdometer = sorted.filter(
-      f => f.odometer != null && f.liters != null
-    );
+    const fillsWithOdometer = sorted.filter((f) => f.odometer != null && f.liters != null);
 
     if (fillsWithOdometer.length > 1) {
       let totalDistance = 0;
@@ -182,16 +172,14 @@ export function FillProvider({
         }
       }
 
-      if (totalDistance > 0)
-        avgConsumption = (totalFuel / totalDistance) * 100;
+      if (totalDistance > 0) avgConsumption = (totalFuel / totalDistance) * 100;
     }
 
     return {
       total_fills: data.length,
       total_liters: +totalLiters.toFixed(2),
       total_cost: +totalCost.toFixed(2),
-      avg_price_per_liter:
-        totalLiters > 0 ? +(totalCost / totalLiters).toFixed(3) : 0,
+      avg_price_per_liter: totalLiters > 0 ? +(totalCost / totalLiters).toFixed(3) : 0,
       avg_consumption: +avgConsumption.toFixed(2),
       last_fill_date: lastFill?.date ?? null,
       last_odometer: lastFill?.odometer ?? null,
@@ -207,19 +195,16 @@ export function FillProvider({
     (vehicleIds?: number[]): Fill[] => {
       if (!fills) return [];
 
-      const ids =
-        vehicleIds && vehicleIds.length > 0
-          ? vehicleIds
-          : selectedVehicleIds;
+      const ids = vehicleIds && vehicleIds.length > 0 ? vehicleIds : selectedVehicleIds;
 
       let result = fills;
 
       if (ids && ids.length > 0) {
-        result = result.filter(f => ids.includes(f.vehicle_id));
+        result = result.filter((f) => ids.includes(f.vehicle_id));
       }
 
       // 🆕 Filtre par période
-      result = result.filter(f => {
+      result = result.filter((f) => {
         if (!f.date) return false;
         const fillDate = new Date(f.date);
         return fillDate >= periodStartDate;
@@ -227,7 +212,7 @@ export function FillProvider({
 
       return result;
     },
-    [fills, selectedVehicleIds, periodStartDate]
+    [fills, selectedVehicleIds, periodStartDate],
   );
 
   const getFilteredStats = useCallback(
@@ -235,7 +220,7 @@ export function FillProvider({
       const filtered = getFilteredFills(vehicleIds);
       return calculateStats(filtered);
     },
-    [getFilteredFills, calculateStats]
+    [getFilteredFills, calculateStats],
   );
 
   /* =========================
@@ -245,10 +230,10 @@ export function FillProvider({
   const vehicleIdsKey = useMemo(
     () =>
       selectedVehicleIds
-        .filter(id => id > 0)
+        .filter((id) => id > 0)
         .sort((a, b) => a - b)
         .join(','),
-    [selectedVehicleIds]
+    [selectedVehicleIds],
   );
 
   const fetchFills = useCallback(async () => {
@@ -258,18 +243,15 @@ export function FillProvider({
     setError(null);
 
     try {
-      const res = await fetch(
-        `/api/fills/get?vehicleIds=${vehicleIdsKey}`
-      );
+      const res = await fetch(`/api/fills/get?vehicleIds=${vehicleIdsKey}`);
       const body = await res.json();
 
-      if (!res.ok)
-        throw new Error(body?.error || `Erreur ${res.status}`);
+      if (!res.ok) throw new Error(body?.error || `Erreur ${res.status}`);
 
       const fetched: Fill[] = body.fills ?? [];
       setFills(fetched);
 
-      const filtered = fetched.filter(f => {
+      const filtered = fetched.filter((f) => {
         const fillDate = new Date(f.date);
         return fillDate >= periodStartDate;
       });
@@ -296,47 +278,45 @@ export function FillProvider({
 
   const addFillOptimistic = useCallback(
     (fill: Fill) => {
-      setFills(prev => {
+      setFills((prev) => {
         const next = prev ? [fill, ...prev] : [fill];
-        const filtered = next.filter(f => new Date(f.date) >= periodStartDate);
+        const filtered = next.filter((f) => new Date(f.date) >= periodStartDate);
         setStats(calculateStats(filtered));
         return next;
       });
     },
-    [calculateStats, periodStartDate]
+    [calculateStats, periodStartDate],
   );
 
   const updateFillOptimistic = useCallback(
     (fillId: number, updatedData: Partial<Fill>) => {
-      setFills(prev => {
+      setFills((prev) => {
         if (!prev) return prev;
 
-        const next = prev.map(f =>
-          f.id === fillId ? { ...f, ...updatedData } : f
-        );
+        const next = prev.map((f) => (f.id === fillId ? { ...f, ...updatedData } : f));
 
-        const filtered = next.filter(f => new Date(f.date) >= periodStartDate);
+        const filtered = next.filter((f) => new Date(f.date) >= periodStartDate);
         setStats(calculateStats(filtered));
 
         return next;
       });
     },
-    [calculateStats, periodStartDate]
+    [calculateStats, periodStartDate],
   );
 
   const deleteFillOptimistic = useCallback(
     (fillId: number) => {
-      setFills(prev => {
+      setFills((prev) => {
         if (!prev) return prev;
 
-        const next = prev.filter(f => f.id !== fillId);
-        const filtered = next.filter(f => new Date(f.date) >= periodStartDate);
+        const next = prev.filter((f) => f.id !== fillId);
+        const filtered = next.filter((f) => new Date(f.date) >= periodStartDate);
 
         setStats(calculateStats(filtered));
         return next;
       });
     },
-    [calculateStats, periodStartDate]
+    [calculateStats, periodStartDate],
   );
 
   return (
@@ -370,7 +350,6 @@ export function FillProvider({
 
 export function useFills() {
   const ctx = useContext(FillContext);
-  if (!ctx)
-    throw new Error('useFills must be used within a FillProvider');
+  if (!ctx) throw new Error('useFills must be used within a FillProvider');
   return ctx;
 }

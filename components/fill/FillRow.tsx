@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Fill } from '@/types/fill';
-import Icon from '@/components/ui/Icon';
+
 import FillEditForm from '@/components/fill/forms/FillEditForm';
+import Icon from '@/components/ui/Icon';
+
+import type { Fill } from '@/types/fill';
 
 export interface FillRowProps {
   fill: Fill;
@@ -123,7 +125,6 @@ export default function FillRow({
     <div className="bg-white dark:bg-gray-900 px-2 sm:px-4 py-4 border-b border-gray-100 dark:border-gray-700">
       {/* Flex container with justify-between and minimal gaps */}
       <div className="flex items-center justify-between gap-1">
-
         {/* Left items */}
         <div className="flex w-full items-center gap-1">
           {/* DATE */}
@@ -148,14 +149,12 @@ export default function FillRow({
 
           <div className="w-4/12 hidden lg:flex items-center px-2 py-1 text-sm truncate">
             {/* NOTES (desktop only, optional) */}
-              {fill.notes && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 py-1 px-2">
-                  <span className="font-medium text-gray-900 dark:text-white mr-1">
-                    Notes:
-                  </span>
-                  <span className="truncate">{fill.notes}</span>
-                </div>
-              )}
+            {fill.notes && (
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 py-1 px-2">
+                <span className="font-medium text-gray-900 dark:text-white mr-1">Notes:</span>
+                <span className="truncate">{fill.notes}</span>
+              </div>
+            )}
           </div>
 
           {/* mobile notes toggle */}
@@ -169,7 +168,7 @@ export default function FillRow({
               </button>
             )}
           </div>
-          
+
           {/* Action menu dropdown */}
           <div className="w-1/12 flex justify-end">
             <ActionMenu />
@@ -180,9 +179,7 @@ export default function FillRow({
       {/* Mobile notes section */}
       {fill.notes && notesOpen && (
         <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 text-sm lg:hidden">
-          <p className="font-medium text-gray-900 dark:text-white mb-1 mr-2">
-            Notes:
-          </p>
+          <p className="font-medium text-gray-900 dark:text-white mb-1 mr-2">Notes:</p>
           {fill.notes}
         </div>
       )}
@@ -198,7 +195,7 @@ export default function FillRow({
       if (typeof window !== 'undefined' && window.innerWidth < 1024) {
         return date.toLocaleDateString('fr-FR', {
           day: '2-digit',
-          month: '2-digit'
+          month: '2-digit',
         });
       }
       return date.toLocaleDateString('fr-FR', {

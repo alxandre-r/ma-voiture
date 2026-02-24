@@ -1,16 +1,20 @@
 'use client';
 
-import { Fill } from "@/types/fill";
-import FillRow, { FillRowProps } from "./FillRow";
-import { useFillActions } from "@/hooks/fill/useFillActions";
-import { ConfirmationModal } from "@/components/ui/ConfirmationModal";
-import { useEffect } from "react";
+import { useEffect } from 'react';
+
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { useFillActions } from '@/hooks/fill/useFillActions';
+
+import FillRow from './FillRow';
+
+import type { FillRowProps } from './FillRow';
+import type { Fill } from '@/types/fill';
 
 interface FillRowContainerProps {
   fill: Fill;
   showVehicleName?: boolean;
   isReadOnly?: boolean;
-  onRefresh?: () => void; 
+  onRefresh?: () => void;
 }
 
 export default function FillRowContainer({
@@ -32,7 +36,7 @@ export default function FillRowContainer({
     confirmDelete,
     setShowDeleteConfirm,
     handleFieldChange,
-    setRefreshCallback, 
+    setRefreshCallback,
   } = useFillActions();
 
   // Passe le refresh depuis le parent au hook pour qu'il puisse l'appeler après les actions

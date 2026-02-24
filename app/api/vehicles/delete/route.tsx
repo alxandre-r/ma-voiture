@@ -1,19 +1,20 @@
 /**
  * @file app/api/vehicles/delete/route.tsx
  * @fileoverview API route to delete a vehicle.
- * 
+ *
  * This endpoint allows authenticated users to delete their own vehicles.
  * Includes proper authentication and authorization checks.
  */
 
 import { NextResponse } from 'next/server';
+
 import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 /**
  * DELETE /api/vehicles/delete
- * 
+ *
  * Delete a vehicle owned by the authenticated user.
- * 
+ *
  * @param {Request} request - The incoming HTTP request with vehicle ID in JSON body
  * @returns {Promise<NextResponse>} JSON response with success or error message
  */
@@ -52,7 +53,10 @@ export async function DELETE(request: Request) {
     }
 
     if (!vehicle) {
-      return NextResponse.json({ error: 'Vehicle not found or you do not have permission to delete it' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Vehicle not found or you do not have permission to delete it' },
+        { status: 404 },
+      );
     }
 
     // Delete the vehicle
@@ -69,7 +73,7 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json(
       { message: 'Vehicle deleted successfully', vehicle_id },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error('Unexpected error in /vehicles/delete:', err);

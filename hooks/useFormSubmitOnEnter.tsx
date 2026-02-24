@@ -17,7 +17,7 @@ import { useEffect } from 'react';
 export const useFormSubmitOnEnter = (
   inputRef: React.RefObject<HTMLInputElement>,
   onSubmit: () => void,
-  disabled: boolean = false
+  disabled: boolean = false,
 ) => {
   useEffect(() => {
     const inputElement = inputRef.current;

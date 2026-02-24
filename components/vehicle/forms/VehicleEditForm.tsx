@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Vehicle } from '@/types/vehicle';
+
 import { useNotifications } from '@/contexts/NotificationContext';
+
+import type { Vehicle } from '@/types/vehicle';
 
 interface VehicleEditFormProps {
   vehicle: Vehicle;
@@ -24,22 +26,23 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
     color: vehicle.color ?? '#000000',
   });
 
-
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [dynamicName, setDynamicName] = useState(editData.name || `${editData.make || ''} ${editData.model || ''}`.trim());
+  const [dynamicName, setDynamicName] = useState(
+    editData.name || `${editData.make || ''} ${editData.model || ''}`.trim(),
+  );
 
   useEffect(() => {
-    setDynamicName(editData.name?.trim() || `${editData.make || ''} ${editData.model || ''}`.trim());
+    setDynamicName(
+      editData.name?.trim() || `${editData.make || ''} ${editData.model || ''}`.trim(),
+    );
   }, [editData.name, editData.make, editData.model]);
 
   const onChangeField = (key: string, value: unknown) => {
-    setEditData(prev => ({ ...prev, [key]: value }));
+    setEditData((prev) => ({ ...prev, [key]: value }));
   };
 
   const saveEdit = async () => {
     setSaving(true);
-    setError(null);
     try {
       const res = await fetch('/api/vehicles/update', {
         method: 'PATCH',
@@ -52,22 +55,24 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
       onSaved?.();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erreur inconnue';
-      setError(msg);
       showError(msg);
     } finally {
       setSaving(false);
     }
   };
 
-  const inputClass = "w-full text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-custom-1 transition";
+  const inputClass =
+    'w-full text-gray-900 dark:text-white bg-white dark:bg-gray-800 px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-custom-1 transition';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 flex flex-col gap-5 transition-colors">
-
       {/* --- Header --- */}
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 rounded-full text-white flex items-center justify-center text-2xl font-bold" style={{ backgroundColor: editData.color as string }}>
-              {editData.make?.[0] || '🚗'}
+        <div
+          className="w-16 h-16 rounded-full text-white flex items-center justify-center text-2xl font-bold"
+          style={{ backgroundColor: editData.color as string }}
+        >
+          {editData.make?.[0] || '🚗'}
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
@@ -77,13 +82,13 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
             <input
               placeholder="Nom"
               value={editData.name ?? ''}
-              onChange={e => onChangeField('name', e.target.value)}
+              onChange={(e) => onChangeField('name', e.target.value)}
               className={inputClass}
             />
             <input
               placeholder="Plaque"
               value={editData.plate ?? ''}
-              onChange={e => onChangeField('plate', e.target.value)}
+              onChange={(e) => onChangeField('plate', e.target.value)}
               className={inputClass}
             />
           </div>
@@ -92,52 +97,65 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
 
       {/* --- Stats badges --- */}
       <div className="flex flex-wrap gap-3">
-
         <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Marque</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+            Marque
+          </span>
           <input
             placeholder="Make"
             value={editData.make ?? ''}
-            onChange={e => onChangeField('make', e.target.value)}
+            onChange={(e) => onChangeField('make', e.target.value)}
             className={`${inputClass} mt-1 text-center`}
           />
         </div>
 
         <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Modèle</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+            Modèle
+          </span>
           <input
             placeholder="Model"
             value={editData.model ?? ''}
-            onChange={e => onChangeField('model', e.target.value)}
+            onChange={(e) => onChangeField('model', e.target.value)}
             className={`${inputClass} mt-1 text-center`}
           />
         </div>
 
         <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Année</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+            Année
+          </span>
           <input
             type="number"
             value={editData.year ?? ''}
-            onChange={e => onChangeField('year', e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              onChangeField('year', e.target.value ? Number(e.target.value) : undefined)
+            }
             className={`${inputClass} mt-1 text-center`}
           />
         </div>
 
         <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Kilométrage</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+            Kilométrage
+          </span>
           <input
             type="number"
             value={editData.odometer ?? ''}
-            onChange={e => onChangeField('odometer', e.target.value ? Number(e.target.value) : undefined)}
+            onChange={(e) =>
+              onChangeField('odometer', e.target.value ? Number(e.target.value) : undefined)
+            }
             className={`${inputClass} mt-1 text-center`}
           />
         </div>
 
         <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
-          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">Carburant</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+            Carburant
+          </span>
           <select
             value={editData.fuel_type ?? ''}
-            onChange={e => onChangeField('fuel_type', e.target.value)}
+            onChange={(e) => onChangeField('fuel_type', e.target.value)}
             className={`${inputClass} mt-1 text-center cursor-pointer`}
           >
             <option value="">Sélectionner</option>
@@ -154,7 +172,7 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
           <input
             type="color"
             value={(editData.color as string) ?? '#000000'}
-            onChange={e => onChangeField('color', e.target.value)}
+            onChange={(e) => onChangeField('color', e.target.value)}
             className="
               mt-2 h-10 w-16
               rounded-lg border border-gray-300 dark:border-gray-600
@@ -163,7 +181,6 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
             "
           />
         </div>
-
       </div>
 
       {/* --- Actions --- */}
@@ -183,7 +200,6 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
           {saving ? 'Enregistrement...' : 'Enregistrer'}
         </button>
       </div>
-
     </div>
   );
 }

@@ -1,17 +1,41 @@
+/**
+ * @summary Historique page (Server Component).
+ *
+ * Fetches vehicles owned by the user and their family,
+ * then retrieves associated fills before passing data
+ * to the client component.
+ *
+ * Redirects to home if the user is not authenticated.
+ *
+ * @remarks
+ * All data fetching is performed server-side to reduce
+ * client requests and improve initial load performance.
+ */
 
-import React from "react";
 import { redirect } from 'next/navigation';
-import { getCurrentUser } from "@/lib/data/user/getCurrentUser";
+import React from 'react';
+
+import { getCurrentUser } from '@/lib/data/user/getCurrentUser';
 import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
-import { Fill } from '@/types/fill';
+
 import HistoriqueClient from './HistoriqueClient';
 
+import type { Fill } from '@/types/fill';
+
+/**
+ * Server page responsible for loading vehicles and fill history.
+ *
+ * @returns JSX page containing the HistoriqueClient component.
+ * @throws Redirects to "/" if no authenticated user is found.
+ */
 export default async function HistoriquePage() {
   const user = await getCurrentUser();
-  if (!user) {redirect('/');}
-  
+  if (!user) {
+    redirect('/');
+  }
+
   const supabase = await createSupabaseServerClient();
-  
+
   // Récupérer les véhicules de l'utilisateur
   const { data: userVehicles } = await supabase
     .from('vehicles_for_display')
@@ -34,14 +58,14 @@ export default async function HistoriquePage() {
       .eq('family_id', familyData.family_id)
       .neq('owner_id', user.id)
       .order('created_at', { ascending: false });
-    
+
     if (familyVehData) {
       familyVehicles = familyVehData;
     }
   }
 
   const allVehicles = [...(userVehicles || []), ...familyVehicles];
-  const vehicleIds = allVehicles.map(v => v.vehicle_id).filter(id => id > 0);
+  const vehicleIds = allVehicles.map((v) => v.vehicle_id).filter((id) => id > 0);
 
   // Récupérer les pleins pour ces véhicules
   let fills: Fill[] = [];
@@ -51,7 +75,7 @@ export default async function HistoriquePage() {
       .select('*')
       .in('vehicle_id', vehicleIds)
       .order('date', { ascending: false });
-    
+
     if (fillsData) {
       fills = fillsData;
     }
@@ -59,10 +83,7 @@ export default async function HistoriquePage() {
 
   return (
     <main>
-      <HistoriqueClient 
-        vehicles={allVehicles}
-        fills={fills}
-      />
+      <HistoriqueClient vehicles={allVehicles} fills={fills} />
     </main>
   );
 }

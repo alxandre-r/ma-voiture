@@ -1,8 +1,17 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useContainerSize, useMonthTicks, useDateRange, useMobileDetection, clampTooltipX, Padding } from "./ChartHelper";
+import { motion, AnimatePresence } from 'framer-motion';
+import React, { useMemo, useState, useCallback } from 'react';
+
+import {
+  useContainerSize,
+  useMonthTicks,
+  useDateRange,
+  useMobileDetection,
+  clampTooltipX,
+} from './ChartHelper';
+
+import type { Padding } from './ChartHelper';
 
 interface FillPoint {
   date: string;
@@ -26,8 +35,10 @@ interface FillChartProps {
 
 export default function FillChart({ vehicles }: FillChartProps) {
   const [size, containerRef] = useContainerSize({ width: 600, height: 240 });
-  const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; label: string } | null>(null);
-  const [mode, setMode] = useState<"plein" | "mensuel">("mensuel");
+  const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; label: string } | null>(
+    null,
+  );
+  const [mode, setMode] = useState<'plein' | 'mensuel'>('mensuel');
 
   const padding: Padding = { top: 30, bottom: 50, left: 60, right: 20 };
   const containerHeight = 160;
@@ -38,36 +49,41 @@ export default function FillChart({ vehicles }: FillChartProps) {
 
   // === Toutes les barres déjà filtrées par selectedPeriod dans le hook ===
   const barsWithVisibility: FillPoint[] = useMemo(
-    () => vehicles.flatMap(v => v.points),
-    [vehicles]
+    () => vehicles.flatMap((v) => v.points),
+    [vehicles],
   );
 
-  if (!barsWithVisibility.length) {
-    return (
-      <div className="text-center py-8 text-gray-400">
-        <p>Aucune donnée disponible pour le graphique.</p>
-      </div>
-    );
-  }
-
-  const visibleBars = useMemo(() => barsWithVisibility.filter(b => b.isVisible), [barsWithVisibility]);
+  const visibleBars = useMemo(
+    () => barsWithVisibility.filter((b) => b.isVisible),
+    [barsWithVisibility],
+  );
 
   const { minDate, maxDate } = useDateRange(visibleBars);
-  const getX = (date: string | Date) =>
-    padding.left + ((new Date(date).getTime() - minDate.getTime()) / (maxDate.getTime() - minDate.getTime())) * innerWidth;
-  const getY = (amount: number, maxAmount: number) => padding.top + innerHeight * (1 - amount / maxAmount);
+
+  const getX = useCallback(
+    (date: string | Date) =>
+      padding.left +
+      ((new Date(date).getTime() - minDate.getTime()) / (maxDate.getTime() - minDate.getTime())) *
+        innerWidth,
+    [minDate, maxDate, innerWidth, padding.left],
+  );
+
+  const getY = useCallback(
+    (amount: number, maxAmount: number) => padding.top + innerHeight * (1 - amount / maxAmount),
+    [padding.top, innerHeight],
+  );
 
   const maxStackAmount = useMemo(() => {
-    if (mode === "mensuel") {
+    if (mode === 'mensuel') {
       const monthMap: Record<string, number> = {};
-      barsWithVisibility.forEach(p => {
+      barsWithVisibility.forEach((p) => {
         const d = new Date(p.date);
         const key = `${d.getFullYear()}-${d.getMonth()}`;
         monthMap[key] = (monthMap[key] || 0) + p.amount;
       });
       return Math.max(...Object.values(monthMap), 10);
     }
-    return Math.max(...barsWithVisibility.map(p => p.amount), 10);
+    return Math.max(...barsWithVisibility.map((p) => p.amount), 10);
   }, [barsWithVisibility, mode]);
 
   const baseBarWidth = mobile
@@ -96,7 +112,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
     const monthStacks: Record<string, Bar[]> = {};
     const b: Bar[] = [];
 
-    barsWithVisibility.forEach(p => {
+    barsWithVisibility.forEach((p) => {
       const xPlein = getX(p.date);
       const yPlein = getY(p.amount, maxStackAmount);
       const heightPlein = Math.max(getY(0, maxStackAmount) - yPlein, 6);
@@ -126,7 +142,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
     });
 
     // Stacking mensuel
-    Object.values(monthStacks).forEach(stack => {
+    Object.values(monthStacks).forEach((stack) => {
       let cumulative = 0;
       const monthStart = new Date(stack[0].date);
       monthStart.setDate(1);
@@ -134,16 +150,18 @@ export default function FillChart({ vehicles }: FillChartProps) {
       const xCenter = (getX(monthStart) + getX(monthEnd)) / 2;
       const widthMonth = getX(monthEnd) - getX(monthStart) - 4;
 
-      stack.sort((a, b) => b.amount - a.amount).forEach(bar => {
-        const h = Math.max(getY(0, maxStackAmount) - getY(bar.amount, maxStackAmount), 6);
-        const y = getY(cumulative + bar.amount, maxStackAmount);
-        cumulative += bar.amount;
+      stack
+        .sort((a, b) => b.amount - a.amount)
+        .forEach((bar) => {
+          const h = Math.max(getY(0, maxStackAmount) - getY(bar.amount, maxStackAmount), 6);
+          const y = getY(cumulative + bar.amount, maxStackAmount);
+          cumulative += bar.amount;
 
-        bar.xMonth = xCenter - widthMonth / 2;
-        bar.yMonth = y;
-        bar.widthMonth = widthMonth;
-        bar.heightMonth = h;
-      });
+          bar.xMonth = xCenter - widthMonth / 2;
+          bar.yMonth = y;
+          bar.widthMonth = widthMonth;
+          bar.heightMonth = h;
+        });
     });
 
     return b;
@@ -153,7 +171,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
     const totals: Record<string, { total: number; topBar: Bar }> = {};
     const stacks: Record<string, Bar[]> = {};
 
-    bars.forEach(b => {
+    bars.forEach((b) => {
       const key = `${new Date(b.date).getFullYear()}-${new Date(b.date).getMonth()}`;
       if (!stacks[key]) stacks[key] = [];
       stacks[key].push(b);
@@ -161,14 +179,18 @@ export default function FillChart({ vehicles }: FillChartProps) {
 
     Object.entries(stacks).forEach(([key, stack]) => {
       const total = stack.reduce((s, b) => s + b.amount, 0);
-      const topBar = stack.reduce((prev, curr) => (curr.yMonth < prev.yMonth ? curr : prev), stack[0]);
+      const topBar = stack.reduce(
+        (prev, curr) => (curr.yMonth < prev.yMonth ? curr : prev),
+        stack[0],
+      );
       totals[key] = { total, topBar };
     });
 
     return totals;
   }, [bars]);
 
-  const clampTooltip = (x: number, textLength: number) => clampTooltipX(x, textLength, size, padding);
+  const clampTooltip = (x: number, textLength: number) =>
+    clampTooltipX(x, textLength, size, padding);
 
   const yLines = useMemo(() => {
     const maxLines = 3;
@@ -194,55 +216,93 @@ export default function FillChart({ vehicles }: FillChartProps) {
 
   const monthTicks = useMonthTicks(minDate, maxDate, getX, mobile, visibleBars);
 
+  if (!barsWithVisibility.length) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <p>Aucune donnée disponible pour le graphique.</p>
+      </div>
+    );
+  }
+
   // ---- Render ----
   return (
     <div className="w-full mt-6 relative bg-white dark:bg-gray-800 rounded-xl py-4 shadow-sm dark:shadow-xl px-2 lg:px-4">
       {/* Header et toggle */}
       <div className="flex items-center justify-between px-2 mb-2">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Pleins enregistrés</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          Pleins enregistrés
+        </h3>
         <motion.button
           type="button"
           role="switch"
-          aria-checked={mode === "mensuel"}
-          onClick={() => setMode(mode === "plein" ? "mensuel" : "plein")}
+          aria-checked={mode === 'mensuel'}
+          onClick={() => setMode(mode === 'plein' ? 'mensuel' : 'plein')}
           whileTap={{ scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           className="relative w-44 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full cursor-pointer flex items-center p-1 border border-gray-100 hover:shadow-sm transition-all dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900"
         >
           <motion.div
             className="absolute w-20 h-6 bg-gradient-to-tl from-custom-1 to-violet-400 rounded-full shadow-md dark:shadow-xl"
-            animate={{ x: mode === "plein" ? 0 : 86 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            animate={{ x: mode === 'plein' ? 0 : 86 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
           />
           <div className="flex justify-between w-full px-3 text-xs font-medium z-20">
-            <span className={mode === "plein" ? "text-white" : "text-gray-700 dark:text-gray-300"}>Par plein</span>
-            <span className={mode === "mensuel" ? "text-white" : "text-gray-700 dark:text-gray-300"}>Par mois</span>
+            <span className={mode === 'plein' ? 'text-white' : 'text-gray-700 dark:text-gray-300'}>
+              Par plein
+            </span>
+            <span
+              className={mode === 'mensuel' ? 'text-white' : 'text-gray-700 dark:text-gray-300'}
+            >
+              Par mois
+            </span>
           </div>
         </motion.button>
       </div>
 
-      <div ref={containerRef} className="relative w-full" style={{ minHeight: containerHeight + padding.top + padding.bottom }}>
+      <div
+        ref={containerRef}
+        className="relative w-full"
+        style={{ minHeight: containerHeight + padding.top + padding.bottom }}
+      >
         <svg width="100%" height={containerHeight + padding.top + padding.bottom}>
           {/* Y lines */}
           {yLines.map((amt, i) => (
-            <line key={i} x1={padding.left} x2={size.width - padding.right} y1={getY(amt, maxStackAmount)} y2={getY(amt, maxStackAmount)} stroke="rgba(0,0,0,0.05)" />
+            <line
+              key={i}
+              x1={padding.left}
+              x2={size.width - padding.right}
+              y1={getY(amt, maxStackAmount)}
+              y2={getY(amt, maxStackAmount)}
+              stroke="rgba(0,0,0,0.05)"
+            />
           ))}
           {yLines.map((amt, i) => (
-            <text key={i} x={padding.left - 8} y={getY(amt, maxStackAmount) + 4} textAnchor="end" className="text-xs fill-gray-400">{amt} €</text>
+            <text
+              key={i}
+              x={padding.left - 8}
+              y={getY(amt, maxStackAmount) + 4}
+              textAnchor="end"
+              className="text-xs fill-gray-400"
+            >
+              {amt} €
+            </text>
           ))}
 
           {/* Bars */}
           <AnimatePresence>
-            {bars.map(bar => {
-              const xTarget = mode === "plein" ? bar.xPlein : bar.xMonth;
-              const yTarget = mode === "plein" ? bar.yPlein : bar.yMonth;
-              const width = mode === "plein" ? bar.widthPlein : bar.widthMonth;
-              const height = mode === "plein" ? bar.heightPlein : bar.heightMonth;
+            {bars.map((bar) => {
+              const xTarget = mode === 'plein' ? bar.xPlein : bar.xMonth;
+              const yTarget = mode === 'plein' ? bar.yPlein : bar.yMonth;
+              const width = mode === 'plein' ? bar.widthPlein : bar.widthMonth;
+              const height = mode === 'plein' ? bar.heightPlein : bar.heightMonth;
 
               const isTop =
-                mode === "mensuel"
-                  ? monthTotals[`${new Date(bar.date).getFullYear()}-${new Date(bar.date).getMonth()}`]?.topBar?.id === bar.id
-                  : Math.max(...bars.filter(b => b.date === bar.date).map(b => b.amount)) === bar.amount;
+                mode === 'mensuel'
+                  ? monthTotals[
+                      `${new Date(bar.date).getFullYear()}-${new Date(bar.date).getMonth()}`
+                    ]?.topBar?.id === bar.id
+                  : Math.max(...bars.filter((b) => b.date === bar.date).map((b) => b.amount)) ===
+                    bar.amount;
 
               const mainBarHeight = isTop ? Math.max(height - radiusTop + 6, 0) : height;
               const mainBarY = isTop ? yTarget + radiusTop - 6 : yTarget;
@@ -260,16 +320,21 @@ export default function FillChart({ vehicles }: FillChartProps) {
                   <motion.rect
                     layout
                     initial={{ x: xInitial, y: mainBarY, width, height: mainBarHeight }}
-                    animate={{ x: bar.isVisible ? xTarget : -offset, y: mainBarY, width, height: mainBarHeight }}
+                    animate={{
+                      x: bar.isVisible ? xTarget : -offset,
+                      y: mainBarY,
+                      width,
+                      height: mainBarHeight,
+                    }}
                     exit={{ x: -offset, y: mainBarY, width, height: mainBarHeight }}
                     fill={bar.color}
                     className="hover:opacity-80 cursor-pointer"
-                    transition={{ type: "spring", stiffness: 140, damping: 20 }}
+                    transition={{ type: 'spring', stiffness: 140, damping: 20 }}
                     onMouseEnter={() =>
                       setHoveredPoint({
                         x: xTarget + width / 2,
                         y: yTarget,
-                        label: `${bar.vehicleName}: ${bar.amount.toFixed(2)}€ (${new Date(bar.date).toLocaleDateString("fr-FR")})`,
+                        label: `${bar.vehicleName}: ${bar.amount.toFixed(2)}€ (${new Date(bar.date).toLocaleDateString('fr-FR')})`,
                       })
                     }
                     onMouseLeave={() => setHoveredPoint(null)}
@@ -279,38 +344,42 @@ export default function FillChart({ vehicles }: FillChartProps) {
                   <motion.rect
                     layout
                     initial={{ x: xInitial, y: roundedY, width, height: roundedHeight }}
-                    animate={{ x: bar.isVisible ? xTarget : -offset, y: roundedY, width, height: roundedHeight }}
+                    animate={{
+                      x: bar.isVisible ? xTarget : -offset,
+                      y: roundedY,
+                      width,
+                      height: roundedHeight,
+                    }}
                     exit={{ x: -offset, y: roundedY, width, height: roundedHeight }}
                     fill={bar.color}
                     rx={radiusTop}
                     ry={radiusTop}
-                    transition={{ type: "spring", stiffness: 140, damping: 20 }}
+                    transition={{ type: 'spring', stiffness: 140, damping: 20 }}
                   />
                 </g>
               );
             })}
           </AnimatePresence>
 
-
           {/* Montants totaux */}
           {Object.values(monthTotals).map(({ total, topBar }) => {
             const isVisible = topBar.isVisible;
 
             // Montants mensuels (stackés)
-            if (mode === "mensuel") {
+            if (mode === 'mensuel') {
               return (
                 <motion.text
-                  key={topBar.id + "-total"}
+                  key={topBar.id + '-total'}
                   initial={{ opacity: 0, y: topBar.yMonth + radiusTop + 10 }}
                   animate={{
-                  opacity: isVisible ? 1 : 0,
-                  x: topBar.xMonth + topBar.widthMonth / 2,
-                  y: topBar.yMonth + radiusTop + 2
+                    opacity: isVisible ? 1 : 0,
+                    x: topBar.xMonth + topBar.widthMonth / 2,
+                    y: topBar.yMonth + radiusTop + 2,
                   }}
                   exit={{ opacity: 0, y: topBar.yMonth + radiusTop + 10 }}
                   textAnchor="middle"
                   className="text-xs fill-white font-medium"
-                  transition={{ type: "spring", stiffness: 140, damping: 20 }}
+                  transition={{ type: 'spring', stiffness: 140, damping: 20 }}
                 >
                   {mobile ? Number(total).toFixed(0) : Number(total).toFixed(2)}€
                 </motion.text>
@@ -318,22 +387,21 @@ export default function FillChart({ vehicles }: FillChartProps) {
             }
 
             // Montants plein (desktop uniquement)
-            if (mode === "plein" && !mobile) {
+            if (mode === 'plein' && !mobile) {
               return (
                 <motion.text
-                  key={topBar.id + "-total-plein"}
+                  key={topBar.id + '-total-plein'}
                   initial={{ opacity: 0, y: topBar.yPlein - 4 }}
                   animate={{
                     opacity: isVisible ? 1 : 0,
                     x: topBar.xPlein + topBar.widthPlein / 2,
-                    y: topBar.yPlein - 4
+                    y: topBar.yPlein - 4,
                   }}
                   exit={{ opacity: 0, y: topBar.yPlein - 4 }}
                   textAnchor="middle"
                   className="text-xs fill-black font-medium"
-                  transition={{ type: "spring", stiffness: 140, damping: 20 }}
-                >
-                </motion.text>
+                  transition={{ type: 'spring', stiffness: 140, damping: 20 }}
+                ></motion.text>
               );
             }
 
@@ -362,7 +430,7 @@ export default function FillChart({ vehicles }: FillChartProps) {
                   initial={{ x: t.x - xOffset, opacity: 0 }}
                   animate={{ x: t.x, opacity: t.isVisible ? 1 : 0 }}
                   exit={{ x: -xOffset, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 140, damping: 20 }}
+                  transition={{ type: 'spring', stiffness: 140, damping: 20 }}
                 >
                   {/* Tick vertical */}
                   <line
@@ -388,7 +456,6 @@ export default function FillChart({ vehicles }: FillChartProps) {
               );
             })}
           </AnimatePresence>
-
 
           {/* Hover */}
           {hoveredPoint && (

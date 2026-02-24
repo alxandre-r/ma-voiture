@@ -1,19 +1,20 @@
 /**
  * @file app/api/vehicles/get/route.tsx
  * @fileoverview API route to fetch vehicles for authenticated user.
- * 
+ *
  * This endpoint returns all vehicles owned by the currently authenticated user,
  * ordered by creation date (newest first).
  */
 
 import { NextResponse } from 'next/server';
+
 import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 /**
  * GET /api/vehicles/get
- * 
+ *
  * Fetch vehicles for authenticated user.
- * 
+ *
  * @returns {Promise<NextResponse>} JSON response with vehicles array or error
  */
 export async function GET() {

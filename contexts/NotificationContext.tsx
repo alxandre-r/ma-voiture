@@ -1,9 +1,12 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import NotificationModal from "@/components/ui/NotificationModal";
+import { createContext, useContext, useState } from 'react';
 
-type NotificationType = "success" | "error" | "info" | "warning";
+import NotificationModal from '@/components/ui/NotificationModal';
+
+import type { ReactNode } from 'react';
+
+type NotificationType = 'success' | 'error' | 'info' | 'warning';
 
 interface Notification {
   id: string;
@@ -30,20 +33,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   };
 
   const showNotification = (message: string, type: NotificationType, duration = 6000) => {
-    setNotifications((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), message, type, duration },
-    ]);
+    setNotifications((prev) => [...prev, { id: crypto.randomUUID(), message, type, duration }]);
   };
 
   return (
     <NotificationContext.Provider
       value={{
         showNotification,
-        showSuccess: (msg, dur) => showNotification(msg, "success", dur),
-        showError: (msg, dur) => showNotification(msg, "error", dur),
-        showInfo: (msg, dur) => showNotification(msg, "info", dur),
-        showWarning: (msg, dur) => showNotification(msg, "warning", dur),
+        showSuccess: (msg, dur) => showNotification(msg, 'success', dur),
+        showError: (msg, dur) => showNotification(msg, 'error', dur),
+        showInfo: (msg, dur) => showNotification(msg, 'info', dur),
+        showWarning: (msg, dur) => showNotification(msg, 'warning', dur),
       }}
     >
       {children}
@@ -66,6 +66,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
 export function useNotifications() {
   const context = useContext(NotificationContext);
-  if (!context) throw new Error("useNotifications must be used within a NotificationProvider");
+  if (!context) throw new Error('useNotifications must be used within a NotificationProvider');
   return context;
 }

@@ -3,46 +3,45 @@
  * @fileoverview Landing page with animations using Framer Motion and custom icons.
  */
 
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import SignInForm from "@/components/auth/SignInForm";
-import SignUpForm from "@/components/auth/SignUpForm";
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+
+import SignInForm from '@/components/auth/SignInForm';
+import SignUpForm from '@/components/auth/SignUpForm';
 
 // UI Effects
 import Aurora from '../components/ui/effects/AuroraBackground';
 import ShinyText from '../components/ui/effects/ShinyText';
 
-
-
 export default function LandingPage() {
-    const [formType, setFormType] = useState<"signin" | "signup">("signin");
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [formType, setFormType] = useState<'signin' | 'signup'>('signin');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
-    useEffect(() => {
-      // Check if user has a theme preference in localStorage
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'light' || savedTheme === 'dark') {
-        setTheme(savedTheme);
-      } else {
-        // Fall back to system preference
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setTheme(prefersDark ? 'dark' : 'light');
-      }
-    }, []);
+  useEffect(() => {
+    // Check if user has a theme preference in localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      setTheme(savedTheme);
+    } else {
+      // Fall back to system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(prefersDark ? 'dark' : 'light');
+    }
+  }, []);
 
   return (
     <main className="min-h-screen flex flex-col relative">
       <Aurora
-        colorStops={["#F54927","#47BFFF","#5227FF"]}
+        colorStops={['#F54927', '#47BFFF', '#5227FF']}
         blend={0.5}
         amplitude={1}
         speed={0.5}
         theme={theme}
       />
-      
+
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center text-center pb-10 px-6 ">
         <motion.h1
@@ -67,13 +66,13 @@ export default function LandingPage() {
       {/* Form Section - Always visible */}
       <section className="w-full flex justify-center px-6 pb-10">
         <div className="w-full max-w-md">
-          {formType === "signin" && (
+          {formType === 'signin' && (
             <div className="space-y-4">
               <SignInForm />
               <div className="text-center text-sm text-gray-600 dark:text-gray-400">
                 <span>Pas encore de compte ? </span>
                 <button
-                  onClick={() => setFormType("signup")}
+                  onClick={() => setFormType('signup')}
                   className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium hover:cursor-pointer"
                 >
                   Créez-en un !
@@ -81,14 +80,14 @@ export default function LandingPage() {
               </div>
             </div>
           )}
-          
-          {formType === "signup" && (
+
+          {formType === 'signup' && (
             <div className="space-y-4">
               <SignUpForm />
               <div className="text-center text-sm text-gray-600 dark:text-gray-400">
                 <span>Déjà un compte ? </span>
                 <button
-                  onClick={() => setFormType("signin")}
+                  onClick={() => setFormType('signin')}
                   className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium hover:cursor-pointer"
                 >
                   Connectez-vous !
@@ -104,19 +103,19 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {[
             {
-              icon: "/icons/dashboard.svg",
-              title: "Tableau de bord clair",
-              desc: "Visualisez toutes vos données au même endroit.",
+              icon: '/icons/dashboard.svg',
+              title: 'Tableau de bord clair',
+              desc: 'Visualisez toutes vos données au même endroit.',
             },
             {
-              icon: "/icons/secure.svg",
-              title: "Sécurité des données",
-              desc: "Vos informations sont protégées et cryptées.",
+              icon: '/icons/secure.svg',
+              title: 'Sécurité des données',
+              desc: 'Vos informations sont protégées et cryptées.',
             },
             {
-              icon: "/icons/responsive.svg",
-              title: "Responsive",
-              desc: "Utilisable sur PC, tablette et mobile.",
+              icon: '/icons/responsive.svg',
+              title: 'Responsive',
+              desc: 'Utilisable sur PC, tablette et mobile.',
             },
           ].map((feature, index) => (
             <motion.div
@@ -128,15 +127,10 @@ export default function LandingPage() {
               viewport={{ once: true }}
             >
               <div className="flex justify-center mb-4 dark:invert">
-                <Image
-                  src={feature.icon}
-                  alt={feature.title}
-                  width={64}
-                  height={64}
-                />
+                <Image src={feature.icon} alt={feature.title} width={64} height={64} />
               </div>
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <ShinyText 
+              <ShinyText
                 text={feature.desc}
                 speed={5}
                 delay={0}
@@ -154,7 +148,9 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="text-center text-gray-500 text-sm mt-auto">
-        <p className="text-sm">© {new Date().getFullYear()} ma-voiture-sandy. Tous droits réservés.</p>
+        <p className="text-sm">
+          © {new Date().getFullYear()} ma-voiture-sandy. Tous droits réservés.
+        </p>
       </footer>
     </main>
   );

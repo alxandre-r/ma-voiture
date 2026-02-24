@@ -1,9 +1,11 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
+
 import Icon from '@/components/ui/Icon';
-import { VehicleMinimal } from '@/types/vehicle';
+
+import type { VehicleMinimal } from '@/types/vehicle';
 
 interface VehicleSelectorProps {
   vehicles: VehicleMinimal[];
@@ -33,7 +35,7 @@ export default function VehicleSelector({
 
   const toggleVehicle = (id: number) => {
     if (value.includes(id)) {
-      onChange(value.filter(v => v !== id));
+      onChange(value.filter((v) => v !== id));
     } else {
       onChange([...value, id]);
     }
@@ -43,14 +45,14 @@ export default function VehicleSelector({
     if (value.length === vehicles.length) {
       onChange([]);
     } else {
-      onChange(vehicles.map(v => v.vehicle_id));
+      onChange(vehicles.map((v) => v.vehicle_id));
     }
   };
 
   const label = () => {
     if (value.length === vehicles.length) return 'Tous les véhicules';
     if (value.length === 1) {
-      const v = vehicles.find(v => v.vehicle_id === value[0]);
+      const v = vehicles.find((v) => v.vehicle_id === value[0]);
       return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
     }
     return `Tous les véhicules`;
@@ -62,7 +64,7 @@ export default function VehicleSelector({
       <motion.button
         type="button"
         disabled={disabled}
-        onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen((o) => !o)}
         whileTap={{ scale: 0.98 }}
         className="
           flex items-center justify-between w-full
@@ -74,11 +76,7 @@ export default function VehicleSelector({
           transition-all hover:cursor-pointer
         "
       >
-        <span
-          className={`truncate font-medium text-gray-900 dark:text-gray-100`}
-        >
-          {label()}
-        </span>
+        <span className={`truncate font-medium text-gray-900 dark:text-gray-100`}>{label()}</span>
 
         <Icon
           name="arrow-down"
@@ -112,7 +110,7 @@ export default function VehicleSelector({
             <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
             <div className="max-h-64 overflow-y-auto">
-              {vehicles.map(v => (
+              {vehicles.map((v) => (
                 <DropdownItem
                   key={v.vehicle_id}
                   label={v.name || `${v.make} ${v.model}`}
@@ -157,9 +155,7 @@ function DropdownItem({
       <span
         className={`
           w-4 h-4 rounded border flex items-center justify-center
-          ${checked
-            ? 'bg-custom-1 border-custom-1'
-            : 'border-gray-400 dark:border-gray-500'}
+          ${checked ? 'bg-custom-1 border-custom-1' : 'border-gray-400 dark:border-gray-500'}
         `}
       >
         <Icon
@@ -171,11 +167,7 @@ function DropdownItem({
         />
       </span>
 
-      <span
-        className={`truncate ${
-          checked ? 'font-medium text-gray-900 dark:text-gray-100' : ''
-        }`}
-      >
+      <span className={`truncate ${checked ? 'font-medium text-gray-900 dark:text-gray-100' : ''}`}>
         {label}
       </span>
     </motion.button>

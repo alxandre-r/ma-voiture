@@ -5,13 +5,14 @@
  * This endpoint checks if the authenticated user is already part of a family.
  */
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function GET() {
   try {
     const supabase = await createSupabaseServerClient();
-    
+
     // Get authenticated user
     const {
       data: { user },
@@ -20,7 +21,7 @@ export async function GET() {
     if (!user) {
       return NextResponse.json(
         { error: 'Non autorisé - utilisateur non connecté' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -31,11 +32,12 @@ export async function GET() {
       .eq('user_id', user.id)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+    if (error && error.code !== 'PGRST116') {
+      // PGRST116 = no rows found
       console.error('Erreur Supabase lors de la vérification de la famille:', error);
       return NextResponse.json(
         { error: 'Erreur lors de la vérification de la famille' },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -51,34 +53,33 @@ export async function GET() {
         console.error('Erreur Supabase lors de la récupération de la famille:', familyError);
         return NextResponse.json(
           { error: 'Erreur lors de la récupération de la famille' },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
       return NextResponse.json(
-        { 
+        {
           hasFamily: true,
           family: {
             ...family,
-            userRole: familyMember.role
-          } 
+            userRole: familyMember.role,
+          },
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     return NextResponse.json(
-      { 
-        hasFamily: false 
+      {
+        hasFamily: false,
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (error) {
     console.error('Erreur serveur lors de la vérification de la famille:', error);
     return NextResponse.json(
       { error: 'Erreur serveur lors de la vérification de la famille' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

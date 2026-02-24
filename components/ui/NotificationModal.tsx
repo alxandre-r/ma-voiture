@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 interface NotificationModalProps {
   message: string;
-  type?: "success" | "error" | "info" | "warning";
+  type?: 'success' | 'error' | 'info' | 'warning';
   duration?: number;
   onClose: () => void;
 }
@@ -17,15 +17,15 @@ const variants = {
 };
 
 const palette = {
-  success: "border-green-500",
-  error: "border-red-500",
-  warning: "border-yellow-500",
-  info: "border-gray-400",
+  success: 'border-green-500',
+  error: 'border-red-500',
+  warning: 'border-yellow-500',
+  info: 'border-gray-400',
 };
 
 export default function NotificationModal({
   message,
-  type = "info",
+  type = 'info',
   duration = 6000,
   onClose,
 }: NotificationModalProps) {
@@ -46,15 +46,11 @@ export default function NotificationModal({
           animate="animate"
           exit="exit"
           variants={variants}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
         >
-          <div
-            className={`rounded-xl border ${palette[type]} bg-white dark:bg-gray-900 shadow-lg`}
-          >
+          <div className={`rounded-xl border ${palette[type]} bg-white dark:bg-gray-900 shadow-lg`}>
             <div className="flex items-start gap-3 p-6 min-w-[280px] max-w-sm">
-              <p className="flex-1 text-sm text-gray-800 dark:text-white">
-                {message}
-              </p>
+              <p className="flex-1 text-sm text-gray-800 dark:text-white">{message}</p>
 
               <button
                 onClick={() => setVisible(false)}

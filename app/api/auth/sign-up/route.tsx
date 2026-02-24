@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from 'next/server';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -12,24 +12,18 @@ export async function POST(req: Request) {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
-      return NextResponse.json(
-        { error: "Nom, email et mot de passe requis" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Nom, email et mot de passe requis' }, { status: 400 });
     }
 
     // Vérifie si l'utilisateur existe déjà dans auth.users ou table users
     const { data: existingUser } = await supabaseAdmin
-      .from("users")
-      .select("id")
-      .eq("email", email)
+      .from('users')
+      .select('id')
+      .eq('email', email)
       .maybeSingle();
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Un compte existe déjà avec cet email." },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'Un compte existe déjà avec cet email.' }, { status: 409 });
     }
 
     // Crée l'utilisateur Supabase (email confirmé immédiatement)
@@ -40,39 +34,30 @@ export async function POST(req: Request) {
     });
 
     if (createError || !newUser) {
-      console.error("Erreur création utilisateur:", createError);
-      return NextResponse.json(
-        { error: "Erreur lors de l'inscription" },
-        { status: 500 }
-      );
+      console.error('Erreur création utilisateur:', createError);
+      return NextResponse.json({ error: "Erreur lors de l'inscription" }, { status: 500 });
     }
 
     // Insère l'utilisateur dans la table users
-    const { error: insertError } = await supabaseAdmin
-      .from("users")
-      .insert({
-        id: newUser.user.id, // correspond à auth.users.id
-        email,
-        name,
-      });
+    const { error: insertError } = await supabaseAdmin.from('users').insert({
+      id: newUser.user.id, // correspond à auth.users.id
+      email,
+      name,
+    });
 
     if (insertError) {
-      console.error("Erreur insertion utilisateur dans users:", insertError);
+      console.error('Erreur insertion utilisateur dans users:', insertError);
       // Optionnel : supprimer l'utilisateur Supabase si insert échoue
       await supabaseAdmin.auth.admin.deleteUser(newUser.user.id);
-      return NextResponse.json(
-        { error: "Erreur lors de l'ajout dans users" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Erreur lors de l'ajout dans users" }, { status: 500 });
     }
 
     return NextResponse.json(
-      { message: "Inscription réussie. Vous pouvez vous connecter." },
-      { status: 201 }
+      { message: 'Inscription réussie. Vous pouvez vous connecter.' },
+      { status: 201 },
     );
-
   } catch (err) {
-    console.error("Erreur API sign-up:", err);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    console.error('Erreur API sign-up:', err);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }

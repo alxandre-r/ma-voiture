@@ -7,16 +7,22 @@
  */
 
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+
 import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+
+import type { NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const supabase = await createSupabaseServerClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   if (!session) {
     if (req.nextUrl.pathname.startsWith('/family/join')) {
-      return NextResponse.redirect(new URL('/?redirect=/family/join?token=' + req.nextUrl.searchParams.get('token'), req.url));
+      return NextResponse.redirect(
+        new URL('/?redirect=/family/join?token=' + req.nextUrl.searchParams.get('token'), req.url),
+      );
     }
     return NextResponse.redirect(new URL('/auth/not-identified', req.url));
   }
@@ -24,5 +30,11 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/garage/:path*', '/historique/:path*', '/family/:path*', '/settings/:path*'],
+  matcher: [
+    '/dashboard/:path*',
+    '/garage/:path*',
+    '/historique/:path*',
+    '/family/:path*',
+    '/settings/:path*',
+  ],
 };

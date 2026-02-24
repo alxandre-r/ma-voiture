@@ -1,5 +1,6 @@
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 import { NextResponse } from 'next/server';
+
+import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
 
 export async function GET() {
   try {
@@ -14,7 +15,7 @@ export async function GET() {
     if (authError || !user) {
       return NextResponse.json(
         { error: 'Non autorisé - utilisateur non connecté' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -25,7 +26,8 @@ export async function GET() {
       .eq('user_id', user.id)
       .single(); // un user ne peut être que dans une famille
 
-    if (fmError && fmError.code !== 'PGRST116') { // PGRST116 = 0 rows
+    if (fmError && fmError.code !== 'PGRST116') {
+      // PGRST116 = 0 rows
       console.error('Erreur lors de la vérification de la famille:', fmError);
     }
 
@@ -47,7 +49,7 @@ export async function GET() {
           name: null,
           hasFamily,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -58,14 +60,13 @@ export async function GET() {
         name: profile.name,
         hasFamily,
       },
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (err) {
-    console.error('Erreur serveur lors de la récupération de l\'utilisateur:', err);
+    console.error("Erreur serveur lors de la récupération de l'utilisateur:", err);
     return NextResponse.json(
-      { error: 'Erreur serveur lors de la récupération de l\'utilisateur' },
-      { status: 500 }
+      { error: "Erreur serveur lors de la récupération de l'utilisateur" },
+      { status: 500 },
     );
   }
 }

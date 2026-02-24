@@ -1,11 +1,13 @@
 'use client';
 
-import React from "react";
-import { motion } from "framer-motion";
-import VehicleSelector from "./VehicleSelector";
-import PeriodSelector from "./PeriodSelector";
-import { VehicleMinimal } from "@/types/vehicle";
-import { PeriodType } from "@/app/(app)/dashboard/DashboardClient";
+import { motion } from 'framer-motion';
+import React from 'react';
+
+import PeriodSelector from './PeriodSelector';
+import VehicleSelector from './VehicleSelector';
+
+import type { PeriodType } from '@/app/(app)/dashboard/DashboardClient';
+import type { VehicleMinimal } from '@/types/vehicle';
 
 type DashboardHeaderProps = {
   vehicles: VehicleMinimal[];
@@ -26,10 +28,8 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   return (
     <div className="w-full flex flex-col gap-3">
-
       {/* ===== MOBILE LAYOUT ===== */}
       <div className="flex flex-col gap-3 sm:hidden w-full">
-
         {/* Bouton */}
         <motion.button
           onClick={onAddFill}
@@ -62,9 +62,7 @@ export default function DashboardHeader({
             bg-gradient-to-tr from-orange-400 to-custom-2 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-gray-400/50 dark:hover:shadow-gray-950/50
             active:shadow-md cursor-pointer"
         >
-          <span className="relative z-10">
-            Ajouter un plein
-          </span>
+          <span className="relative z-10">Ajouter un plein</span>
         </motion.button>
 
         <div className="sm:ml-auto flex items-center gap-4">

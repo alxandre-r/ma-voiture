@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark &));
 
@@ -16,16 +16,16 @@
 /* Custom color variables for themes */
 @theme {
   /* First color : indigo */
-  --color-custom-1: #7E47FF; /* indigo-600 */
-  --color-custom-1-hover: #6B3EDC; /* indigo-700 */
-  --color-custom-1-dark: #9A7FFF; /* indigo-400 */
-  --color-custom-1-dark-hover: #7E47FF; /* indigo-500 */
+  --color-custom-1: #7e47ff; /* indigo-600 */
+  --color-custom-1-hover: #6b3edc; /* indigo-700 */
+  --color-custom-1-dark: #9a7fff; /* indigo-400 */
+  --color-custom-1-dark-hover: #7e47ff; /* indigo-500 */
 
   /* Second color : orange */
-  --color-custom-2: #F26E52;
-  --color-custom-2-hover: #D6553A; 
-  --color-custom-2-dark: #F57D65; 
-  --color-custom-2-dark-hover: #F26E52;
+  --color-custom-2: #f26e52;
+  --color-custom-2-hover: #d6553a;
+  --color-custom-2-dark: #f57d65;
+  --color-custom-2-dark-hover: #f26e52;
 
   /* INFO : backgrounds are : white for light theme and dark gray for dark theme */
 }
@@ -61,7 +61,10 @@ textarea,
 .dark .text-gray-400,
 .dark .border-gray-700,
 .dark .border-gray-600 {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 /* Smooth transitions for interactive elements */
@@ -70,10 +73,12 @@ a,
 input,
 select,
 textarea {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
-
-
 
 /* Notification fade-out animation */
 .fade-out {
@@ -84,8 +89,12 @@ textarea {
 
 /* Loading spinner animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-spinner {

@@ -1,4 +1,5 @@
-export interface Vehicle { // corresponds to the "vehicles_for_display" view in Supabase
+export interface Vehicle {
+  // corresponds to the "vehicles_for_display" view in Supabase
   vehicle_id: number;
   owner_id?: string | null;
   owner_name?: string | null;
@@ -12,7 +13,7 @@ export interface Vehicle { // corresponds to the "vehicles_for_display" view in 
   odometer?: number | null;
   plate?: string | null;
   created_at?: string | null;
-  last_fill_date: string | null;          // timestamptz
+  last_fill_date: string | null; // timestamptz
   calculated_consumption?: number | null; // L/100km
 }
 

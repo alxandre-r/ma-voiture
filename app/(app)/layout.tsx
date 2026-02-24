@@ -10,10 +10,12 @@
 
 'use client';
 
-import type { ReactNode } from "react";
 import { NotificationProvider } from '@/contexts/NotificationContext';
-import Sidebar from "./Sidebar";
-import NavBar from "./NavBar";
+
+import NavBar from './NavBar';
+import Sidebar from './Sidebar';
+
+import type { ReactNode } from 'react';
 
 /**
  * PrivateLayout Component
@@ -25,7 +27,6 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
   return (
     <NotificationProvider>
       <div className="relative flex min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 transition-colors duration-300 dark:from-gray-900 dark:to-gray-800">
-
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex">
           <Sidebar />
@@ -42,7 +43,6 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
         <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
           <NavBar />
         </nav>
-
       </div>
     </NotificationProvider>
   );

@@ -1,7 +1,9 @@
 // hooks/useFillActions.ts
 import { useState } from 'react';
-import { Fill, FillFormData } from '@/types/fill';
+
 import { useNotifications } from '@/contexts/NotificationContext';
+
+import type { Fill, FillFormData } from '@/types/fill';
 
 export function useFillActions() {
   const { showSuccess, showError } = useNotifications();
@@ -65,8 +67,7 @@ export function useFillActions() {
     // Auto-calculate missing values
     if (result.amount && result.liters && result.liters > 0) {
       result.price_per_liter = Number((result.amount / result.liters).toFixed(3));
-    }
-    else if (result.amount && result.price_per_liter && result.price_per_liter > 0) {
+    } else if (result.amount && result.price_per_liter && result.price_per_liter > 0) {
       result.liters = Number((result.amount / result.price_per_liter).toFixed(2));
     }
 
@@ -163,18 +164,18 @@ export function useFillActions() {
         amount: fillData.amount ? fillData.amount : null,
         price_per_liter: fillData.price_per_liter ? fillData.price_per_liter : null,
         notes: fillData.notes || null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
       const res = await fetch('/api/fills/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'ajout du plein');
+        throw new Error(data.error || "Erreur lors de l'ajout du plein");
       }
       showSuccess('Plein ajouté avec succès');
       return true;
@@ -219,7 +220,7 @@ export function useFillActions() {
   /** --- Handle field changes with auto-calculations --- */
   const handleFieldChange = (key: string, value: unknown) => {
     if (!editData) return;
-    
+
     const newData = { ...editData, [key]: value };
     const calculatedData = calculateFillValues(newData);
     setEditData(calculatedData);
