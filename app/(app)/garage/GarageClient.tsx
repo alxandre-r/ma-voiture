@@ -1,3 +1,13 @@
+/**
+ * @file GarageClient.tsx
+ * @fileoverview Client component for the Garage page.
+ *
+ * Displays user's vehicles and family vehicles. Handles "Add Vehicle" modal state.
+ * Shows empty state when no vehicles are present.
+ *
+ * @todo Modify VehicleList to only display user's vehicles, and create a separate FamilyVehicleList for family vehicles.
+ */
+
 'use client';
 
 import { useSearchParams } from 'next/navigation';
@@ -66,6 +76,8 @@ export default function GarageClient({
         <Icon name="add" size={20} className="invert dark:invert-0" />
         <span className="font-medium">Ajouter un véhicule</span>
       </button>
+
+      {/* Here, add vehicleList for family. */}
 
       <AddVehicleModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>

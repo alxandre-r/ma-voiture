@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
+import Spinner from '@/components/ui/Spinner';
 import { useNotifications } from '@/contexts/NotificationContext';
 
 import type { Vehicle } from '@/types/vehicle';
@@ -13,7 +14,7 @@ interface VehicleEditFormProps {
 }
 
 export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: VehicleEditFormProps) {
-  const { showSuccess, showError } = useNotifications();
+  const { showSuccess, showError, showInfo } = useNotifications();
 
   const [editData, setEditData] = useState<Partial<Vehicle>>({
     name: vehicle.name ?? '',
@@ -41,7 +42,33 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
     setEditData((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Validation
+  const validateData = () => {
+    if (editData.year && (editData.year < 1886 || editData.year > new Date().getFullYear() + 1)) {
+      showError("L'année doit être comprise entre 1886 et l'année prochaine.");
+      return false;
+    }
+
+    if (editData.odometer && editData.odometer < 0) {
+      showError('Le kilométrage ne peut pas être négatif.');
+      return false;
+    }
+
+    // if data hasn't changed, just cancel edit mode with message
+    const hasChanges = Object.keys(editData).some(
+      (key) => editData[key as keyof Vehicle] !== vehicle[key as keyof Vehicle],
+    );
+    if (!hasChanges) {
+      showInfo("Aucune modification n'a été apportée au véhicule.");
+      onCancelEdit();
+      return false;
+    }
+
+    return true;
+  };
+
   const saveEdit = async () => {
+    if (!validateData()) return;
     setSaving(true);
     try {
       const res = await fetch('/api/vehicles/update', {
@@ -188,16 +215,23 @@ export default function VehicleEditForm({ vehicle, onCancelEdit, onSaved }: Vehi
         <button
           onClick={onCancelEdit}
           disabled={saving}
-          className="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition hover:cursor-pointer"
+          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition hover:cursor-pointer"
         >
           Annuler
         </button>
         <button
           onClick={saveEdit}
           disabled={saving}
-          className="px-4 py-2 rounded-xl bg-custom-1 hover:bg-custom-1-dark text-white transition hover:cursor-pointer"
+          className="px-12 py-2 rounded-lg bg-custom-1 hover:bg-custom-1-hover text-white transition hover:cursor-pointer"
         >
-          {saving ? 'Enregistrement...' : 'Enregistrer'}
+          {saving ? (
+            <span className="flex items-center gap-2">
+              <Spinner color="white" />
+              Enregistrement...
+            </span>
+          ) : (
+            'Enregistrer'
+          )}
         </button>
       </div>
     </div>

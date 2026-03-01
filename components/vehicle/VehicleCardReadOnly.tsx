@@ -5,7 +5,7 @@ import type { Vehicle } from '@/types/vehicle';
 export default function VehicleCardReadOnly({ vehicle }: { vehicle: Vehicle }) {
   return (
     <div className="vehicle-card">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 flex flex-col gap-5 transition-colors">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 flex flex-col gap-5 transition-colors">
         {/* --- Header : Véhicule --- */}
         <div className="flex items-center gap-4">
           <div
@@ -30,7 +30,7 @@ export default function VehicleCardReadOnly({ vehicle }: { vehicle: Vehicle }) {
 
         {/* --- Stats principales : badges verticaux --- */}
         <div className="flex flex-wrap gap-3">
-          <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
+          <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl flex flex-col items-center text-center">
             <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
               Kilométrage
             </span>
@@ -38,7 +38,7 @@ export default function VehicleCardReadOnly({ vehicle }: { vehicle: Vehicle }) {
               {vehicle.odometer?.toLocaleString() ?? '—'} km
             </span>
           </div>
-          <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
+          <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl flex flex-col items-center text-center">
             <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
               Conso Moy.
             </span>
@@ -46,7 +46,7 @@ export default function VehicleCardReadOnly({ vehicle }: { vehicle: Vehicle }) {
               {vehicle.calculated_consumption ?? '—'} L/100km
             </span>
           </div>
-          <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl flex flex-col items-center text-center">
+          <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl flex flex-col items-center text-center">
             <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
               Dernier plein
             </span>

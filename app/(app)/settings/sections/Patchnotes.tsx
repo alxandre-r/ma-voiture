@@ -11,6 +11,94 @@ export default function PatchnotesSection() {
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
     {
+      version: 'à venir',
+      date: 'TbA',
+      summary: 'Prochaines fonctionnalités et améliorations prévues',
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">
+            Dashboard & Véhicules
+          </li>
+          <li>
+            Déplacer le bouton d&apos;ajout de véhicule en dessous de la liste des véhicules
+            personnels dans le garage. Modifications internes à effetcuer : éclater VehicleList en 2
+            listes pour afficher le bouton entre les deux.
+          </li>
+
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
+            Notifications & Historique
+          </li>
+          <li>
+            Retirer la possibilité d&apos;éditer et supprimer un plein d&apos;un véhicule partagé
+            pour les membres de la famille. Seul le propriétaire peut le faire.
+          </li>
+
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
+          <li>
+            Page <strong>Famille</strong> : Ajouter la possibilité pour le propriétaire de
+            transférer la propriété de la famille à un autre membre.
+          </li>
+
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
+            Nouvelles fonctionnalités
+          </li>
+          <li>
+            Implémenter la <strong>maintenance de véhicule</strong> avec historique et rappels.
+          </li>
+          <li>
+            Ajouter des <strong>statistiques de coûts</strong> par véhicule et par flotte et par
+            temporalité.
+          </li>
+          <li>
+            Prise en charge des <strong>véhicules électriques</strong>.
+          </li>
+          <li>
+            Implémenter une calculatrice d&apos;itinéraire pour estimer la consommation et le coût
+            d&apos;un trajet donné. Se basant sur un inpout de l&apos;utilisateur pour le nombre de
+            km.
+          </li>
+        </ul>
+      ),
+      type: 'todo',
+    },
+    {
+      version: '1.1.1',
+      date: '01 Mars 2026',
+      summary: 'Correctifs mineurs et optimisations visuelles',
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>
+            Modification de la notification après une action : plus grande et plus moderne. Supporte
+            l&apos;affichage mobile.
+          </li>
+          <li>
+            La page de connexion utilise désormais les notifications pour afficher les messages
+            d&apos;erreur.
+          </li>
+          <li>Ajuster les couleurs en mode sombre dans la page Famille.</li>
+          <li>
+            Meilleure séparation entre les véhicules partagés et les véhicules personnels dans le
+            garage.
+          </li>
+          <li>
+            Ajout d&apos;un indicateur de chargement dans certains boutons (la totalité des boutons
+            doit encore être revus).
+          </li>
+
+          <li>
+            Correction d&apos;une erreur lorsqu&apos;un utilisateur tente de rejoindre une famille.
+          </li>
+          <li>
+            Prise en charge du cas suivant : l&apos;utilisateur valide le formulaire de modification
+            d&apos;un véhicule sans faire de modification. Dans ce cas, le formulaire se ferme et
+            une notification informe l&apos;utilisateur qu&apos;aucune modification n&apos;a été
+            apportée.
+          </li>
+        </ul>
+      ),
+      type: 'minor',
+    },
+    {
       version: '1.1.0',
       date: '23 Février 2026',
       summary: 'Optimisation de la performance et UX',
@@ -240,54 +328,6 @@ export default function PatchnotesSection() {
         </div>
       ),
       type: 'major',
-    },
-    {
-      version: 'À venir',
-      date: '',
-      summary: 'Prochaines fonctionnalités et améliorations prévues',
-      details: (
-        <ul className="list-disc list-inside space-y-1">
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">
-            Dashboard & Véhicules
-          </li>
-          <li>
-            Bug fix : charts ne fonctionnent pas correctement en multi sélection de véhicules.
-          </li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
-            Notifications & Historique
-          </li>
-          <li>
-            Utiliser les <strong>Notifications</strong> dans la page{' '}
-            <Link href="/history" className="text-indigo-600 dark:text-indigo-400 underline">
-              History
-            </Link>{' '}
-            (Edit, Delete).
-          </li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
-          <li>
-            Page <strong>Famille</strong> : Restreindre l&apos;invitation au propriétaire
-            uniquement.
-          </li>
-          <li>Correction du formulaire d&apos;invitation</li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
-            Nouvelles fonctionnalités
-          </li>
-          <li>
-            Implémenter l&apos;<strong>assurance de véhicule</strong> avec informations et
-            historique.
-          </li>
-          <li>
-            Ajouter les <strong>statistiques de coûts</strong> par véhicule et par flotte.
-          </li>
-          <li>
-            Prise en charge des <strong>véhicules électriques</strong>.
-          </li>
-        </ul>
-      ),
-      type: 'todo',
     },
   ];
 

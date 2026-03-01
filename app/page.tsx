@@ -9,8 +9,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
-import SignInForm from '@/components/auth/SignInForm';
-import SignUpForm from '@/components/auth/SignUpForm';
+import SignInForm from '@/components/auth/forms/SignInForm';
+import SignUpForm from '@/components/auth/forms/SignUpForm';
 
 // UI Effects
 import Aurora from '../components/ui/effects/AuroraBackground';

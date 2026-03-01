@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface NotificationModalProps {
@@ -16,11 +17,19 @@ const variants = {
   exit: { opacity: 0, x: 80, scale: 0.95 },
 };
 
-const palette = {
-  success: 'border-green-500',
-  error: 'border-red-500',
-  warning: 'border-yellow-500',
-  info: 'border-gray-400',
+// Mapping explicite pour le light et dark theme
+const borderClasses = {
+  success: 'border-b-green-600 dark:border-b-green-500',
+  error: 'border-b-red-600 dark:border-b-red-700',
+  warning: 'border-b-yellow-500 dark:border-b-yellow-400',
+  info: 'border-b-gray-400 dark:border-b-gray-500',
+};
+
+const svgPath = {
+  success: '/icons/notif/success',
+  error: '/icons/notif/error',
+  warning: '/icons/notif/warning',
+  info: '/icons/notif/info',
 };
 
 export default function NotificationModal({
@@ -30,12 +39,15 @@ export default function NotificationModal({
   onClose,
 }: NotificationModalProps) {
   const [visible, setVisible] = useState(true);
+  const [isHovering, setIsHovering] = useState(false);
 
   // auto-dismiss
   useEffect(() => {
+    if (isHovering) return;
+
     const timer = setTimeout(() => setVisible(false), duration);
     return () => clearTimeout(timer);
-  }, [duration]);
+  }, [duration, isHovering]);
 
   return (
     <AnimatePresence onExitComplete={onClose}>
@@ -48,16 +60,43 @@ export default function NotificationModal({
           variants={variants}
           transition={{ duration: 0.25, ease: 'easeOut' }}
         >
-          <div className={`rounded-xl border ${palette[type]} bg-white dark:bg-gray-900 shadow-lg`}>
-            <div className="flex items-start gap-3 p-6 min-w-[280px] max-w-sm">
+          <div
+            className={`rounded-xl shadow-xl backdrop-blur-md border
+              bg-white/30 
+              border-gray-200 
+              hover:border-gray-300
+              ${borderClasses[type]} 
+              dark:bg-gray-800/30
+              dark:border-gray-700 
+              dark:hover:border-gray-600
+              transition-colors
+              `}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
+            <div className="flex items-center gap-3 p-6">
+              <Image src={`${svgPath[type]}.svg`} alt={type} width={24} height={24} />
+
               <p className="flex-1 text-sm text-gray-800 dark:text-white">{message}</p>
 
               <button
                 onClick={() => setVisible(false)}
-                className="text-gray-800 hover:text-gray-600 dark:hover:text-white hover:cursor-pointer transition-opacity"
+                className="text-gray-500 hover:text-gray-800 dark:hover:text-white hover:cursor-pointer transition-opacity"
                 aria-label="Fermer"
               >
-                ×
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
           </div>

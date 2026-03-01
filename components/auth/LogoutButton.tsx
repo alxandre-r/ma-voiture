@@ -22,10 +22,6 @@ export default function LogoutButton({ className = '' }: { className?: string })
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
-  /**
-   * Handle logout process.
-   * Signs out from Supabase and redirects to home.
-   */
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/');
@@ -34,7 +30,7 @@ export default function LogoutButton({ className = '' }: { className?: string })
   return (
     <button
       onClick={handleLogout}
-      className={`bg-red-500 hover:bg-red-600 text-white px-4 py-3 hover:cursor-pointer rounded w-full sm:px-6 sm:py-3 ${className}`}
+      className={`bg-red-500 hover:bg-red-600 text-white px-4 py-3 hover:cursor-pointer rounded-lg w-full sm:px-6 sm:py-3 ${className}`}
       aria-label="Se déconnecter"
     >
       Se déconnecter

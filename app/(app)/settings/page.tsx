@@ -1,5 +1,6 @@
 /**
  * @file src/app/settings/page.tsx
+ * @description SSR page that fetches current user info to display user information and account settings.
  */
 
 import React from 'react';

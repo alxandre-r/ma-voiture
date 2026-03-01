@@ -1,3 +1,8 @@
+/**
+ * @file src/app/settings/SettingsLayout.tsx
+ * @description Layout for the settings page : displays the settings floating menu at left and the active section at right.
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -20,10 +25,12 @@ export default function SettingsLayout({ user }: { user: User }) {
       <h1 className="text-xl font-bold mb-6 text-gray-800 dark:text-white">Paramètres</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Floating menu */}
         <aside className="lg:col-span-1">
           <SettingsMenu activeSection={activeSection} onChange={setActiveSection} />
         </aside>
 
+        {/* Active section content */}
         <div className="lg:col-span-3">
           {activeSection === 'account' && <AccountSection user={user} />}
           {activeSection === 'appearance' && <AppearanceSection />}

@@ -19,23 +19,26 @@ export default function VehicleList({
 }) {
   return (
     <>
-      <div className="personal-vehicles-section">
-        {vehicles && vehicles.length > 0 ? (
+      {vehicles && vehicles.length > 0 ? (
+        <section className="personal-vehicles-section">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-3">
+            Vos véhicules
+          </h2>
           <div className="grid grid-cols-1 gap-6">
             {vehicles.map((vehicle, index) => (
               <VehicleCard key={vehicle.vehicle_id || `vehicle-${index}`} vehicle={vehicle} />
             ))}
           </div>
-        ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-center mt-4">
-            Aucun véhicule disponible.
-          </p>
-        )}
-      </div>
+        </section>
+      ) : (
+        <p className="text-gray-500 dark:text-gray-400 text-center mt-4">
+          Aucun véhicule disponible.
+        </p>
+      )}
 
       {familyVehicles && familyVehicles.length > 0 && (
         <section className="family-vehicles-section">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-700 pb-3">
             Véhicules de la famille
           </h2>
           <div className="grid grid-cols-1 gap-6">

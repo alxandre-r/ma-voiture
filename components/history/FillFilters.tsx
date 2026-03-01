@@ -127,7 +127,7 @@ export default function FillFilters({
 
   /* ---------------- Render ---------------- */
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function FillFilters({
         {/* Mobile toggle */}
         <button
           onClick={() => setFiltersOpen((o) => !o)}
-          className="md:hidden px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 flex items-center gap-2"
+          className="md:hidden px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-800 flex items-center gap-2"
         >
           {filtersOpen ? <Icon name="arrow-up" size={16} /> : <Icon name="arrow-down" size={16} />}
         </button>
@@ -165,7 +165,7 @@ export default function FillFilters({
             type="button"
             onClick={() => setDropdownOpen((o) => !o)}
             disabled={loading || !fills?.length}
-            className="flex justify-between items-center w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+            className="flex justify-between items-center w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800"
           >
             <span
               className={`truncate ${vehicleFilter.length === 0 ? 'text-gray-400' : 'font-medium'}`}
@@ -180,11 +180,7 @@ export default function FillFilters({
           </button>
 
           {dropdownOpen && (
-            <div className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
-              <div className="px-4 py-2 text-xs opacity-70 border-b border-gray-200 dark:border-gray-700">
-                Sélection multiple possible
-              </div>
-
+            <div className="absolute z-50 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg overflow-hidden">
               <DropdownItem
                 label="Tous les véhicules"
                 checked={

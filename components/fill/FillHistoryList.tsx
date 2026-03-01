@@ -108,23 +108,43 @@ export default function FillHistoryList({
 
       {filteredFills.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm mb-4">
-          <div className="bg-custom-1 p-3 rounded text-gray-100">
+          <div
+            className="p-3 rounded text-gray-100
+          bg-gradient-to-br from-custom-1-hover to-custom-1-dark
+          dark:bg-gradient-to-br dark:from-custom-1-dark-hover dark:to-custom-1-dark-hover"
+          >
             <div className="text-sm">Pleins totaux</div>
             <div className="font-medium text-xl">{filteredFills.length}</div>
           </div>
-          <div className="bg-custom-1 p-3 rounded text-gray-100">
+          <div
+            className="p-3 rounded text-gray-100
+          bg-gradient-to-br from-custom-1-hover to-custom-1-dark
+          dark:bg-gradient-to-br dark:from-custom-1-dark-hover dark:to-custom-1-dark-hover"
+          >
             <div className="text-sm">Litres totaux</div>
             <div className="font-medium text-xl">{totalLiters.toFixed(1)} L</div>
           </div>
-          <div className="bg-custom-1 p-3 rounded text-gray-100">
+          <div
+            className="p-3 rounded text-gray-100
+          bg-gradient-to-br from-custom-1-hover to-custom-1-dark
+          dark:bg-gradient-to-br dark:from-custom-1-dark-hover dark:to-custom-1-dark-hover"
+          >
             <div className="text-sm">Coût total</div>
             <div className="font-medium text-xl">{formatCurrency(totalCost)}</div>
           </div>
-          <div className="bg-custom-1 p-3 rounded text-gray-100">
+          <div
+            className="p-3 rounded text-gray-100
+          bg-gradient-to-br from-custom-1-hover to-custom-1-dark
+          dark:bg-gradient-to-br dark:from-custom-1-dark-hover dark:to-custom-1-dark-hover"
+          >
             <div className="text-sm">KM parcourus</div>
             <div className="font-medium text-xl">{totalKilometers} km</div>
           </div>
-          <div className="bg-custom-1 p-3 rounded text-gray-100">
+          <div
+            className="p-3 rounded text-gray-100
+          bg-gradient-to-br from-custom-1-hover to-custom-1-dark
+          dark:bg-gradient-to-br dark:from-custom-1-dark-hover dark:to-custom-1-dark-hover"
+          >
             <div className="text-sm">Prix moyen/L</div>
             <div className="font-medium text-xl">{avgPricePerLiter.toFixed(3)} €/L</div>
           </div>
@@ -135,7 +155,7 @@ export default function FillHistoryList({
         <div className="text-center py-8 text-gray-400">Aucun plein trouvé pour le moment.</div>
       )}
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 px-2 sm:px-4 space-y-2">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 px-2 sm:px-4">
         {filteredFills.map((fill) => (
           <FillRowContainer
             key={fill.id}

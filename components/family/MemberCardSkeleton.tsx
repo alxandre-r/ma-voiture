@@ -15,9 +15,7 @@ export const MemberCardSkeleton: React.FC = () => {
           {/* Row 1: Name + Badge | Role */}
           <div className="flex items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2 min-w-0">
-              {/* Name */}
               <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
-              {/* "Vous" badge skeleton */}
               <div className="h-4 w-10 bg-gray-200 dark:bg-gray-700 rounded-full" />
             </div>
 
@@ -27,10 +25,7 @@ export const MemberCardSkeleton: React.FC = () => {
 
           {/* Row 2: Email | Joined date */}
           <div className="flex items-center justify-between gap-2">
-            {/* Email */}
             <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
-
-            {/* Joined date */}
             <div className="hidden lg:flex h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
           </div>
         </div>

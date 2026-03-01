@@ -10,6 +10,8 @@
 
 import { useState } from 'react';
 
+import Spinner from '@/components/ui/Spinner';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
 
 /**
@@ -24,6 +26,7 @@ export default function SignInForm() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { showNotification } = useNotifications();
 
   /**
    * Handles form submission for user login.
@@ -33,6 +36,23 @@ export default function SignInForm() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    // Validation before sending request
+    if (!email || !password) {
+      showNotification('Veuillez remplir tous les champs', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      showNotification('Veuillez entrer une adresse email valide', 'error');
+      return;
+    }
+
     setLoading(true);
 
     const supabase = createSupabaseBrowserClient();
@@ -42,7 +62,7 @@ export default function SignInForm() {
     });
 
     if (error) {
-      setErrorMsg(error.message);
+      showNotification(error.message, 'error');
       setLoading(false);
     } else {
       const redirectUrl =
@@ -63,25 +83,26 @@ export default function SignInForm() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
+        className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none inset-shadow-sm"
       />
       <input
         type="password"
         placeholder="Mot de passe"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
+        className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none inset-shadow-sm"
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 bg-violet-600 hover:bg-violet-700 text-white rounded transition-colors disabled:opacity-60 hover:cursor-pointer"
+        className="w-full py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors shadow-lg disabled:opacity-60 hover:cursor-pointer"
       >
         {loading ? (
-          <span className="inline-block bg-gradient-to-r from-white via-gray-200 to-white bg-[length:200%_100%] bg-clip-text text-transparent animate-shiny">
+          <div className="flex items-center justify-center gap-2">
+            <Spinner color="white" />
             Connexion en cours...
-          </span>
+          </div>
         ) : (
           'Se connecter'
         )}

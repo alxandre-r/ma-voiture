@@ -1,22 +1,19 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 
 import Icon from '@/components/ui/Icon';
+import Spinner from '@/components/ui/Spinner';
 import { useNotifications } from '@/contexts/NotificationContext';
+import useAccountActions from '@/hooks/account/useAccountActions';
 
 import type { User } from '@/types/user';
 
 export default function AccountSection({ user }: { user: User }) {
-  const router = useRouter();
   const { showNotification } = useNotifications();
 
-  /**
-   * localUser = source de vérité côté client
-   * SSR hydrate uniquement au premier rendu
-   */
-  const [localUser, setLocalUser] = useState<User>(user);
+  const { localUser, updateProfile, changePassword, isProfileLoading, isPasswordLoading } =
+    useAccountActions({ user, showNotification });
 
   const [editing, setEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -28,85 +25,19 @@ export default function AccountSection({ user }: { user: User }) {
     newPassword: '',
   });
 
-  // Transition non bloquante (Next 13+)
-  const [isPending, startTransition] = useTransition();
-
-  /* =============================
-     PROFILE UPDATE
-  ============================== */
   const saveProfile = async () => {
-    if (!form.name.trim()) {
-      return showNotification('Le nom ne peut pas être vide', 'error');
-    }
-
-    if (!form.email.trim()) {
-      return showNotification('Email invalide', 'error');
-    }
-
-    const previousUser = localUser;
-
-    // 1️⃣ Optimistic update
-    setLocalUser((u) => ({
-      ...u,
-      name: form.name,
-      email: form.email,
-    }));
-
-    setEditing(false);
-
-    try {
-      const res = await fetch('/api/users/update-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Erreur lors de la mise à jour');
-      }
-
-      showNotification('Profil mis à jour', 'success');
-
-      // 2️⃣ Revalidation serveur non bloquante
-      startTransition(() => {
-        router.refresh();
-      });
-    } catch (error) {
-      // rollback si erreur
-      setLocalUser(previousUser);
-      showNotification(error instanceof Error ? error.message : 'Erreur', 'error');
+    const success = await updateProfile(form.name, form.email);
+    if (success) {
+      setEditing(false);
     }
   };
 
-  /* =============================
-     PASSWORD UPDATE
-  ============================== */
-  const changePassword = async () => {
-    if (!form.oldPassword || !form.newPassword) {
-      return showNotification('Tous les champs sont requis', 'error');
-    }
+  const handlePasswordChange = async () => {
+    const success = await changePassword(form.oldPassword, form.newPassword);
 
-    try {
-      const res = await fetch('/api/users/change-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          oldPassword: form.oldPassword,
-          newPassword: form.newPassword,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      showNotification('Mot de passe mis à jour', 'success');
+    if (success) {
       setShowPassword(false);
       setForm((f) => ({ ...f, oldPassword: '', newPassword: '' }));
-    } catch (error) {
-      showNotification(error instanceof Error ? error.message : 'Erreur', 'error');
     }
   };
 
@@ -177,12 +108,19 @@ export default function AccountSection({ user }: { user: User }) {
 
                 <button
                   onClick={saveProfile}
-                  disabled={isPending}
+                  disabled={isProfileLoading}
                   className="px-4 py-2 rounded-lg bg-custom-1 text-white text-sm cursor-pointer
                   hover:bg-custom-1/90 disabled:bg-custom-1/70 transition-colors
                   hover:scale-105 active:scale-95"
                 >
-                  Enregistrer
+                  {isProfileLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner color="white" />
+                      Mise à jour...
+                    </div>
+                  ) : (
+                    'Enregistrer'
+                  )}
                 </button>
               </div>
             </div>
@@ -235,12 +173,20 @@ export default function AccountSection({ user }: { user: User }) {
               </button>
 
               <button
-                onClick={changePassword}
-                className="px-4 py-2 rounded-lg bg-custom-1 text-white text-sm cursor-pointer 
-                hover:bg-custom-1/90 transition-colors
+                onClick={handlePasswordChange}
+                disabled={isPasswordLoading}
+                className="px-4 py-2 rounded-lg bg-custom-1 text-white text-sm cursor-pointer
+                hover:bg-custom-1/90 disabled:bg-custom-1/70 transition-colors
                 hover:scale-105 active:scale-95"
               >
-                Mettre à jour
+                {isPasswordLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Spinner color="white" />
+                    Mise à jour...
+                  </div>
+                ) : (
+                  'Mettre à jour'
+                )}
               </button>
             </div>
           </div>

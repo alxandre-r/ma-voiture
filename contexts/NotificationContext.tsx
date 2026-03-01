@@ -49,7 +49,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       {children}
 
       {/* Notification stack container */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-3 px-4 sm:px-0">
+      <div className="fixed top-4 right-0 z-50 flex flex-col gap-3 md:px-6 px-2 md:max-w-lg w-full">
         {notifications.map((n) => (
           <NotificationModal
             key={n.id}

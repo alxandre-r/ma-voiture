@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 
-import { useFamily } from '@/contexts/FamilyContext';
+import Spinner from '@/components/ui/Spinner';
 import { useNotifications } from '@/contexts/NotificationContext';
 
 interface FamilyInvite {
@@ -28,7 +28,6 @@ export default function JoinFamilyClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showNotification } = useNotifications();
-  const { refreshFamily } = useFamily();
 
   useEffect(() => {
     const urlToken = searchParams.get('token');
@@ -88,7 +87,6 @@ export default function JoinFamilyClient() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      await refreshFamily();
       router.push('/family');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la jointure';
@@ -102,7 +100,7 @@ export default function JoinFamilyClient() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-400">Chargement...</p>
+        <Spinner />
       </div>
     );
   }
@@ -152,11 +150,8 @@ export default function JoinFamilyClient() {
       <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-custom-1/10 dark:bg-custom-1/20 p-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Invitation à rejoindre une famille
+            {`${familyData.owner_user.name} vous invite à rejoindre sa famille`}
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Vous avez été invité à rejoindre la famille suivante
-          </p>
         </div>
 
         <div className="p-8 space-y-6">
@@ -183,14 +178,21 @@ export default function JoinFamilyClient() {
             <button
               onClick={handleJoinFamily}
               disabled={isJoining}
-              className="flex-1 py-3 rounded-lg bg-custom-1 hover:bg-custom-1-dark text-white font-semibold transition disabled:opacity-50 cursor-pointer"
+              className="flex-1 py-3 rounded-lg bg-custom-1 hover:bg-custom-1-hover text-white font-semibold transition disabled:opacity-50 cursor-pointer"
             >
-              {isJoining ? 'Rejointure en cours...' : 'Rejoindre cette famille'}
+              {isJoining ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Spinner color="white" />
+                  Chargement en cours...
+                </div>
+              ) : (
+                'Rejoindre cette famille'
+              )}
             </button>
 
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex-1 py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 cursor-pointer"
+              className="flex-1 py-3 bg-gray-100 dark:bg-gray-700 rounded-lg dark:border-gray-600 text-gray-700 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-600 cursor-pointer"
             >
               Annuler
             </button>

@@ -134,8 +134,8 @@ export default function FamilyClient({ user, family }: { user: User; family: Fam
       </div>
 
       {/* Family Members */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-        <h2 className="text-xl p-6 font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-md overflow-hidden">
+        <h2 className="text-xl p-6 font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800">
           Membres de la famille
         </h2>
         <div className="p-6">
@@ -147,14 +147,17 @@ export default function FamilyClient({ user, family }: { user: User; family: Fam
             />
           )}
 
-          <div className="mt-6">
-            <button
-              onClick={() => setIsInviteModalOpen(true)}
-              className="w-full bg-orange-50 dark:bg-orange-600/20 hover:bg-orange-100 dark:hover:bg-orange-600/30 text-custom-2 dark:text-custom-2-dark font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 focus:outline-none hover:cursor-pointer"
-            >
-              Inviter un membre
-            </button>
-          </div>
+          {/* Show invite button only to owners */}
+          {userIsOwner && (
+            <div className="mt-6">
+              <button
+                onClick={() => setIsInviteModalOpen(true)}
+                className="w-full bg-orange-50 dark:bg-orange-600/20 hover:bg-orange-100 dark:hover:bg-orange-600/30 text-custom-2 dark:text-custom-2-dark font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 focus:outline-none hover:cursor-pointer"
+              >
+                Inviter un membre
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

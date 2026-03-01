@@ -37,6 +37,13 @@ export async function POST(request: Request) {
       );
     }
 
+    if (oldPassword === newPassword) {
+      return NextResponse.json(
+        { error: "Le nouveau mot de passe doit être différent de l'ancien" },
+        { status: 400 },
+      );
+    }
+
     // Reauthenticate user with old password
     const { error: reauthError } = await supabase.auth.signInWithPassword({
       email: user.email!,

@@ -1,6 +1,6 @@
 'use client';
 
-import LogoutButton from '@/components/LogoutButton';
+import LogoutButton from '@/components/auth/LogoutButton';
 import Icon from '@/components/ui/Icon';
 
 export default function LogoutSection() {

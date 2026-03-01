@@ -1,3 +1,8 @@
+/**
+ * @file src/app/settings/SettingsMenu.tsx
+ * @description Floating menu for settings page. Displays a list of sections and highlights the active one. Pass the selected section to layout to display the corresponding content.
+ */
+
 'use client';
 
 import Icon from '@/components/ui/Icon';

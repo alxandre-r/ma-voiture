@@ -8,6 +8,8 @@
 
 import { useState } from 'react';
 
+import Spinner from '@/components/ui/Spinner';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
 
 export default function SignUpForm() {
@@ -15,14 +17,28 @@ export default function SignUpForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState<string | null>(null);
-  const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showNotification } = useNotifications();
 
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
-    setMessage(null);
-    setIsError(false);
+
+    // Basic validation before sending request
+    if (!name || !email || !password) {
+      showNotification('Veuillez remplir tous les champs', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      showNotification('Veuillez entrer une adresse email valide', 'error');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -34,8 +50,7 @@ export default function SignUpForm() {
 
       const body = await res.json();
       if (!res.ok) {
-        setIsError(true);
-        setMessage(body.error || "Erreur lors de l'inscription");
+        showNotification(body.error || "Erreur lors de l'inscription", 'error');
         setLoading(false);
         return;
       }
@@ -43,8 +58,10 @@ export default function SignUpForm() {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
       if (signInError) {
-        setIsError(true);
-        setMessage('Compte créé mais échec de connexion automatique : ' + signInError.message);
+        showNotification(
+          'Compte créé mais échec de connexion automatique : ' + signInError.message,
+          'error',
+        );
         setLoading(false);
         return;
       }
@@ -54,8 +71,7 @@ export default function SignUpForm() {
       window.location.href = redirectUrl;
     } catch (err) {
       console.error('Erreur signup client:', err);
-      setIsError(true);
-      setMessage('Erreur inattendue, réessayez.');
+      showNotification('Erreur inattendue, réessayez.', 'error');
     } finally {
       setLoading(false);
     }
@@ -66,51 +82,42 @@ export default function SignUpForm() {
       <h2 className="text-xl font-bold text-gray-800 dark:text-white text-center">
         Créer un compte
       </h2>
-      {message && (
-        <p
-          className={`text-center font-semibold ${isError ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}
-        >
-          {message}
-        </p>
-      )}
 
       <input
         type="text"
-        required
         placeholder="Nom ou pseudo"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
+        className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none inset-shadow-sm"
       />
 
       <input
         type="email"
-        required
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value.toLowerCase())}
-        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
+        className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none inset-shadow-sm"
       />
       <input
         type="password"
-        required
         placeholder="Mot de passe"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none"
+        className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-white focus:outline-none inset-shadow-sm"
       />
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 bg-violet-600 hover:bg-violet-700 text-white rounded transition-colors disabled:opacity-60 hover:cursor-pointer"
+        className="w-full py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors shadow-lg disabled:opacity-60 hover:cursor-pointer"
       >
         {loading ? (
-          <span className="inline-block bg-gradient-to-r from-white via-gray-200 to-white bg-[length:200%_100%] bg-clip-text text-transparent animate-shiny">
-            Inscription en cours...
-          </span>
+          <div className="flex items-center justify-center gap-2">
+            <Spinner color="white" />
+            Création de compte...
+          </div>
         ) : (
-          "Confirmer l'inscription"
+          "Valider l'inscription"
         )}
       </button>
     </form>

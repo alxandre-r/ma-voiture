@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Spinner from '@/components/ui/Spinner';
+
 import { Modal } from './Modal';
 
 interface ConfirmationModalProps {
@@ -59,7 +61,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <Spinner color="white" />
                 {confirmText}...
               </span>
             ) : (
