@@ -118,7 +118,7 @@ function DashboardContent({
           <a href="/settings" className="text-yellow-600 underline">
             Paramètres
           </a>{' '}
-          pour découvrir les nouveautés de la version 2.0 ainsi que les améliorations à venir.
+          pour découvrir les nouveautés de la version 1.2.0 ainsi que les améliorations à venir.
         </p>
       </div>
     </div>

@@ -23,8 +23,10 @@ import ExpensesClient from './ExpensesClient';
  */
 export default async function ExpensesPage() {
   const user = await getCurrentUserInfo();
-  if (!user) {
+  if (!user)
     redirect('/');
+  else if (user.has_vehicles === false) {
+    redirect('/garage');
   }
 
   const vehicles = await getAllVehicles(user.id);

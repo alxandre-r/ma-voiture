@@ -10,6 +10,7 @@ import type { VersionBlockProps } from '@/components/patchnotes/versionBlock';
 export default function PatchnotesSection() {
   // --- Données de patchnotes ---
   const patchnotesData: VersionBlockProps[] = [
+
     {
       version: 'à venir',
       date: '',
@@ -46,6 +47,30 @@ export default function PatchnotesSection() {
         </ul>
       ),
       type: 'todo',
+    },
+        {
+      version: '1.2.1',
+      date: '16 Mars 2026',
+      summary: 'Correctifs mineurs et optimisations visuelles',
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>
+            Correction d&apos;un bug dans la liste des interventions de la page Maintenance qui empêchait l&apos;affichage de certains véhicules.
+          </li>
+          <li>
+            Ajout d&apos;un bouton &apos;Quitter la famille&apos; pour les membres non propriétaires dans la page de gestion de la famille.
+            Les membres propriétaires ont désormais un bouton &apos;Supprimer la famille&apos; qui supprime la famille et tous les véhicules partagés associés
+            ainsi qu&apos;un bouton &apos;Renommer la famille&apos; pour modifier le nom de la famille.
+          </li>
+          <li>
+            Prise en charge du cas où un user n&apos;a pas de véhicule : les pages redirigent vers le garage pour ajouter un véhicule.
+          </li>
+          <li>
+            Amélioration de l&apos;affichage mobile de la page garage (vues détail et forumulaire).
+          </li>
+        </ul>
+      ),
+      type: 'minor',
     },
     {
       version: '1.2.0',

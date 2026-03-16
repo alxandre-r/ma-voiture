@@ -28,7 +28,11 @@ import type { Expense } from '@/types/expense';
  */
 export default async function MaintenancePage() {
   const user = await getCurrentUserInfo();
-  if (!user) redirect('/');
+  if (!user)
+    redirect('/');
+  else if (user.has_vehicles === false) {
+    redirect('/garage');
+  }
 
   const vehicles = await getAllVehicles(user.id);
   const selectorVehicles = mapVehiclesToMinimal(vehicles);

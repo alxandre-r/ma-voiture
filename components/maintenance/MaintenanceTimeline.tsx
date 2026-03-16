@@ -12,6 +12,7 @@ import type { Expense } from '@/types/expense';
 import type { VehicleMinimal } from '@/types/vehicle';
 
 interface MaintenanceTimelineProps {
+  userId?: string;
   expenses?: Expense[];
   vehicles?: VehicleMinimal[];
   onRefresh?: () => void;
@@ -21,6 +22,7 @@ interface MaintenanceTimelineProps {
 }
 
 export default function MaintenanceTimeline({
+  userId,
   expenses = [],
   vehicles = [],
   onRefresh,
@@ -115,7 +117,7 @@ export default function MaintenanceTimeline({
                 const vehicle = vehicles.find((v) => v.vehicle_id === expense.vehicle_id);
                 const vehicleName = vehicle
                   ? vehicle.name || `${vehicle.make} ${vehicle.model}`
-                  : 'Véhicule';
+                  : 'Véhicule inconnu';
                 const isLast = index === expenses.length - 1;
                 const isMenuOpen = openMenuId === expense.id;
 
@@ -152,8 +154,8 @@ export default function MaintenanceTimeline({
                     {/* Content on the right */}
                     <div className={`flex-1 ${isLast ? '' : 'pb-8'}`}>
                       <div className="bg-slate-50 rounded-xl p-4 sm:p-6 border border-slate-100 hover:shadow-sm transition-shadow relative">
-                        {/* More menu button - top right */}
-                        {onEditExpense && (
+                        {/* More menu button - top right : display only if the expense is user's */}
+                        {onEditExpense && expense.owner_id === userId && (
                           <div className="absolute top-3 right-3" ref={setMenuRef(expense.id)}>
                             <button
                               onClick={() => setOpenMenuId(isMenuOpen ? null : expense.id)}

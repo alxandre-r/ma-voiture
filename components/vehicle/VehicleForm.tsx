@@ -147,6 +147,29 @@ export default function VehicleForm({
     }
   };
 
+  // Extract the button so it can be used in multiple places and show loading state
+  const SaveButton = () => (
+    <button
+      type="submit"
+      form="vehicle-form"
+      disabled={isLoading}
+      className="px-6 py-2 rounded-lg bg-custom-2 hover:bg-custom-2-hover text-white transition disabled:opacity-50 cursor-pointer flex items-center"
+    >
+      {isLoading ? (
+        <span className="flex items-center gap-2">
+          <Spinner />
+          Enregistrement...
+        </span>
+      ) : (
+        <span className="flex items-center gap-2">
+          <Icon name="check" size={18} className="invert dark:invert-0" />
+          Enregistrer
+        </span>
+      )}
+    </button>
+  );
+
+
   const isLoading = loading || externalLoading;
 
   return (
@@ -165,24 +188,10 @@ export default function VehicleForm({
             {vehicle ? `Modification du véhicule ${vehicle.name}` : 'Ajouter un véhicule'}
           </h2>
         </div>
-        <button
-          type="submit"
-          form="vehicle-form"
-          disabled={isLoading}
-          className="px-6 py-2 rounded-lg bg-custom-2 hover:bg-custom-2-hover text-white transition disabled:opacity-50 cursor-pointer flex items-center"
-        >
-          {isLoading ? (
-            <span className="flex items-center gap-2">
-              <Spinner />
-              Enregistrement...
-            </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <Icon name="check" size={18} className="invert dark:invert-0" />
-              Enregistrer
-            </span>
-          )}
-        </button>
+        {/* display button only on md+ screens, on smaller screens it will be in the bottom bar */}
+        <div className="hidden md:block">
+          <SaveButton />
+        </div>
       </div>
 
       <form id="vehicle-form" onSubmit={handleSubmit} className="space-y-6">
@@ -202,7 +211,7 @@ export default function VehicleForm({
                   <button
                     type="button"
                     onClick={() => setShowImageModal(true)}
-                    className="w-full h-full min-h-[80px] rounded-md overflow-hidden border 
+                    className="w-full h-full md:min-h-[80px] min-h-[180px] rounded-md overflow-hidden border 
                     border-gray-200 bg-gray-100 hover:bg-gray-200 
                     dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600
                     transition flex items-center justify-center cursor-pointer relative"
@@ -229,52 +238,57 @@ export default function VehicleForm({
                 </div>
 
                 {/* Status & Color */}
-                <div className="flex flex-col space-y-3">
-                  {/* Toggle Slider */}
-                  <div
-                    className="relative w-full h-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-200 
-                  dark:border-gray-700 dark:from-gray-800 dark:to-gray-900 overflow-hidden p-1"
-                  >
-                    {/* Sliding background */}
-                    <motion.div
-                      className="absolute top-1 bottom-1 w-1/2 rounded-full shadow-md"
-                      initial={false}
-                      animate={{
-                        left: formData.status === 'active' ? '4px' : 'calc(50% + 0px)',
-                        backgroundColor: formData.status === 'active' ? '#10b981' : '#6b7280',
-                      }}
-                      transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                    />
-
-                    {/* Labels */}
-                    <div className="relative flex h-full">
-                      <button
-                        type="button"
-                        onClick={() => setFormData((prev) => ({ ...prev, status: 'active' }))}
-                        className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
-                          ${
-                            formData.status === 'active'
-                              ? 'text-white'
-                              : 'text-gray-500 dark:text-gray-400'
-                          }`}
+                <div className="flex flex-row space-x-4 md:flex-col md:space-y-3">
+                    {/* Toggle Slider */}
+                    <div className="flex-1 md:flex-none">
+                      <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                        Statut
+                      </label>
+                      <div
+                        className="relative w-full max-w-[176px] md:max-w-sm h-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-200 
+                      dark:border-gray-700 dark:from-gray-800 dark:to-gray-900 overflow-hidden p-1"
                       >
-                        Actif
-                      </button>
+                        {/* Sliding background */}
+                        <motion.div
+                          className="absolute top-1 bottom-1 w-1/2 rounded-full shadow-md"
+                          initial={false}
+                          animate={{
+                            left: formData.status === 'active' ? '4px' : 'calc(50% + 0px)',
+                            backgroundColor: formData.status === 'active' ? '#10b981' : '#6b7280',
+                          }}
+                          transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                        />
 
-                      <button
-                        type="button"
-                        onClick={() => setFormData((prev) => ({ ...prev, status: 'inactive' }))}
-                        className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
-                          ${
-                            formData.status === 'inactive'
-                              ? 'text-white'
-                              : 'text-gray-500 dark:text-gray-400'
-                          }`}
-                      >
-                        Inactif
-                      </button>
+                        {/* Labels */}
+                        <div className="relative flex h-full">
+                          <button
+                            type="button"
+                            onClick={() => setFormData((prev) => ({ ...prev, status: 'active' }))}
+                            className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
+                              ${
+                                formData.status === 'active'
+                                  ? 'text-white'
+                                  : 'text-gray-500 dark:text-gray-400'
+                              }`}
+                          >
+                            Actif
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setFormData((prev) => ({ ...prev, status: 'inactive' }))}
+                            className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
+                              ${
+                                formData.status === 'inactive'
+                                  ? 'text-white'
+                                  : 'text-gray-500 dark:text-gray-400'
+                              }`}
+                          >
+                            Inactif
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
                   {/* Color Picker */}
                   <div>
@@ -287,7 +301,7 @@ export default function VehicleForm({
                         name="color"
                         value={formData.color || '#f97316'}
                         onChange={handleChange}
-                        className="h-8 w-10 cursor-pointer rounded-md border border-gray-200 p-1 bg-white dark:bg-gray-700 dark:border-gray-600"
+                        className="h-10 w-16 cursor-pointer rounded-md border border-gray-200 p-1 bg-white dark:bg-gray-700 dark:border-gray-600"
                       />
                       <span className="text-xs text-gray-500 font-mono uppercase">
                         {formData.color || '#f97316'}
@@ -516,6 +530,11 @@ export default function VehicleForm({
           </Card>
         </div>
       </form>
+
+      {/* Save button for mobile view */}
+      <div className="md:hidden justify-end flex">
+        <SaveButton />
+      </div>
 
       {/* Vehicle Image Modal */}
       <VehicleImageModal

@@ -64,14 +64,13 @@ function MaintenanceContent({
 
   /**
    * Vehicles available in the form.
-   * Only active vehicles owned by the user,
+   * All active vehicles (owned by the user or family members),
    * plus the vehicle of the expense being edited.
    */
   const vehicles = useMemo(() => {
     const activeVehicles = initialVehicles.filter((v) => {
       const isActive = v.status === 'active' || v.status == null;
-      const isOwner = v.owner_id === user.id;
-      return isActive && isOwner;
+      return isActive;
     });
 
     if (!editingExpense) return activeVehicles;
@@ -198,6 +197,7 @@ function MaintenanceContent({
       </div>
 
       <MaintenanceTimeline
+        userId={user.id}
         vehicles={vehicles}
         expenses={filteredExpenses}
         onEditExpense={handleEditExpense}

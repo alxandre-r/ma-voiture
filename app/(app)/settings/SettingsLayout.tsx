@@ -13,7 +13,6 @@ import AppearanceSection from './sections/Appearance';
 import LogoutSection from './sections/Logout';
 import PatchnotesSection from './sections/Patchnotes';
 import PrivacySection from './sections/Privacy';
-import PreferencesSection from './sections/Preferences';
 import SettingsMenu from './SettingsMenu';
 
 import type { User } from '@/types/user';
@@ -33,7 +32,6 @@ export default function SettingsLayout({ user }: { user: User }) {
         <div className="lg:col-span-3">
           {activeSection === 'account' && <AccountSection user={user} />}
           {activeSection === 'appearance' && <AppearanceSection />}
-          {activeSection === 'preferences' && <PreferencesSection />}
           {activeSection === 'patchnotes' && <PatchnotesSection />}
           {activeSection === 'privacy' && <PrivacySection />}
           {activeSection === 'logout' && <LogoutSection />}

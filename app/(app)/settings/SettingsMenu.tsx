@@ -14,7 +14,6 @@ const menuItems: {
 }[] = [
   { id: 'account', label: 'Mon compte', icon: 'user' },
   { id: 'appearance', label: 'Apparence', icon: 'settings' },
-  { id: 'preferences', label: 'Préférences', icon: 'conso' },
   { id: 'patchnotes', label: 'Notes de version', icon: 'notes' },
   { id: 'privacy', label: 'Confidentialité', icon: 'secure' },
   { id: 'logout', label: 'Déconnexion', icon: 'garage' },

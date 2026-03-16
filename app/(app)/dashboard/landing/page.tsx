@@ -36,30 +36,29 @@ export default function DashboardLandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               {
-                title: 'Dashboard',
-                desc: 'Visualisez vos statistiques et votre consommation en temps réel',
-                link: '/dashboard',
+                title: 'Statistiques',
+                desc: 'Analysez votre consommation de carburant sur plusieurs périodes',
+              },
+              {
+                title: 'Dépenses',
+                desc: 'Suivez tous vos pleins et dépenses liés à vos véhicules en un seul endroit',
+              },
+              {
+                title: 'Maintenance',
+                desc: 'Planifiez et suivez les entretiens de vos véhicules pour ne jamais manquer une révision',
               },
               {
                 title: 'Garage',
                 desc: 'Gérez tous vos véhicules et leurs informations détaillées',
-                link: '/garage',
-              },
-              {
-                title: 'Consommations',
-                desc: 'Analysez votre consommation de carburant sur plusieurs périodes',
-                link: '/consommations',
               },
               {
                 title: 'Famille',
                 desc: 'Partagez vos véhicules avec les autres membres de votre famille',
-                link: '/famille',
               },
             ].map((feature, i) => (
               <div
                 key={i}
-                onClick={() => (window.location.href = feature.link)}
-                className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 shadow-md hover:shadow-custom-2 transition-shadow duration-300 cursor-pointer"
+                className="p-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30 shadow-sm hover:shadow-custom-2 transition-shadow duration-300"
               >
                 <h3 className="text-xl font-semibold mb-2 text-custom-2">{feature.title}</h3>
                 <p className="text-gray-600 dark:text-gray-400">{feature.desc}</p>
@@ -80,7 +79,7 @@ export default function DashboardLandingPage() {
           </p>
           <a
             href="/settings"
-            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-custom-1 text-gray-700 dark:text-white rounded-lg font-semibold hover:bg-custom-1 hover:text-white dark:hover:bg-custom-1 transition-all duration-200 group"
+            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-custom-1 text-gray-700 dark:text-white rounded-lg font-semibold hover:bg-custom-1 hover:text-white dark:hover:bg-custom-1 transition-all duration-400 group"
           >
             <Icon
               name="settings"
@@ -100,7 +99,7 @@ export default function DashboardLandingPage() {
         </p>
         <a
           href="/garage?addVehicle=true"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-white text-custom-2 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-200"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-white text-custom-2 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
         >
           Ajouter un véhicule
         </a>

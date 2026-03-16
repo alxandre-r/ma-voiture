@@ -207,11 +207,11 @@ export default function ExpenseList({
   const getDescription = (expense: Expense) => {
     // For fuel - show liters
     if (expense.type === 'fuel' && expense.liters != null) {
-      return `${expense.liters.toFixed(2)} L`;
+      return `${expense.liters.toFixed(2)} L • ${expense.price_per_liter?.toFixed(3)} €/L`;
     }
     // For electric_charge - show kWh
     if (expense.type === 'electric_charge' && expense.kwh != null) {
-      return `${expense.kwh.toFixed(2)} kWh`;
+      return `${expense.kwh.toFixed(2)} kWh • ${expense.price_per_kwh?.toFixed(3)} €/kWh`;
     }
     // For maintenance - show maintenance type and garage
     if (expense.type === 'maintenance') {
@@ -219,6 +219,10 @@ export default function ExpenseList({
       if (expense.maintenance_type_label) parts.push(expense.maintenance_type_label);
       if (expense.garage) parts.push(expense.garage);
       return parts.length > 0 ? parts.join(' • ') : null;
+    }
+    // For insurance - show message
+    if (expense.type === 'insurance') {
+      return 'Mensualité d\'assurance';
     }
     // For other - show label
     if (expense.type === 'other' && expense.label) return expense.label;
@@ -233,7 +237,7 @@ export default function ExpenseList({
 
     // For fuel - show price per liter
     if (expense.type === 'fuel' && expense.price_per_liter != null) {
-      parts.push(`${expense.price_per_liter.toFixed(3)} €/L`);
+      parts.push(`${expense.odometer ? `${expense.odometer.toLocaleString()} km` : ''}`);
     }
     // For electric_charge - show price per kWh
     if (expense.type === 'electric_charge' && expense.price_per_kwh != null) {

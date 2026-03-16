@@ -5,14 +5,14 @@ import { JoinFamilyForm } from '@/components/family/JoinFamilyForm';
 
 export default function JoinFamilyWelcomePage() {
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen md:py-12 py-2">
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center md:mb-16 mb-8">
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Bienvenue à bord
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="md:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Créez une famille ou rejoignez-en une pour partager vos véhicules et collaborer avec vos
             proches.
           </p>
