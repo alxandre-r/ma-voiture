@@ -67,10 +67,12 @@ export const Dropdown = ({ label, children, className, search, selectedItems }: 
   };
 
   /* Filter children if search is active */
-  const filteredChildren = React.Children.toArray(children).filter((child: React.ReactElement) => {
+  const filteredChildren = React.Children.toArray(children).filter((child) => {
     if (!search || !query) return true;
-    if (!child.props.label) return true;
-    return child.props.label.toLowerCase().includes(query.toLowerCase());
+    if (!React.isValidElement(child)) return true;
+    const childElement = child as React.ReactElement<{ label?: string }>;
+    if (!childElement.props?.label) return true;
+    return childElement.props.label.toLowerCase().includes(query.toLowerCase());
   });
 
   return (
