@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
+import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import { RenameFamilyModal } from '@/components/family/RenameFamilyModal';
-import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { useFamilyActions } from '@/hooks/family/useFamilyActions';
 
 import type { Family } from '@/types/family';

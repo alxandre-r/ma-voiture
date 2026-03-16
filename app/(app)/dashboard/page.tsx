@@ -2,29 +2,34 @@
 import { redirect } from 'next/navigation';
 import React from 'react';
 
-import { getCurrentUserInfo } from '@/lib/data/user/getCurrentUserInfo';
-import { getFamilyVehicles } from '@/lib/data/vehicles/getFamilyVehicles';
-import { getUserVehicles } from '@/lib/data/vehicles/getUserVehicles';
+import { getAllExpenses } from '@/lib/data/expenses';
+import { getCurrentUserInfo } from '@/lib/data/user';
+import { getAllVehicles } from '@/lib/data/vehicles';
+import { mapVehiclesToMinimal } from '@/lib/utils/vehicles/mapVehiclesToMinimal';
 
 import DashboardClient from './DashboardClient';
+
+import type { Expense } from '@/types/expense';
+import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 export default async function DashboardPage() {
   const user = await getCurrentUserInfo();
   if (!user) redirect('/');
 
-  const vehicles = await getUserVehicles(user.id);
-  if (!vehicles || vehicles.length === 0) {
-    redirect('/dashboard/landing');
-  }
-
-  if (user.has_family) {
-    const familyVehicles = await getFamilyVehicles(user.id, user.family_id);
-    vehicles.push(...familyVehicles);
-  }
+  const vehicles = (await getAllVehicles(user.id)) as Vehicle[];
+  const selectorVehicles = mapVehiclesToMinimal(vehicles) as VehicleMinimal[];
+  const expenses = (await getAllExpenses(
+    vehicles.map((v) => v.vehicle_id).filter((id) => id > 0),
+  )) as Expense[];
 
   return (
     <main>
-      <DashboardClient userVehicles={vehicles} />
+      <DashboardClient
+        currentUserId={user.id}
+        vehicles={vehicles}
+        expenses={expenses}
+        selectorVehicles={selectorVehicles}
+      />
     </main>
   );
 }

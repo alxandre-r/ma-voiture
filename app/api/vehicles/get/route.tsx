@@ -40,5 +40,55 @@ export async function GET() {
     return NextResponse.json({ error: vehiclesError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ vehicles });
+  // Fetch insurance contracts for all vehicles
+  const vehicleIds = vehicles?.map((v) => v.vehicle_id) || [];
+
+  let insuranceData: Record<
+    number,
+    Array<{
+      id: number;
+      start_date: string;
+      end_date: string | null;
+      monthly_cost: number;
+      provider: string | null;
+    }>
+  > = {};
+
+  if (vehicleIds.length > 0) {
+    const { data: contracts, error: insuranceError } = await supabase
+      .from('insurance_contracts')
+      .select('id, vehicle_id, start_date, end_date, monthly_cost, provider')
+      .in('vehicle_id', vehicleIds)
+      .order('start_date', { ascending: false });
+
+    if (!insuranceError && contracts) {
+      // Group by vehicle_id
+      insuranceData = contracts.reduce(
+        (acc, contract) => {
+          const vid = contract.vehicle_id;
+          if (!acc[vid]) {
+            acc[vid] = [];
+          }
+          acc[vid].push({
+            id: contract.id,
+            start_date: contract.start_date,
+            end_date: contract.end_date,
+            monthly_cost: contract.monthly_cost,
+            provider: contract.provider,
+          });
+          return acc;
+        },
+        {} as typeof insuranceData,
+      );
+    }
+  }
+
+  // Attach insurance data to vehicles
+  const vehiclesWithInsurance =
+    vehicles?.map((vehicle) => ({
+      ...vehicle,
+      insurance_history: insuranceData[vehicle.vehicle_id] || [],
+    })) || [];
+
+  return NextResponse.json({ vehicles: vehiclesWithInsurance });
 }

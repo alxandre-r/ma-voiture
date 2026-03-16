@@ -13,8 +13,8 @@ import SignInForm from '@/components/auth/forms/SignInForm';
 import SignUpForm from '@/components/auth/forms/SignUpForm';
 
 // UI Effects
-import Aurora from '../components/ui/effects/AuroraBackground';
-import ShinyText from '../components/ui/effects/ShinyText';
+import Aurora from '../components/common/ui/effects/AuroraBackground';
+import ShinyText from '../components/common/ui/effects/ShinyText';
 
 export default function LandingPage() {
   const [formType, setFormType] = useState<'signin' | 'signup'>('signin');

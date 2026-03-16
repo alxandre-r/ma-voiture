@@ -1,0 +1,289 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/ui/card';
+import { EXPENSE_CATEGORIES } from '@/components/expenses/expenseCategories';
+import { formatCurrency } from '@/lib/utils/format';
+
+type ChartMode = 'category' | 'vehicle';
+
+interface MonthlyExpenseChartProps {
+  data: Array<{
+    month: string;
+    Carburant: number;
+    Assurance: number;
+    Entretien: number;
+    Autre: number;
+    total: number;
+  }>;
+  vehicleData?: Array<{
+    month: string;
+    [vehicleId: string]: number | string;
+  }>;
+  vehicles?: Array<{
+    vehicle_id: number;
+    name: string;
+    color: string;
+  }>;
+  previousYearData?: Array<{
+    month: string;
+    total: number;
+  }>;
+}
+
+// Vehicle colors
+const VEHICLE_COLORS = [
+  '#f97415', // primary
+  '#7c3aed', // secondary
+  '#3B82F6', // blue
+  '#F59E0B', // amber
+  '#8B5CF6', // violet
+  '#EC4899', // pink
+  '#06B6D4', // cyan
+  '#EF4444', // red
+];
+
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ value: number; dataKey: string; color: string }>;
+  label?: string;
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
+        <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {entry.dataKey}: {formatCurrency(entry.value)}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+export default function MonthlyExpenseChart({
+  data,
+  vehicleData,
+  vehicles,
+  previousYearData,
+}: MonthlyExpenseChartProps) {
+  const [chartMode, setChartMode] = useState<ChartMode>('category');
+
+  // Create a map for previous year data
+  const prevDataMap = useMemo(
+    () => new Map(previousYearData?.map((d) => [d.month, d.total]) || []),
+    [previousYearData],
+  );
+
+  // Add previous year data to the chart data
+  const chartData = useMemo(() => {
+    if (chartMode === 'category') {
+      return data.map((item) => ({
+        ...item,
+        previous: prevDataMap.get(item.month) || 0,
+      }));
+    } else {
+      // For vehicle mode, we need to transform vehicleData
+      return (
+        vehicleData?.map((item) => {
+          const previous = prevDataMap.get(item.month) || 0;
+          // Convert vehicleId keys to vehicle names
+          const vehicleValues: Record<string, number> = {};
+          vehicles?.forEach((v) => {
+            const value = item[v.vehicle_id as keyof typeof item];
+            vehicleValues[v.name] = typeof value === 'number' ? value : 0;
+          });
+          return {
+            month: item.month,
+            ...vehicleValues,
+            previous,
+            total: Object.values(vehicleValues).reduce((a, b) => a + b, 0),
+          };
+        }) || []
+      );
+    }
+  }, [data, vehicleData, vehicles, chartMode, prevDataMap]);
+
+  const _hasPreviousData = previousYearData && previousYearData.length > 0;
+
+  // Get colors from the expense categories
+  const getCategoryColor = (category: string): string => {
+    const cat = EXPENSE_CATEGORIES.find((c) => c.name === category);
+    return cat?.color || '#6B7280';
+  };
+
+  // Get vehicle color
+  const getVehicleColor = (vehicleId: number): string => {
+    const vehicle = vehicles?.find((v) => v.vehicle_id === vehicleId);
+    if (vehicle?.color) return vehicle.color;
+    return VEHICLE_COLORS[vehicleId % VEHICLE_COLORS.length];
+  };
+
+  const isVehicleMode = chartMode === 'vehicle';
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <CardTitle>Dépenses mensuelles</CardTitle>
+        {/* Toggle Switch */}
+        <div className="relative w-36 sm:w-40 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-100 hover:shadow-sm transition-all dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900 shrink-0 overflow-hidden p-1">
+          {/* Sliding background */}
+          <motion.div
+            className="absolute top-1 h-6 bg-gradient-to-r from-custom-1 to-violet-500 rounded-full shadow-md dark:shadow-xl"
+            initial={false}
+            animate={{
+              x: isVehicleMode ? '100%' : '0%',
+              width: isVehicleMode ? 'calc(50% - 4px)' : 'calc(50% - 4px)',
+            }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+          />
+          {/* Labels container */}
+          <div className="relative flex h-full w-full">
+            <button
+              type="button"
+              onClick={() => setChartMode('category')}
+              className={`flex-1 text-xs font-medium transition-colors duration-200 ${
+                !isVehicleMode ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Catégorie
+            </button>
+            <button
+              type="button"
+              onClick={() => setChartMode('vehicle')}
+              className={`flex-1 text-xs font-medium transition-colors duration-200 ${
+                isVehicleMode ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Véhicule
+            </button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="h-56">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} stackOffset="sign" margin={{ left: -20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis
+                dataKey="month"
+                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                axisLine={{ stroke: '#e2e8f0' }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value) => `${value}€`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              {/* Custom Legend with circles */}
+              <Legend
+                wrapperStyle={{ fontSize: '10px', paddingTop: '5px' }}
+                content={() => (
+                  <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-1">
+                    {isVehicleMode
+                      ? vehicles?.map((vehicle) => (
+                          <div
+                            key={vehicle.vehicle_id}
+                            className="flex items-center gap-1 sm:gap-2"
+                          >
+                            <span
+                              className="w-2 h-2 sm:w-3 sm:h-3 rounded-full"
+                              style={{ backgroundColor: getVehicleColor(vehicle.vehicle_id) }}
+                            />
+                            <span className="text-slate-600 dark:text-slate-400 text-xs">
+                              {vehicle.name}
+                            </span>
+                          </div>
+                        ))
+                      : ['Assurance', 'Carburant', 'Entretien', 'Autre'].map((category) => (
+                          <div key={category} className="flex items-center gap-1 sm:gap-2">
+                            <span
+                              className="w-2 h-2 sm:w-3 sm:h-3 rounded-full"
+                              style={{ backgroundColor: getCategoryColor(category) }}
+                            />
+                            <span className="text-slate-600 dark:text-slate-400 text-xs">
+                              {category}
+                            </span>
+                          </div>
+                        ))}
+                  </div>
+                )}
+              />
+              {/* Stack order depends on mode */}
+              {isVehicleMode ? (
+                vehicles?.map((vehicle, index) => (
+                  <Bar
+                    key={vehicle.vehicle_id}
+                    dataKey={vehicle.name}
+                    name={vehicle.name}
+                    stackId="a"
+                    fill={getVehicleColor(vehicle.vehicle_id)}
+                    radius={[
+                      index === (vehicles?.length || 1) - 1 ? 4 : 0,
+                      index === (vehicles?.length || 1) - 1 ? 4 : 0,
+                      0,
+                      0,
+                    ]}
+                  />
+                ))
+              ) : (
+                <>
+                  {/* Stack order: Assurance (bottom), Carburant, Entretien, Autre (top) */}
+                  <Bar
+                    dataKey="Assurance"
+                    name="Assurance"
+                    stackId="a"
+                    fill={getCategoryColor('Assurance')}
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="Carburant"
+                    name="Carburant"
+                    stackId="a"
+                    fill={getCategoryColor('Carburant')}
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="Entretien"
+                    name="Entretien"
+                    stackId="a"
+                    fill={getCategoryColor('Entretien')}
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="Autre"
+                    name="Autre"
+                    stackId="a"
+                    fill={getCategoryColor('Autre')}
+                    radius={[4, 4, 0, 0]}
+                  />
+                </>
+              )}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

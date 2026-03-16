@@ -7,9 +7,9 @@
 import { redirect } from 'next/navigation';
 import React from 'react';
 
-import { getCurrentUserInfo } from '@/lib/data/user/getCurrentUserInfo';
-import { getFamilyVehicles } from '@/lib/data/vehicles/getFamilyVehicles';
-import { getUserVehicles } from '@/lib/data/vehicles/getUserVehicles';
+import { getFamilyMembers } from '@/lib/data/family';
+import { getCurrentUserInfo } from '@/lib/data/user';
+import { getUserVehicles, getFamilyVehicles } from '@/lib/data/vehicles';
 
 import GarageClient from './GarageClient';
 
@@ -20,5 +20,14 @@ export default async function GaragePage() {
   const vehicles = await getUserVehicles(user.id);
   const familyVehicles = await getFamilyVehicles(user.id, user.family_id);
 
-  return <GarageClient userVehicles={vehicles} familyVehicles={familyVehicles} />;
+  // Fetch family members to get owner info for family vehicles
+  const familyMembers = user.family_id ? await getFamilyMembers(user.family_id) : [];
+
+  return (
+    <GarageClient
+      userVehicles={vehicles}
+      familyVehicles={familyVehicles}
+      familyMembers={familyMembers}
+    />
+  );
 }

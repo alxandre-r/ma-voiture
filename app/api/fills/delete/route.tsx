@@ -40,10 +40,10 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Le champ fillId est requis' }, { status: 400 });
     }
 
-    // Verify fill ownership
+    // Verify fill ownership - we need to get the expense_id to check ownership
     const { data: existingFill, error: fillError } = await supabase
       .from('fills')
-      .select('id, owner_id, vehicle_id, date')
+      .select('id, expense_id, vehicle_id, date')
       .eq('id', body.fillId)
       .single();
 
@@ -51,19 +51,26 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Plein non trouvé' }, { status: 404 });
     }
 
-    if (existingFill.owner_id !== user.id) {
+    // Get the expense to check ownership
+    const { data: existingExpense, error: expenseError } = await supabase
+      .from('expenses')
+      .select('owner_id')
+      .eq('id', existingFill.expense_id)
+      .single();
+
+    if (expenseError || !existingExpense) {
+      return NextResponse.json({ error: 'Dépense associée non trouvée' }, { status: 404 });
+    }
+
+    if (existingExpense.owner_id !== user.id) {
       return NextResponse.json(
         { error: "Vous n'êtes pas autorisé à supprimer ce plein" },
         { status: 403 },
       );
     }
 
-    // Delete fill record
-    const { error } = await supabase
-      .from('fills')
-      .delete()
-      .eq('id', body.fillId)
-      .eq('owner_id', user.id);
+    // Delete fill record (will cascade delete expense due to foreign key)
+    const { error } = await supabase.from('fills').delete().eq('id', body.fillId);
 
     if (error) {
       console.error('Error deleting fill:', error);

@@ -16,9 +16,11 @@ type MenuItem = {
 // ----- Configuration -----
 const MENU_ITEMS: MenuItem[] = [
   { name: 'Tableau de bord', path: '/dashboard', icon: '/icons/dashboard.svg' },
+  { name: 'Statistiques', path: '/statistics', icon: '/icons/chart.svg' },
+  { name: 'Dépenses', path: '/expenses', icon: '/icons/euro.svg' },
+  { name: 'Maintenance', path: '/maintenance', icon: '/icons/tool.svg' },
   { name: 'Garage', path: '/garage', icon: '/icons/garage.svg' },
-  { name: 'Consommations', path: '/historique', icon: '/icons/conso.svg' },
-  { name: 'Famille', path: '/family', icon: '/icons/responsive.svg' },
+  { name: 'Famille', path: '/family', icon: '/icons/family.svg' },
 ];
 
 const BOTTOM_ITEM: MenuItem = {
@@ -76,7 +78,7 @@ export default function Sidebar() {
           <motion.div
             layout
             transition={{ type: 'spring', stiffness: 300, damping: 40 }}
-            className="absolute left-0 right-0 h-12 rounded-lg bg-gradient-to-tr from-orange-400 to-orange-600"
+            className="absolute left-0 right-0 h-12 rounded-lg bg-gradient-to-br from-custom-2 to-custom-2-dark-hover"
             style={{
               top: refs.current[activeIndex]?.offsetTop,
             }}

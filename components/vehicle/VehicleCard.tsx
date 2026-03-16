@@ -1,207 +1,133 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
-import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
-import Icon from '@/components/ui/Icon';
-import { useNotifications } from '@/contexts/NotificationContext';
-
-import VehicleEditForm from './forms/VehicleEditForm';
+import Icon from '@/components/common/ui/Icon';
+import ProfilePicture from '@/components/user/ProfilePicture';
 
 import type { Vehicle } from '@/types/vehicle';
 
-export default function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
-  const { showSuccess, showError } = useNotifications();
-  const router = useRouter();
+interface VehicleOwner {
+  user_id: string;
+  user_name: string;
+  avatar_url?: string | null;
+}
 
-  const [editing, setEditing] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+interface VehicleCardProps {
+  vehicle: Vehicle;
+  onClick?: (vehicle: Vehicle) => void;
+  isFamilyVehicle?: boolean;
+  owner?: VehicleOwner;
+}
 
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  // --- Close menu on outside click ---
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleDelete = async () => {
-    setDeleting(true);
-    try {
-      const res = await fetch('/api/vehicles/delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vehicle_id: vehicle.vehicle_id }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression du véhicule');
-      showSuccess('Véhicule supprimé avec succès !');
-      router.refresh();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erreur inconnue';
-      showError(`❌ ${msg}`);
-    } finally {
-      setDeleting(false);
-      setShowDeleteConfirm(false);
+export default function VehicleCard({
+  vehicle,
+  onClick,
+  isFamilyVehicle,
+  owner,
+}: VehicleCardProps) {
+  // Handle card click - use callback instead of navigation
+  const handleClick = () => {
+    if (onClick) {
+      onClick(vehicle);
     }
   };
 
-  console.log('Rendering VehicleCard for:', vehicle);
+  // Use provided image or show placeholder
+  const vehicleImage = vehicle.image;
 
   return (
-    <div className="vehicle-card">
-      {editing ? (
-        <VehicleEditForm
-          vehicle={vehicle}
-          onCancelEdit={() => setEditing(false)}
-          onSaved={() => {
-            router.refresh();
-            setEditing(false);
-          }}
-        />
-      ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-5 flex flex-col gap-5 transition-colors">
-          {/* --- Header : Véhicule --- */}
-          <div className="flex items-center gap-4">
-            <div
-              className="w-16 h-16 rounded-full text-white flex items-center justify-center text-2xl font-bold"
-              style={{ backgroundColor: vehicle.color || '#F26E52' }}
-            >
-              {vehicle.make?.[0] || '🚗'}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
-                {vehicle.name || `${vehicle.make || 'Unknown'} ${vehicle.model || ''}`}
-              </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                {vehicle.plate ? `Plaque : ${vehicle.plate}` : ''}
-              </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                Année : {vehicle.year || '—'} • Carburant : {vehicle.fuel_type || '—'}
-              </p>
-            </div>
-
-            {/* --- Actions flottantes avec sous-menu --- */}
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={() => setShowMenu(!showMenu)}
-                className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 transition cursor-pointer"
-                title="Menu"
-              >
-                <Icon name="more-vertical" size={20} />
-              </button>
-
-              {showMenu && (
-                <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-600 z-10">
-                  <button
-                    onClick={() => {
-                      setEditing(true);
-                      setShowMenu(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 first:rounded-t-lg transition flex items-center gap-2 cursor-pointer"
-                  >
-                    <Icon name="edit" size={16} />
-                    Modifier
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowDeleteConfirm(true);
-                      setShowMenu(false);
-                    }}
-                    disabled={deleting}
-                    className="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900 last:rounded-b-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
-                  >
-                    <Icon name="delete" size={16} />
-                    Supprimer
-                  </button>
-                </div>
-              )}
-            </div>
+    <div
+      className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm 
+      dark:bg-gray-800 dark:border-gray-700
+      hover:shadow-md transition-shadow hover:-trangray-y-1 hover:border-custom-1/70 cursor-pointer transition-transform"
+      onClick={handleClick}
+    >
+      {/* Click to view details - the whole card is clickable */}
+      <div className="aspect-video w-full relative">
+        {vehicleImage ? (
+          <Image
+            className="h-full w-full object-cover"
+            alt={`${vehicle.make} ${vehicle.model}`}
+            src={vehicleImage}
+            fill
+          />
+        ) : (
+          <div className="h-full w-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+            <Icon name="car" size={48} />
           </div>
-
-          {/* --- Stats principales : badges verticaux --- */}
-          <div className="flex flex-wrap gap-3">
-            <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl flex flex-col items-center text-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
-                Kilométrage
-              </span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                {vehicle.odometer?.toLocaleString() ?? '—'} km
-              </span>
-            </div>
-            <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl flex flex-col items-center text-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
-                Conso Moy.
-              </span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                {vehicle.calculated_consumption ?? '—'} L/100km
-              </span>
-            </div>
-            <div className="flex-1 min-w-[120px] bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl flex flex-col items-center text-center">
-              <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
-                Dernier plein
-              </span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                {vehicle.last_fill_date
-                  ? new Date(vehicle.last_fill_date).toLocaleDateString('fr-FR')
-                  : '—'}
-              </span>
-            </div>
-          </div>
-
-          {/* --- Timeline mini : suivi du véhicule --- */}
-          <div className="mt-3 border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <div>{vehicle.owner_name && `Propriétaire : ${vehicle.owner_name}`}</div>
-            <div>
-              Créé le :{' '}
-              {vehicle.created_at ? new Date(vehicle.created_at).toLocaleDateString('fr-FR') : '—'}
-            </div>
-          </div>
-
-          {/* --- Si pas de plein enregistré : hint pour ajouter un plein --- */}
-          {!vehicle.last_fill_date && (
-            <div className="mt-4 p-4 rounded-lg border border-dashed border-custom-2 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/30 text-center">
-              <p className="font-semibold text-gray-700 dark:text-gray-300">
-                Aucun plein enregistré pour ce véhicule
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                Ajoutez votre premier plein pour commencer le suivi.
-              </p>
-              <button
-                onClick={() => {
-                  window.location.href = `/dashboard?addFill=true&vehicleId=${vehicle.vehicle_id}`;
-                }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-custom-2 text-white rounded-md hover:bg-custom-2-hover transition-all text-sm font-medium hover:cursor-pointer"
-              >
-                <Icon name="add" size={16} className="invert dark:invert-0" />
-                Ajouter un plein
-              </button>
-            </div>
-          )}
+        )}
+        {/* Status badge */}
+        <div className="absolute top-4 left-4">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white ${vehicle.status === 'active' ? 'bg-emerald-500/50' : 'bg-gray-500/40'} backdrop-blur-sm `}
+          >
+            {vehicle.status === 'active' ? 'Actif' : 'Inactif'}
+          </span>
         </div>
-      )}
 
-      {/* --- Delete Confirmation --- */}
-      <ConfirmationModal
-        isOpen={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={handleDelete}
-        title="Confirmer la suppression"
-        message={`Êtes-vous sûr de vouloir supprimer le véhicule "${vehicle.name || vehicle.make || 'ce véhicule'}" ?`}
-        confirmText="Supprimer"
-        cancelText="Annuler"
-        confirmButtonColor="red"
-        isLoading={deleting}
-      />
+        {/* Owner badge - only show for family vehicles */}
+        {isFamilyVehicle && owner && (
+          <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/90 dark:bg-gray-700 backdrop-blur-sm rounded-full px-2 py-1 shadow-sm">
+            <ProfilePicture
+              avatarUrl={owner.avatar_url}
+              name={owner.user_name}
+              size="sm"
+              className="w-6 h-6"
+            />
+            <span className="text-xs font-medium text-gray-700 dark:text-gray-300 pr-1">
+              {owner.user_name}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4">
+        <div className="mb-2">
+          <h4 className="font-bold text-gray-900 dark:text-gray-100">
+            <div className="flex items-center gap-2">
+              <span>
+                {vehicle.make} {vehicle.model}
+              </span>
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: vehicle.color || '#64748b' }}
+              ></div>
+            </div>
+          </h4>
+          <span className="text-xs font-mono font-bold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded inline-block mt-1">
+            {vehicle.plate || '—'}
+          </span>
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 font-bold uppercase">Carburant</span>
+            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+              {vehicle.fuel_type || '—'}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 font-bold uppercase">Année</span>
+            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+              {vehicle.year || '—'}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 font-bold uppercase">Kilométrage</span>
+            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+              {vehicle.odometer?.toLocaleString() || '—'} km
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-400 font-bold uppercase">Consommation</span>
+            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+              {vehicle.calculated_consumption ? `${vehicle.calculated_consumption} L/100` : '—'}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

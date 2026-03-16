@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import { useFillActions } from '@/hooks/fill/useFillActions';
 
 import FillRow from './FillRow';

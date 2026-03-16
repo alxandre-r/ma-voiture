@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import Icon from '@/components/ui/Icon';
+import Icon from '@/components/common/ui/Icon';
 
 export default function PrivacySection() {
   const [exportingData, setExportingData] = useState(false);

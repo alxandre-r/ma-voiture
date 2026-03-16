@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import Icon from '@/components/common/ui/Icon';
 import FillEditForm from '@/components/fill/forms/FillEditForm';
-import Icon from '@/components/ui/Icon';
 
 import type { Fill } from '@/types/fill';
 
@@ -132,9 +132,16 @@ export default function FillRow({
             {formatDate(fill.date)}
           </div>
 
-          {/* VEHICLE */}
+          {/* VEHICLE / Type indicator */}
           <div className="w-3/12 md:w-2/12 text-sm truncate text-gray-600 dark:text-gray-300 lg:text-gray-700">
-            {fill.vehicle_name ?? fill.vehicle_id}
+            <span className="flex items-center gap-1">
+              {fill.charge_type === 'charge' ? (
+                <Icon name="elec" size={14} className="text-blue-500" />
+              ) : (
+                <Icon name="conso" size={14} className="text-orange-500" />
+              )}
+              {fill.vehicle_name ?? fill.vehicle_id}
+            </span>
           </div>
 
           {/* AMOUNT */}

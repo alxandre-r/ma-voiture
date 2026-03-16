@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState } from 'react';
 
-import NotificationModal from '@/components/ui/NotificationModal';
+import NotificationModal from '@/components/common/ui/NotificationModal';
 
 import type { ReactNode } from 'react';
 

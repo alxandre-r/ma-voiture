@@ -23,7 +23,44 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, make, model, year, fuel_type, odometer, plate, color } = body;
+    const {
+      name,
+      make,
+      model,
+      year,
+      fuel_type,
+      odometer,
+      plate,
+      color,
+      status,
+      vin,
+      transmission,
+      image,
+      insurance_start_date,
+      insurance_monthly_cost,
+      tech_control_expiry,
+      financing_mode,
+      purchase_date,
+      purchase_price,
+    } = body;
+
+    // Helper to convert empty strings to null for date fields
+    const toDate = (value: string | undefined | null) => {
+      if (!value || value === '') return null;
+      return value;
+    };
+
+    // Helper to convert empty strings to null for numeric fields
+    const toNumber = (value: number | undefined | null) => {
+      if (value === undefined || value === null) return null;
+      return value;
+    };
+
+    // Helper to convert to uppercase (for plate and VIN)
+    const toUpperCase = (value: string | undefined | null) => {
+      if (!value) return null;
+      return value.toUpperCase();
+    };
 
     // Insertion en base
     const { data, error } = await supabase
@@ -31,14 +68,23 @@ export async function POST(request: Request) {
       .insert([
         {
           owner_id: user.id,
-          name,
+          name: name || null,
           make,
           model,
-          year,
-          fuel_type,
-          odometer,
-          color,
-          plate,
+          year: year || null,
+          fuel_type: fuel_type || null,
+          odometer: odometer || 0,
+          color: color || null,
+          plate: toUpperCase(plate),
+          // New fields
+          status: status || 'active',
+          vin: toUpperCase(vin),
+          transmission: transmission || null,
+          image: image || null,
+          tech_control_expiry: toDate(tech_control_expiry),
+          financing_mode: financing_mode || null,
+          purchase_date: toDate(purchase_date),
+          purchase_price: toNumber(purchase_price),
         },
       ])
       .select()
@@ -46,7 +92,33 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Error inserting vehicle:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      // Provide more specific error messages
+      let errorMessage = error.message;
+      if (error.message.includes('invalid input syntax for type date')) {
+        errorMessage = 'Format de date invalide pour un des champs de date';
+      } else if (error.message.includes('null value in column "make"')) {
+        errorMessage = 'La marque est requise';
+      } else if (error.message.includes('null value in column "model"')) {
+        errorMessage = 'Le modèle est requis';
+      }
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
+
+    // Create insurance_contract if insurance data is provided
+    if (insurance_start_date && insurance_monthly_cost) {
+      const { error: insuranceError } = await supabase.from('insurance_contracts').insert([
+        {
+          vehicle_id: data.vehicle_id,
+          owner_id: user.id,
+          monthly_cost: toNumber(insurance_monthly_cost),
+          start_date: toDate(insurance_start_date),
+        },
+      ]);
+
+      if (insuranceError) {
+        console.error('Error creating insurance contract:', insuranceError);
+        // Don't fail the whole request, just log the error
+      }
     }
 
     return NextResponse.json({ message: 'Vehicle created successfully', vehicle: data });

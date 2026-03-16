@@ -41,24 +41,53 @@ export async function POST(request: Request) {
 
     if (vehicleError || !vehicle) {
       return NextResponse.json(
-        { error: 'Véhicule non trouvé ou vous n&apos;êtes pas le propriétaire' },
+        { error: 'Vehicle not found or you are not the owner' },
         { status: 404 },
       );
     }
 
-    // Create fill record
-    const { data: fill, error } = await supabase
-      .from('fills')
+    // Determine charge type and expense type
+    const isCharge = body.charge_type === 'charge';
+    const expenseType = isCharge ? 'electric_charge' : 'fuel';
+
+    // First, create the expense record
+    const { data: expense, error: expenseError } = await supabase
+      .from('expenses')
       .insert([
         {
           vehicle_id: body.vehicle_id,
           owner_id: user.id,
+          type: expenseType,
+          amount: body.amount ? Number(body.amount) : 0,
           date: body.date,
-          odometer: body.odometer || null,
-          liters: body.liters || null,
-          amount: body.amount || null,
-          price_per_liter: body.price_per_liter || null,
           notes: body.notes || null,
+        },
+      ])
+      .select()
+      .single();
+
+    if (expenseError) {
+      console.error('Error creating expense:', expenseError);
+      return NextResponse.json(
+        { error: 'Erreur lors de la création de la dépense' },
+        { status: 500 },
+      );
+    }
+
+    // Then, create the fill record with the expense_id
+    const { data: fill, error } = await supabase
+      .from('fills')
+      .insert([
+        {
+          expense_id: expense.id,
+          odometer: body.odometer ?? null,
+          // For electric charges, use 0 instead of null (NOT NULL constraint)
+          liters: isCharge ? 0 : (body.liters ?? null),
+          price_per_liter: isCharge ? 0 : (body.price_per_liter ?? null),
+          // Electric vehicle fields
+          charge_type: body.charge_type || 'fill',
+          kwh: isCharge ? (body.kwh ?? null) : null,
+          price_per_kwh: isCharge ? (body.price_per_kwh ?? null) : null,
         },
       ])
       .select()
@@ -66,7 +95,9 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Error adding fill:', error);
-      return NextResponse.json({ error: 'Erreur lors de l&apos;ajout du plein' }, { status: 500 });
+      // Rollback: delete the expense if fill creation fails
+      await supabase.from('expenses').delete().eq('id', expense.id);
+      return NextResponse.json({ error: "Erreur lors de l'ajout du plein" }, { status: 500 });
     }
 
     // Update vehicle odometer if fill has odometer data
@@ -85,14 +116,18 @@ export async function POST(request: Request) {
     // Add vehicle info to response for UI
     const responseFill = {
       ...fill,
+      vehicle_id: body.vehicle_id,
       vehicle_name: vehicle.name,
       fuel_type: vehicle.fuel_type,
+      date: body.date,
+      amount: body.amount,
+      notes: body.notes,
     };
 
     return NextResponse.json(
       {
         fill: responseFill,
-        message: 'Plein ajouté avec succès',
+        message: isCharge ? 'Recharge ajoutée avec succès' : 'Plein ajouté avec succès',
       },
       { status: 201 },
     );

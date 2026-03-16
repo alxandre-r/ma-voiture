@@ -1,86 +1,118 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
+import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import { FamilyMemberList } from '@/components/family/FamilyMemberList';
 import { InviteFamilyModal } from '@/components/family/InviteFamilyModal';
 import { RenameFamilyModal } from '@/components/family/RenameFamilyModal';
-import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useFamilyActions } from '@/hooks/family/useFamilyActions';
 
 import type { Family } from '@/types/family';
 import type { User } from '@/types/user';
 
-export default function FamilyClient({ user, family }: { user: User; family: Family }) {
+interface FamilyMember {
+  user_id: string;
+  user_name: string;
+  email: string;
+  role: string;
+  joined_at: string;
+  avatar_url?: string;
+}
+
+export default function FamilyClient({
+  user,
+  family,
+  initialMembers = [],
+}: {
+  user: User;
+  family: Family;
+  initialMembers?: FamilyMember[];
+}) {
   const [familyData, setFamilyData] = useState(family);
+  const [members, setMembers] = useState<FamilyMember[]>(initialMembers);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
-  const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [userIsOwner, setUserIsOwner] = useState(false);
   const [origin, setOrigin] = useState('');
-  const settingsMenuRef = useRef<HTMLDivElement>(null);
 
   const { showNotification } = useNotifications();
 
-  // ----------------------- useFamilyActions Hook -----------------------
   const { handleRename, handleLeave, handleDelete } = useFamilyActions(familyData, setFamilyData);
 
-  // ----------------------- Settings menu click outside -----------------------
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingsMenuRef.current && !settingsMenuRef.current.contains(event.target as Node)) {
-        setIsSettingsMenuOpen(false);
-      }
-    };
-
-    if (isSettingsMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isSettingsMenuOpen]);
-
-  // Set the current user's role (owner/member) based on family data
   useEffect(() => {
     if (familyData && user) {
       setUserIsOwner(familyData.owner_id === user.id);
     }
   }, [familyData, user]);
 
-  // Set the origin for client-side only
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
 
+  // Handle members update after removal
+  const handleMembersUpdated = () => {
+    // Refetch members
+    fetch('/api/family/members')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.members) {
+          setMembers(data.members);
+        }
+      })
+      .catch((err) => console.error('Error refreshing members:', err));
+  };
+
   return (
     <div>
-      {/* Header Section */}
-      <div className="flex justify-between items-start mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+      {/* Page Title & Invite Button - Same row */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 md:justify-between">
+        <div className="md:flex-1 text-center md:text-left">
+          <h1 className="text-3xl font-bold text-custom-2 dark:text-slate-100 tracking-tight flex items-center gap-2 justify-center md:justify-start">
             {familyData.name}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            Vous partagez vos véhicules et l&apos;historique de vos trajets avec votre famille
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            Vous partagez vos véhicules et l'historique de vos trajets avec votre famille
           </p>
         </div>
-
-        {/* Settings Menu */}
-        <div className="relative" ref={settingsMenuRef}>
+        {userIsOwner && (
           <button
-            onClick={() => setIsSettingsMenuOpen(!isSettingsMenuOpen)}
-            className="py-2 px-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-700 hover:cursor-pointer"
+            onClick={() => setIsInviteModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-custom-1 text-white font-semibold rounded-xl hover:bg-custom-1/90 transition-all shadow-lg shadow-custom-1/20 cursor-pointer whitespace-nowrap md:justify-start w-full md:w-auto"
           >
-            <span className="sr-only">Paramètres</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+              />
+            </svg>
+            Inviter un membre
+          </button>
+        )}
+      </div>
+
+      {/* Family Members Grid - All cards same width */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+        <FamilyMemberList
+          members={members}
+          currentUserId={user.id}
+          currentUserRole={userIsOwner ? 'owner' : 'member'}
+          onMembersUpdated={handleMembersUpdated}
+        />
+      </div>
+
+      {/* Info Section */}
+      <div className="mt-12 bg-white dark:bg-gray-800/40 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
             <svg
-              className="w-6 h-6 text-gray-600 dark:text-gray-300"
+              className="w-5 h-5 text-blue-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -89,75 +121,21 @@ export default function FamilyClient({ user, family }: { user: User; family: Fam
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-          </button>
-
-          <div
-            className={`absolute right-0 p-2 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-300 dark:border-gray-700 z-50 transition-all duration-300 transform ${isSettingsMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-1'}`}
-          >
-            <div className="py-1">
-              {userIsOwner && (
-                <button
-                  onClick={() => setIsRenameModalOpen(true)}
-                  className="w-full rounded-md text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 hover:cursor-pointer"
-                >
-                  Renommer la famille
-                </button>
-              )}
-              {userIsOwner && (
-                <button
-                  onClick={() => setIsDeleteModalOpen(true)}
-                  className="w-full rounded-md text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 hover:cursor-pointer"
-                >
-                  Supprimer la famille
-                </button>
-              )}
-              {!userIsOwner && (
-                <button
-                  onClick={() => setIsLeaveModalOpen(true)}
-                  className="w-full rounded-md text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 hover:cursor-pointer"
-                >
-                  Quitter la famille
-                </button>
-              )}
-            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Family Members */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-md overflow-hidden">
-        <h2 className="text-xl p-6 font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800">
-          Membres de la famille
-        </h2>
-        <div className="p-6">
-          {user && (
-            <FamilyMemberList
-              familyId={familyData.id}
-              currentUserId={user.id}
-              currentUserRole={userIsOwner ? 'owner' : 'member'}
-            />
-          )}
-
-          {/* Show invite button only to owners */}
-          {userIsOwner && (
-            <div className="mt-6">
-              <button
-                onClick={() => setIsInviteModalOpen(true)}
-                className="w-full bg-orange-50 dark:bg-orange-600/20 hover:bg-orange-100 dark:hover:bg-orange-600/30 text-custom-2 dark:text-custom-2-dark font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 focus:outline-none hover:cursor-pointer"
-              >
-                Inviter un membre
-              </button>
-            </div>
-          )}
+          <div>
+            <h5 className="font-bold text-slate-900 dark:text-slate-100">
+              À propos des accès partagés
+            </h5>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+              Les membres de la famille peuvent consulter les véhicules de tous les membres, ainsi
+              quapos;aux données de plais et maintenance et les statistiques associées. Solo el
+              propietario del véhicule está en mesure dapos;ajouter des données à son véhicule, pero
+              todos los miembros pueden consultarlos.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -185,7 +163,7 @@ export default function FamilyClient({ user, family }: { user: User; family: Fam
         onClose={() => setIsLeaveModalOpen(false)}
         onConfirm={handleLeave}
         title="Quitter la famille"
-        message="Vous perdrez l'accès aux véhicules et aux données partagées."
+        message={<span>Vous perdrez lapos;accès aux véhicules et aux données partagées.</span>}
         confirmText="Quitter"
         cancelText="Annuler"
         confirmButtonColor="red"

@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes';
 
-import Icon from '@/components/ui/Icon';
+import Icon from '@/components/common/ui/Icon';
 
 export default function AppearanceSection() {
   const { theme, setTheme } = useTheme();

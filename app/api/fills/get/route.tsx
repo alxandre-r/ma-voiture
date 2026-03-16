@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     let query = supabase
       .from('fills_for_display')
       .select(
-        'id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at',
+        'id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at, charge_type, kwh, price_per_kwh, fuel_type',
       )
       .order('date', { ascending: false });
 
@@ -66,6 +66,11 @@ export async function GET(request: Request) {
       price_per_liter: fill.price_per_liter,
       notes: fill.notes,
       created_at: fill.created_at,
+      // Electric vehicle fields
+      charge_type: fill.charge_type,
+      kwh: fill.kwh,
+      price_per_kwh: fill.price_per_kwh,
+      fuel_type: fill.fuel_type,
     }));
 
     return NextResponse.json(

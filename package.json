@@ -15,6 +15,7 @@
     "@auth/supabase-adapter": "^1.10.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.55.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.29.2",
     "motion": "^12.26.1",
     "next": "^15.5.7",
@@ -22,7 +23,10 @@
     "next-themes": "^0.4.6",
     "ogl": "^1.0.11",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-easy-crop": "^5.5.6",
+    "recharts": "^3.8.0",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

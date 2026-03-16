@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { Modal } from '@/components/ui/Modal';
+import { Modal } from '@/components/common/ui/Modal';
 import { useFormSubmitOnEnter } from '@/hooks/useFormSubmitOnEnter';
 
 interface RenameFamilyModalProps {

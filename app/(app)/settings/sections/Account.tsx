@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 
-import Icon from '@/components/ui/Icon';
-import Spinner from '@/components/ui/Spinner';
+import Icon from '@/components/common/ui/Icon';
+import Spinner from '@/components/common/ui/Spinner';
+import AvatarModal from '@/components/user/AvatarModal';
+import ProfilePicture from '@/components/user/ProfilePicture';
 import { useNotifications } from '@/contexts/NotificationContext';
 import useAccountActions from '@/hooks/account/useAccountActions';
 
@@ -12,11 +14,19 @@ import type { User } from '@/types/user';
 export default function AccountSection({ user }: { user: User }) {
   const { showNotification } = useNotifications();
 
-  const { localUser, updateProfile, changePassword, isProfileLoading, isPasswordLoading } =
-    useAccountActions({ user, showNotification });
+  const {
+    localUser,
+    updateProfile,
+    changePassword,
+    isProfileLoading,
+    isPasswordLoading,
+    isAvatarLoading,
+    updateAvatar,
+  } = useAccountActions({ user, showNotification });
 
   const [editing, setEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   const [form, setForm] = useState({
     name: user.name,
@@ -25,7 +35,30 @@ export default function AccountSection({ user }: { user: User }) {
     newPassword: '',
   });
 
+  const validateProfileData = () => {
+    if (form.name.trim() === '' || form.email.trim() === '') {
+      showNotification("Le nom et l'email ne peuvent pas être vides.", 'error');
+      return false;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      showNotification('Veuillez entrer une adresse email valide.', 'error');
+      return false;
+    }
+
+    if (form.name === localUser.name && form.email === localUser.email) {
+      showNotification("Aucune modification n'a été apportée.", 'info');
+      setEditing(false);
+      return false;
+    }
+
+    return true;
+  };
+
   const saveProfile = async () => {
+    if (!validateProfileData()) {
+      return;
+    }
     const success = await updateProfile(form.name, form.email);
     if (success) {
       setEditing(false);
@@ -41,7 +74,13 @@ export default function AccountSection({ user }: { user: User }) {
     }
   };
 
-  const initial = localUser.name?.charAt(0).toUpperCase();
+  const handleAvatarSave = async (file: File) => {
+    return await updateAvatar(file);
+  };
+
+  const handleAvatarRemove = async () => {
+    return await updateAvatar(null);
+  };
 
   return (
     <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-8">
@@ -56,12 +95,25 @@ export default function AccountSection({ user }: { user: User }) {
         </p>
       </div>
 
-      {/* PROFILE */}
+      {/* PROFILE INFO - Avatar + Details */}
       <div className="flex items-start gap-6">
-        <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-custom-2 text-white flex items-center justify-center text-lg lg:text-3xl font-bold">
-          {initial}
-        </div>
+        {/* Avatar - Clickable */}
+        <button
+          onClick={() => setShowAvatarModal(true)}
+          disabled={isAvatarLoading}
+          className="relative group cursor-pointer focus:outline-none focus:ring-2 focus:ring-custom-1 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded-full"
+        >
+          <ProfilePicture avatarUrl={localUser.avatar_url} name={localUser.name} size="lg" />
+          <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity flex items-center justify-center">
+            {isAvatarLoading ? (
+              <Spinner color="white" />
+            ) : (
+              <span className="text-white text-xs font-medium">Changer</span>
+            )}
+          </div>
+        </button>
 
+        {/* User Info */}
         <div className="flex-1">
           {!editing ? (
             <>
@@ -192,6 +244,17 @@ export default function AccountSection({ user }: { user: User }) {
           </div>
         )}
       </div>
+
+      {/* Avatar Modal */}
+      <AvatarModal
+        isOpen={showAvatarModal}
+        onClose={() => setShowAvatarModal(false)}
+        avatarUrl={localUser.avatar_url}
+        name={localUser.name}
+        onSave={handleAvatarSave}
+        onRemove={handleAvatarRemove}
+        isLoading={isAvatarLoading}
+      />
     </section>
   );
 }

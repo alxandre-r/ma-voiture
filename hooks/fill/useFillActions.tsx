@@ -40,6 +40,10 @@ export function useFillActions() {
       amount: fill.amount,
       price_per_liter: fill.price_per_liter,
       notes: fill.notes ?? '',
+      // Electric vehicle fields
+      charge_type: fill.charge_type ?? 'fill',
+      kwh: fill.kwh ?? 0,
+      price_per_kwh: fill.price_per_kwh ?? 0,
     });
   };
 
@@ -48,27 +52,52 @@ export function useFillActions() {
     setEditData(null);
   };
 
-  /** --- Auto-calculations for liters/price/amount --- */
-  const calculateFillValues = (data: Partial<FillFormData>): FillFormData => {
-    const liters = data.liters ?? editData?.liters ?? 0;
-    const amount = data.amount ?? editData?.amount ?? 0;
-    const pricePerLiter = data.price_per_liter ?? editData?.price_per_liter ?? 0;
+  /** --- Auto-calculations for liters/price/amount (fuel) or kWh/price/kWh (electric) --- */
+  const calculateFillValues = (
+    data: Partial<FillFormData>,
+    baseData?: Partial<FillFormData> | null,
+  ): FillFormData => {
+    // Use baseData if provided (for create mode), otherwise use editData (for edit mode)
+    const base = baseData ?? editData;
+
+    // Use || instead of ?? to treat 0 as falsy (allow clearing fields)
+    const liters = data.liters ?? base?.liters ?? 0;
+    const amount = data.amount ?? base?.amount ?? 0;
+    const pricePerLiter = data.price_per_liter ?? base?.price_per_liter ?? 0;
+    // Electric fields
+    const kwh = data.kwh ?? base?.kwh ?? 0;
+    const pricePerKwh = data.price_per_kwh ?? base?.price_per_kwh ?? 0;
+    const chargeType = data.charge_type ?? base?.charge_type ?? 'fill';
 
     const result: FillFormData = {
-      vehicle_id: data.vehicle_id ?? editData?.vehicle_id ?? 0,
-      date: data.date ?? editData?.date ?? new Date().toISOString().split('T')[0],
-      odometer: data.odometer ?? editData?.odometer ?? 0,
+      vehicle_id: data.vehicle_id ?? base?.vehicle_id ?? 0,
+      date: data.date ?? base?.date ?? new Date().toISOString().split('T')[0],
+      odometer: data.odometer ?? base?.odometer ?? 0,
       liters: liters,
       amount: amount,
       price_per_liter: pricePerLiter,
-      notes: data.notes ?? editData?.notes ?? '',
+      notes: data.notes ?? base?.notes ?? '',
+      // Electric vehicle fields
+      charge_type: chargeType,
+      kwh: kwh,
+      price_per_kwh: pricePerKwh,
     };
 
-    // Auto-calculate missing values
-    if (result.amount && result.liters && result.liters > 0) {
-      result.price_per_liter = Number((result.amount / result.liters).toFixed(3));
-    } else if (result.amount && result.price_per_liter && result.price_per_liter > 0) {
-      result.liters = Number((result.amount / result.price_per_liter).toFixed(2));
+    // Auto-calculate missing values based on charge type (only if value exists and is > 0)
+    if (chargeType === 'charge') {
+      // For electric charges: calculate kWh from amount and price_per_kwh
+      if (amount && pricePerKwh) {
+        result.kwh = Number((amount / pricePerKwh).toFixed(2));
+      } else if (amount && kwh) {
+        result.price_per_kwh = Number((amount / kwh).toFixed(3));
+      }
+    } else {
+      // For fuel fills: calculate liters from amount and price_per_liter
+      if (amount && liters) {
+        result.price_per_liter = Number((amount / liters).toFixed(3));
+      } else if (amount && pricePerLiter) {
+        result.liters = Number((amount / pricePerLiter).toFixed(2));
+      }
     }
 
     return result;
@@ -88,9 +117,20 @@ export function useFillActions() {
       showError('Veuillez entrer le montant total');
       return false;
     }
-    if (!data.liters && !data.price_per_liter) {
-      showError('Veuillez entrer soit les litres, soit le prix au litre');
-      return false;
+
+    // Validate based on charge type
+    if (data.charge_type === 'charge') {
+      // For electric charges: need either kWh or price_per_kwh
+      if (!data.kwh && !data.price_per_kwh) {
+        showError('Veuillez entrer soit les kWh, soit le prix au kWh');
+        return false;
+      }
+    } else {
+      // For fuel fills: need either liters or price_per_liter
+      if (!data.liters && !data.price_per_liter) {
+        showError('Veuillez entrer soit les litres, soit le prix au litre');
+        return false;
+      }
     }
     return true;
   };
@@ -104,24 +144,31 @@ export function useFillActions() {
       // Validate data
       if (!validateFillData(editData)) return;
 
+      const isCharge = editData.charge_type === 'charge';
+
       // Convert all fields to proper types
-      const payload: FillFormData = {
+      const payload = {
         vehicle_id: editData.vehicle_id,
         date: editData.date,
         odometer: Number(editData.odometer),
-        liters: Number(editData.liters),
+        // For electric charges, liters must be 0 (not null due to NOT NULL constraint)
+        liters: isCharge ? 0 : Number(editData.liters),
         amount: Number(editData.amount),
-        price_per_liter: Number(editData.price_per_liter),
+        // For electric charges, price_per_liter must be 0 (not null due to NOT NULL constraint)
+        price_per_liter: isCharge ? 0 : Number(editData.price_per_liter),
         notes: editData.notes,
+        // Electric vehicle fields
+        charge_type: editData.charge_type ?? 'fill',
+        kwh: isCharge ? (editData.kwh ? Number(editData.kwh) : null) : null,
+        price_per_kwh: isCharge
+          ? editData.price_per_kwh
+            ? Number(editData.price_per_kwh)
+            : null
+          : null,
       };
 
       // Check for NaN values
-      if (
-        isNaN(payload.odometer) ||
-        isNaN(payload.liters) ||
-        isNaN(payload.amount) ||
-        isNaN(payload.price_per_liter)
-      ) {
+      if (isNaN(payload.odometer) || isNaN(payload.amount)) {
         throw new Error('Tous les champs numériques doivent être remplis correctement.');
       }
 
@@ -155,15 +202,23 @@ export function useFillActions() {
       // Validate data
       if (!validateFillData(fillData)) return false;
 
+      const isCharge = fillData.charge_type === 'charge';
       const payload = {
         vehicle_id: fillData.vehicle_id,
         owner: '',
         date: fillData.date,
         odometer: fillData.odometer ? parseInt(fillData.odometer.toString(), 10) : null,
-        liters: fillData.liters ? fillData.liters : null,
+        // For electric charges, liters must be 0 (not null due to NOT NULL constraint)
+        // For fuel fills, use the actual value or null
+        liters: isCharge ? 0 : fillData.liters ? fillData.liters : null,
         amount: fillData.amount ? fillData.amount : null,
-        price_per_liter: fillData.price_per_liter ? fillData.price_per_liter : null,
+        // For electric charges, price_per_liter must be 0 (not null due to NOT NULL constraint)
+        price_per_liter: isCharge ? 0 : fillData.price_per_liter ? fillData.price_per_liter : null,
         notes: fillData.notes || null,
+        // Electric vehicle fields
+        charge_type: fillData.charge_type || 'fill',
+        kwh: isCharge ? fillData.kwh || null : null,
+        price_per_kwh: isCharge ? fillData.price_per_kwh || null : null,
         created_at: new Date().toISOString(),
       };
 
@@ -177,7 +232,11 @@ export function useFillActions() {
       if (!res.ok) {
         throw new Error(data.error || "Erreur lors de l'ajout du plein");
       }
-      showSuccess('Plein ajouté avec succès');
+      showSuccess(
+        fillData.charge_type === 'charge'
+          ? 'Recharge ajoutée avec succès'
+          : 'Plein ajouté avec succès',
+      );
       return true;
     } catch (err: unknown) {
       showError(err instanceof Error ? err.message : 'Une erreur inconnue est survenue');
@@ -226,6 +285,52 @@ export function useFillActions() {
     setEditData(calculatedData);
   };
 
+  /** --- Update existing fill (for editing from expense list) --- */
+  const updateFill = async (fillId: number, fillData: FillFormData): Promise<boolean> => {
+    try {
+      // Validate data
+      if (!validateFillData(fillData)) return false;
+
+      const isCharge = fillData.charge_type === 'charge';
+      const payload = {
+        vehicle_id: fillData.vehicle_id,
+        date: fillData.date,
+        odometer: fillData.odometer ? parseInt(fillData.odometer.toString(), 10) : null,
+        // For electric charges, liters must be 0 (not null due to NOT NULL constraint)
+        liters: isCharge ? 0 : fillData.liters ? fillData.liters : null,
+        amount: fillData.amount ? fillData.amount : null,
+        // For electric charges, price_per_liter must be 0 (not null due to NOT NULL constraint)
+        price_per_liter: isCharge ? 0 : fillData.price_per_liter ? fillData.price_per_liter : null,
+        notes: fillData.notes || null,
+        // Electric vehicle fields
+        charge_type: fillData.charge_type || 'fill',
+        kwh: isCharge ? fillData.kwh || null : null,
+        price_per_kwh: isCharge ? fillData.price_per_kwh || null : null,
+      };
+
+      const res = await fetch('/api/fills/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: fillId, ...payload }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? 'Erreur lors de la modification du plein');
+      }
+      showSuccess(
+        fillData.charge_type === 'charge'
+          ? 'Recharge modifiée avec succès'
+          : 'Plein modifié avec succès',
+      );
+      triggerRefresh();
+      return true;
+    } catch (err) {
+      if (err instanceof Error) showError(err.message);
+      return false;
+    }
+  };
+
   return {
     editingId,
     editData,
@@ -238,6 +343,7 @@ export function useFillActions() {
     cancelEdit,
     saveEdit,
     addFill,
+    updateFill,
     requestDelete,
     confirmDelete,
     setShowDeleteConfirm,

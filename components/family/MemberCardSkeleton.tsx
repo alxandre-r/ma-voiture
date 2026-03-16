@@ -1,34 +1,28 @@
-// components/family/MemberCardSkeleton.tsx
-// This component is a skeleton loader for the family member card, used while fetching family members data.
+'use client';
 
 import React from 'react';
 
 export const MemberCardSkeleton: React.FC = () => {
   return (
-    <div className="p-4 rounded-lg shadow-xs border border-gray-200 dark:border-gray-600 animate-pulse">
-      <div className="flex items-start justify-between gap-4">
-        {/* Left: Avatar */}
-        <div className="hidden lg:flex w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+    <div className="bg-white dark:bg-gray-800/40 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 flex flex-col animate-pulse min-w-0">
+      <div className="flex justify-between items-start mb-4">
+        {/* Avatar Skeleton */}
+        <div className="w-16 h-16 rounded-full border-4 border-slate-50 dark:border-white/10 bg-slate-200 dark:bg-slate-700"></div>
 
-        {/* Center: Content */}
-        <div className="flex-1 min-w-0">
-          {/* Row 1: Name + Badge | Role */}
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
-              <div className="h-4 w-10 bg-gray-200 dark:bg-gray-700 rounded-full" />
-            </div>
+        {/* Role Badge Skeleton */}
+        <div className="w-16 h-5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+      </div>
 
-            {/* Role badge */}
-            <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded-full" />
-          </div>
+      {/* Name & Email Skeleton */}
+      <div className="space-y-2">
+        <div className="w-32 h-5 rounded bg-slate-200 dark:bg-slate-700"></div>
+        <div className="w-40 h-4 rounded bg-slate-200 dark:bg-slate-700"></div>
+      </div>
 
-          {/* Row 2: Email | Joined date */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="hidden lg:flex h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
-          </div>
-        </div>
+      {/* Footer Skeleton */}
+      <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+        <div className="w-24 h-3 rounded bg-slate-200 dark:bg-slate-700"></div>
+        <div className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-700"></div>
       </div>
     </div>
   );

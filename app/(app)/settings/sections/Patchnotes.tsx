@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 
+import Icon from '@/components/common/ui/Icon';
 import { VersionBlock } from '@/components/patchnotes/versionBlock';
-import Icon from '@/components/ui/Icon';
 
 import type { VersionBlockProps } from '@/components/patchnotes/versionBlock';
 
@@ -12,45 +12,31 @@ export default function PatchnotesSection() {
   const patchnotesData: VersionBlockProps[] = [
     {
       version: 'à venir',
-      date: 'TbA',
+      date: '',
       summary: 'Prochaines fonctionnalités et améliorations prévues',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none">
-            Dashboard & Véhicules
-          </li>
-          <li>
-            Déplacer le bouton d&apos;ajout de véhicule en dessous de la liste des véhicules
-            personnels dans le garage. Modifications internes à effetcuer : éclater VehicleList en 2
-            listes pour afficher le bouton entre les deux.
-          </li>
-
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
-            Notifications & Historique
+            Améliorations
           </li>
           <li>
-            Retirer la possibilité d&apos;éditer et supprimer un plein d&apos;un véhicule partagé
-            pour les membres de la famille. Seul le propriétaire peut le faire.
-          </li>
-
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">Famille</li>
-          <li>
-            Page <strong>Famille</strong> : Ajouter la possibilité pour le propriétaire de
-            transférer la propriété de la famille à un autre membre.
+            Amélioration de la fonctionnalité d&apos;assurance : possibilité de gérer un historique
+            d&apos;assurances pour chaque véhicule, avec des dates de début et de fin, montant..
           </li>
 
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
             Nouvelles fonctionnalités
           </li>
           <li>
-            Implémenter la <strong>maintenance de véhicule</strong> avec historique et rappels.
+            Véhicules <strong>favoris</strong>. Permet de marquer un ou plusieurs véhicules comme
+            favoris pour les afficher en priorité dans le
           </li>
           <li>
-            Ajouter des <strong>statistiques de coûts</strong> par véhicule et par flotte et par
-            temporalité.
+            Ajout de préférences utilisateur pour personnaliser l&apos;affichage du dashboard (choix
+            du mode d&apos;affichage des graphiques et de la temporalité par défaut).
           </li>
           <li>
-            Prise en charge des <strong>véhicules électriques</strong>.
+            <strong>Rappels</strong> de maintenance.
           </li>
           <li>
             Implémenter une calculatrice d&apos;itinéraire pour estimer la consommation et le coût
@@ -60,6 +46,91 @@ export default function PatchnotesSection() {
         </ul>
       ),
       type: 'todo',
+    },
+    {
+      version: '1.2.0',
+      date: '16 Mars 2026',
+      summary:
+        'Ajouts des pages Statistiques, Dépenses et Maintenance. Introduction du système de dépense (Plein/Recharge, Maintenance, Assurance et Autre).',
+      details: (
+        <div className="space-y-6">
+          {/* Frontend / UX */}
+          <div>
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                Les filtres de véhicules et de période sont désormais présent dans le header de
+                plusieurs pages et sont partagés entre ces pages : Dashboard, Statistiques, Dépenses
+                et Maintenance. Les filtres permettent de filtrer les données affichées dans ces
+                différentes pages selon les véhicules sélectionnés et la période choisie.
+              </li>
+              <li>
+                <Link href="/dashboard" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Dashboard
+                </Link>{' '}
+                : Retrait des graphiques au bénéfice de la page{' '}
+                <Link href="/statistics" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Statistiques
+                </Link>
+                . Présente désormais les dernières dépenses.
+              </li>
+
+              <li>
+                Nouvelle page{' '}
+                <Link href="/statistics" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Statistiques
+                </Link>
+                . Contient des graphiques d&apos;évolution de la consommation, des dépenses et du
+                kilométrage. Permet de comparer plusieurs véhicules et de visualiser la répartition
+                des dépenses selon leur type.
+              </li>
+
+              <li>
+                Nouvelle page{' '}
+                <Link href="/expenses" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Dépenses
+                </Link>
+                . Affiche la liste de toutes les dépenses. Permet d&apos;ajouter, modifier et
+                supprimer une dépense.
+              </li>
+              <li>
+                Nouvelle page{' '}
+                <Link
+                  href="/maintenance"
+                  className="text-indigo-600 dark:text-indigo-400 underline"
+                >
+                  Maintenance
+                </Link>
+                . Affiche la liste de tous les entretiens. Permet d&apos;ajouter, modifier et
+                supprimer un entretien.
+              </li>
+              <li>
+                <Link href="/garage" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Garage
+                </Link>{' '}
+                : Refonte visuelle de la liste de véhicule, fonctionnant maintenant en cards. Ajout
+                de la fonctionnalité de photo de véhicule, statut actif/inactif, assurance,
+                Entretien et contrôle technique, ainsi que des informations relatives au financement
+                (prix d&apos;achat ou loyer mensuel selon le mode de financement).
+              </li>
+              <li>
+                <Link href="/family" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Famille
+                </Link>{' '}
+                : Refonte pour un affichage en forme de card pour les membres.
+              </li>
+              <li>
+                Ajout de la possibilité d&apos;ajouter et modifier sa photo de profil dans la page
+                Mon Compte des {''}
+                <Link href="/settings" className="text-indigo-600 dark:text-indigo-400 underline">
+                  Paramètres
+                </Link>
+                .
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+      type: 'major',
     },
     {
       version: '1.1.1',
