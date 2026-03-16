@@ -131,9 +131,9 @@ export default function FamilyClient({
             </h5>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               Les membres de la famille peuvent consulter les véhicules de tous les membres, ainsi
-              quapos;aux données de plais et maintenance et les statistiques associées. Solo el
-              propietario del véhicule está en mesure dapos;ajouter des données à son véhicule, pero
-              todos los miembros pueden consultarlos.
+              qu&apos;aux données de pleins et maintenance et les statistiques associées. Seuls les
+              propriétaires des véhicules sont en mesure d&apos;ajouter des données à leur véhicule, mais
+              tous les membres peuvent les consulter.
             </p>
           </div>
         </div>
@@ -163,7 +163,7 @@ export default function FamilyClient({
         onClose={() => setIsLeaveModalOpen(false)}
         onConfirm={handleLeave}
         title="Quitter la famille"
-        message={<span>Vous perdrez lapos;accès aux véhicules et aux données partagées.</span>}
+        message={'Êtes-vous sûr de vouloir quitter la famille ? Vous perdrez l\'accès aux véhicules et données partagés.'}
         confirmText="Quitter"
         cancelText="Annuler"
         confirmButtonColor="red"
