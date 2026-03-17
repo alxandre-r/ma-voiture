@@ -40,7 +40,7 @@ export default function RecentExpenses({ expenses, vehicles }: RecentExpensesPro
                 <div
                   className={`flex items-center justify-center p-2.5 rounded-xl shrink-0 ${getCategoryColor(expense.type)}`}
                 >
-                  <Icon name={getCategoryIcon(expense.type)} size={18} />
+                  <Icon name={getCategoryIcon(expense.type)} size={18} className='invert dark:invert-0' />
                 </div>
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white text-sm">
