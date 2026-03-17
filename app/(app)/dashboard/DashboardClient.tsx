@@ -100,10 +100,7 @@ function DashboardContent({
       </div>
 
       {/* Stats Cards */}
-      <StatsCards
-        avgConsumption={avgConsumption}
-        totalExpenses={totalExpenses}
-      />
+      <StatsCards avgConsumption={avgConsumption} totalExpenses={totalExpenses} />
 
       {/* Recent Expenses Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -111,7 +108,7 @@ function DashboardContent({
       </div>
 
       {/* New version messages */}
-      <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
+      <div className="p-4 bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400 text-yellow-700 dark:text-yellow-300">
         <p className="font-medium">Plus à venir</p>
         <p className="text-sm mt-1">
           Visitez la section &quot;Patchnotes&quot; de la page{' '}

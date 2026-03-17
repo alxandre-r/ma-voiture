@@ -1,11 +1,12 @@
 'use client';
 
-import { format, parseISO } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import Link from 'next/link';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import Icon from '@/components/common/ui/Icon';
+import { getCategoryColor, getCategoryIcon, getCategoryLabel } from '@/lib/utils/expensesUtils';
+import { formatCurrency, formatDate } from '@/lib/utils/format';
+import { getVehicleName } from '@/lib/utils/vehicleUtils';
 
 import type { Expense } from '@/types/expense';
 import type { Vehicle } from '@/types/vehicle';
@@ -13,65 +14,6 @@ import type { Vehicle } from '@/types/vehicle';
 interface RecentExpensesProps {
   expenses: Expense[];
   vehicles: Vehicle[];
-}
-
-// Get category color based on expense type
-function getCategoryColor(type: string): string {
-  switch (type) {
-    case 'fuel':
-      return 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
-    case 'electric_charge':
-      return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
-    case 'maintenance':
-      return 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
-    case 'insurance':
-      return 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
-    case 'other':
-    default:
-      return 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400';
-  }
-}
-
-// Get category icon based on expense type
-function getCategoryIcon(type: string): string {
-  switch (type) {
-    case 'fuel':
-      return 'car';
-    case 'electric_charge':
-      return 'elec';
-    case 'maintenance':
-      return 'tool';
-    case 'insurance':
-      return 'secure';
-    default:
-      return 'euro';
-  }
-}
-
-// Get category label based on expense type
-function getCategoryLabel(expense: Expense): string {
-  switch (expense.type) {
-    case 'fuel':
-      return 'Carburant';
-    case 'electric_charge':
-      return 'Recharge';
-    case 'maintenance':
-      return expense.maintenance_type_label || 'Entretien';
-    case 'insurance':
-      return 'Assurance';
-    case 'other':
-      return expense.label || 'Autre';
-    default:
-      return expense.type;
-  }
-}
-
-// Get vehicle name from vehicle ID
-function getVehicleName(vehicleId: number, vehicles: Vehicle[]): string {
-  const vehicle = vehicles.find((v) => v.vehicle_id === vehicleId);
-  if (!vehicle) return 'Véhicule';
-
-  return vehicle.name || `${vehicle.make} ${vehicle.model}`;
 }
 
 export default function RecentExpenses({ expenses, vehicles }: RecentExpensesProps) {
@@ -106,7 +48,7 @@ export default function RecentExpenses({ expenses, vehicles }: RecentExpensesPro
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
-                      {format(parseISO(expense.date), 'dd MMM', { locale: fr })}
+                      {formatDate(expense.date)}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {getVehicleName(expense.vehicle_id, vehicles)}
@@ -117,7 +59,7 @@ export default function RecentExpenses({ expenses, vehicles }: RecentExpensesPro
 
               {/* Right: Amount */}
               <span className="text-base font-bold text-gray-900 dark:text-white">
-                {expense.amount.toFixed(2)} €
+                {formatCurrency(expense.amount ?? 0)}
               </span>
             </div>
           ))}

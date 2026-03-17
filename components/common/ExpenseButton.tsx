@@ -118,7 +118,7 @@ export default function ExpenseButton({ vehicles, currentUserId }: ExpenseButton
   // If no active vehicle, show warning message
   if (!hasActiveVehicle) {
     return (
-      <div className="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+      <div className="p-4 bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300">
         <p className="font-medium">Aucun véhicule actif disponible</p>
         <p className="text-sm">Veuillez ajouter un véhicule actif pour enregistrer des dépenses.</p>
       </div>
@@ -164,9 +164,9 @@ export default function ExpenseButton({ vehicles, currentUserId }: ExpenseButton
         className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium 
               transition-colors flex items-center gap-2 self-center sm:self-auto cursor-pointer"
       >
-        <Icon name="add" size={18} className="invert" />
+        <Icon name="add" size={18} className="invert dark:invert-0" />
         Ajouter une dépense
-        <Icon name="arrow-down" size={14} className="invert" />
+        <Icon name="arrow-down" size={14} className="invert dark:invert-0" />
       </button>
 
       {/* Dropdown Menu */}

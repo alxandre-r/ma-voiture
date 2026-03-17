@@ -151,7 +151,7 @@ export default function PrivacySection() {
             onClick={exportUserData}
             disabled={true}
             className={`px-4 py-3 text-white rounded-lg bg-custom-1/70 font-medium flex items-center gap-2 hover:cursor-not-allowed`}
-            title='Cette fonctionnalité sera disponible dans une prochaine mise à jour'
+            title="Cette fonctionnalité sera disponible dans une prochaine mise à jour"
           >
             <Icon name="add" size={18} className="invert dark:invert-0" />{' '}
             {exportingData ? 'Export en cours...' : 'Exporter mes données'}

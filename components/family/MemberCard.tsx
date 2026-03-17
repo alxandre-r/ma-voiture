@@ -42,11 +42,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   const isCurrentUser = member.user_id === currentUserId;
 
   return (
-    <div className="bg-white dark:bg-gray-800/40 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 flex flex-col group min-w-0">
+    <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col group min-w-0">
       <div className="flex justify-between items-start mb-4">
         {/* Avatar */}
         <div className="relative">
-          <div className="w-16 h-16 rounded-full border-4 border-slate-50 dark:border-white/10 shadow-sm overflow-hidden box-border">
+          <div className="w-16 h-16 rounded-full border-4 border-gray-50 dark:border-white/10 shadow-sm overflow-hidden box-border">
             <ProfilePicture
               avatarUrl={member.avatar_url}
               name={member.user_name}
@@ -66,7 +66,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           ${
             member.role === 'owner'
               ? 'bg-custom-1/10 text-custom-1 border-custom-1/20'
-              : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10'
+              : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-white/10'
           }
         `}
         >
@@ -77,15 +77,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {/* Name & Email */}
       <div>
         <div className="flex items-center gap-1.5">
-          <h4 className="font-bold text-slate-900 dark:text-slate-100">{member.user_name}</h4>
-          {isCurrentUser && <span className="text-slate-400 text-xs font-medium">(Vous)</span>}
+          <h4 className="font-bold text-gray-900 dark:text-gray-100">{member.user_name}</h4>
+          {isCurrentUser && <span className="text-gray-400 text-xs font-medium">(Vous)</span>}
         </div>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{member.email}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{member.email}</p>
       </div>
 
       {/* Footer */}
-      <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-        <span className="text-xs text-slate-400">
+      <div className="mt-6 pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+        <span className="text-xs text-gray-400">
           Rejoint le {new Date(member.joined_at).toLocaleDateString('fr-FR')}
         </span>
 
@@ -93,7 +93,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           <button
             onClick={() => onRemove(member.user_id)}
             disabled={isRemoving}
-            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
+            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
             title={`Supprimer ${member.user_name || 'ce membre'} de la famille`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         )}
 
         {member.role === 'owner' && (
-          <svg className="w-5 h-5 text-slate-300" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
           </svg>
         )}

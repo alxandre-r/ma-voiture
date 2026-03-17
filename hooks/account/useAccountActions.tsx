@@ -123,19 +123,16 @@ export default function useAccountActions({ user, showNotification }: UseAccount
      AVATAR UPDATE
   ============================== */
   const updateAvatar = async (file: File | null) => {
-    console.log('[updateAvatar] Starting...', { file: file?.name, fileSize: file?.size });
     setIsAvatarLoading(true);
 
     try {
       const supabase = createSupabaseBrowserClient();
-      console.log('[updateAvatar] Supabase client created');
 
       // Get current user
       const {
         data: { user: currentUser },
         error: authError,
       } = await supabase.auth.getUser();
-      console.log('[updateAvatar] Auth result:', { userId: currentUser?.id, error: authError });
 
       if (authError) {
         throw new Error(`Erreur d'authentification: ${authError.message}`);
@@ -152,15 +149,9 @@ export default function useAccountActions({ user, showNotification }: UseAccount
         const timestamp = Date.now();
         const fileExt = file.name.split('.').pop() || 'png';
         const fileName = `${currentUser.id}/avatar_${timestamp}.${fileExt}`;
-        console.log('[updateAvatar] Uploading file:', {
-          fileName,
-          fileType: file.type,
-          fileSize: file.size,
-        });
 
         // Delete existing avatar if any
         if (localUser.avatar_url) {
-          console.log('[updateAvatar] Removing existing avatar');
           // Extract the old filename from the URL to delete
           const oldFileName = localUser.avatar_url.split('/avatars/')[1];
           if (oldFileName) {
@@ -169,38 +160,30 @@ export default function useAccountActions({ user, showNotification }: UseAccount
         }
 
         // Upload new file (don't use upsert to force a fresh upload)
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(fileName, file);
-
-        console.log('[updateAvatar] Upload result:', { data: uploadData, error: uploadError });
-
+        
         if (uploadError) {
           throw new Error(`Erreur lors de l'upload: ${uploadError.message}`);
         }
 
         // Get public URL
         const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
-
-        console.log('[updateAvatar] Public URL:', urlData.publicUrl);
         avatarUrl = urlData.publicUrl;
       } else {
         // Remove avatar
         if (localUser.avatar_url) {
-          console.log('[updateAvatar] Removing avatar');
           await supabase.storage.from('avatars').remove([`${currentUser.id}/avatar`]);
         }
         avatarUrl = null;
       }
 
-      console.log('[updateAvatar] Updating user record with avatarUrl:', avatarUrl);
       // Update user record
-      const { data: updateData, error: updateError } = await supabase
+      const { error: updateError } = await supabase
         .from('users')
         .update({ avatar_url: avatarUrl })
         .eq('id', currentUser.id);
-
-      console.log('[updateAvatar] Update result:', { data: updateData, error: updateError });
 
       if (updateError) {
         throw new Error(`Erreur lors de la mise à jour du profil: ${updateError.message}`);

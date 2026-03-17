@@ -18,7 +18,6 @@ export default async function DashboardPage() {
 
   const vehicles = (await getAllVehicles(user.id)) as Vehicle[];
   if (!vehicles || vehicles.length === 0) redirect('/dashboard/landing'); // If user has no vehicles, redirect to landing page to encourage them to add one
-  console.log('DashboardPage - vehicles:', vehicles);
   const selectorVehicles = mapVehiclesToMinimal(vehicles) as VehicleMinimal[];
   const expenses = (await getAllExpenses(
     vehicles.map((v) => v.vehicle_id).filter((id) => id > 0),

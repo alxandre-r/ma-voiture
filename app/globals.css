@@ -29,3 +29,17 @@
 
   /* INFO : backgrounds are : white for light theme and dark gray for dark theme */
 }
+
+/* Dark mode styles for Recharts */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #334155;
+}
+
+.dark .recharts-cartesian-axis-line {
+  stroke: #475569;
+}
+
+.dark .recharts-text {
+  fill: #94a3b8;
+}

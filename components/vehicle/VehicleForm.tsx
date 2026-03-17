@@ -169,7 +169,6 @@ export default function VehicleForm({
     </button>
   );
 
-
   const isLoading = loading || externalLoading;
 
   return (
@@ -239,56 +238,56 @@ export default function VehicleForm({
 
                 {/* Status & Color */}
                 <div className="flex flex-row space-x-4 md:flex-col md:space-y-3">
-                    {/* Toggle Slider */}
-                    <div className="flex-1 md:flex-none">
-                      <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
-                        Statut
-                      </label>
-                      <div
-                        className="relative w-full max-w-[176px] md:max-w-sm h-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-200 
+                  {/* Toggle Slider */}
+                  <div className="flex-1 md:flex-none">
+                    <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">
+                      Statut
+                    </label>
+                    <div
+                      className="relative w-full max-w-[176px] md:max-w-sm h-10 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-200 
                       dark:border-gray-700 dark:from-gray-800 dark:to-gray-900 overflow-hidden p-1"
-                      >
-                        {/* Sliding background */}
-                        <motion.div
-                          className="absolute top-1 bottom-1 w-1/2 rounded-full shadow-md"
-                          initial={false}
-                          animate={{
-                            left: formData.status === 'active' ? '4px' : 'calc(50% + 0px)',
-                            backgroundColor: formData.status === 'active' ? '#10b981' : '#6b7280',
-                          }}
-                          transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                        />
+                    >
+                      {/* Sliding background */}
+                      <motion.div
+                        className="absolute top-1 bottom-1 w-1/2 rounded-full shadow-md"
+                        initial={false}
+                        animate={{
+                          left: formData.status === 'active' ? '4px' : 'calc(50% + 0px)',
+                          backgroundColor: formData.status === 'active' ? '#10b981' : '#6b7280',
+                        }}
+                        transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                      />
 
-                        {/* Labels */}
-                        <div className="relative flex h-full">
-                          <button
-                            type="button"
-                            onClick={() => setFormData((prev) => ({ ...prev, status: 'active' }))}
-                            className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
+                      {/* Labels */}
+                      <div className="relative flex h-full">
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, status: 'active' }))}
+                          className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
                               ${
                                 formData.status === 'active'
                                   ? 'text-white'
                                   : 'text-gray-500 dark:text-gray-400'
                               }`}
-                          >
-                            Actif
-                          </button>
+                        >
+                          Actif
+                        </button>
 
-                          <button
-                            type="button"
-                            onClick={() => setFormData((prev) => ({ ...prev, status: 'inactive' }))}
-                            className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, status: 'inactive' }))}
+                          className={`flex-1 text-xs font-bold uppercase tracking-wider transition-colors z-10 cursor-pointer
                               ${
                                 formData.status === 'inactive'
                                   ? 'text-white'
                                   : 'text-gray-500 dark:text-gray-400'
                               }`}
-                          >
-                            Inactif
-                          </button>
-                        </div>
+                        >
+                          Inactif
+                        </button>
                       </div>
                     </div>
+                  </div>
 
                   {/* Color Picker */}
                   <div>

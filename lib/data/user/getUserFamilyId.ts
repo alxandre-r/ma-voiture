@@ -15,8 +15,8 @@ export async function getUserFamilyId(userId: string): Promise<string | null> {
 
   if (data && data.family_id) {
     return data.family_id;
-  }
-  else if (error && error.code !== 'PGRST116') { // PGRST116 = No rows found, which is expected if the user is not in a family
+  } else if (error && error.code !== 'PGRST116') {
+    // PGRST116 = No rows found, which is expected if the user is not in a family
     console.error('Error fetching family ID:', error);
   }
 

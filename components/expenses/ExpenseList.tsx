@@ -60,7 +60,7 @@ export default function ExpenseList({
             e.stopPropagation();
             setMenuOpen((prev) => !prev);
           }}
-          className="p-2 text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-gray-700 rounded transition-colors"
+          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
           title="Actions"
         >
           <Icon name="more-vertical" size={18} />
@@ -176,16 +176,16 @@ export default function ExpenseList({
   const getCategoryColor = (type: string) => {
     switch (type) {
       case 'fuel':
-        return 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
+        return 'bg-orange-600/90';
       case 'electric_charge':
-        return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+        return 'bg-blue-600/90';
       case 'maintenance':
-        return 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
+        return 'bg-amber-600/90';
       case 'insurance':
-        return 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
+        return 'bg-green-600/90';
       case 'other':
       default:
-        return 'bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400';
+        return 'bg-violet-600/90';
     }
   };
 
@@ -222,7 +222,7 @@ export default function ExpenseList({
     }
     // For insurance - show message
     if (expense.type === 'insurance') {
-      return 'Mensualité d\'assurance';
+      return "Mensualité d'assurance";
     }
     // For other - show label
     if (expense.type === 'other' && expense.label) return expense.label;
@@ -259,7 +259,7 @@ export default function ExpenseList({
           <div className="flex flex-wrap gap-2 w-full sm:w-auto">
             {/* Category Filter Only */}
             <select
-              className="bg-slate-100 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-gray-200 focus:outline-none"
+              className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
@@ -274,48 +274,48 @@ export default function ExpenseList({
       </CardHeader>
 
       {/* Stats Section */}
-      <div className="px-6 pb-4 border-b border-slate-100 dark:border-gray-800">
+      <div className="px-6 pb-4 border-b border-gray-100 dark:border-gray-700">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {stats.totalCost > 0 && (
-            <div className="bg-slate-50 dark:bg-gray-800 p-3 rounded-lg border border-slate-100 dark:border-gray-700">
-              <div className="flex items-center space-x-2 text-slate-500 dark:text-gray-400 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 mb-1">
                 <Icon name="euro" size={14} />
                 <span className="text-xs font-semibold uppercase tracking-wider">Coût Total</span>
               </div>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
                 {stats.totalCost.toFixed(2)} €
               </span>
             </div>
           )}
           {stats.totalCount > 0 && (
-            <div className="bg-slate-50 dark:bg-gray-800 p-3 rounded-lg border border-slate-100 dark:border-gray-700">
-              <div className="flex items-center space-x-2 text-slate-500 dark:text-gray-400 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 mb-1">
                 <Icon name="stack" size={14} />
                 <span className="text-xs font-semibold uppercase tracking-wider">Transactions</span>
               </div>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
                 {stats.totalCount}
               </span>
             </div>
           )}
           {stats.fillUpsCount > 0 && (
-            <div className="bg-slate-50 dark:bg-gray-800 p-3 rounded-lg border border-slate-100 dark:border-gray-700">
-              <div className="flex items-center space-x-2 text-slate-500 dark:text-gray-400 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 mb-1">
                 <Icon name="conso" size={14} />
                 <span className="text-xs font-semibold uppercase tracking-wider">Pleins</span>
               </div>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
                 {stats.fillUpsCount}
               </span>
             </div>
           )}
           {stats.chargeUpsCount > 0 && (
-            <div className="bg-slate-50 dark:bg-gray-800 p-3 rounded-lg border border-slate-100 dark:border-gray-700">
-              <div className="flex items-center space-x-2 text-slate-500 dark:text-gray-400 mb-1">
+            <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 mb-1">
                 <Icon name="elec" size={14} />
                 <span className="text-xs font-semibold uppercase tracking-wider">Recharges</span>
               </div>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
                 {stats.chargeUpsCount}
               </span>
             </div>
@@ -325,7 +325,7 @@ export default function ExpenseList({
 
       <CardContent className="p-0">
         {/* Desktop Header */}
-        <div className="hidden sm:grid sm:grid-cols-12 gap-4 px-4 py-3 bg-slate-50/80 dark:bg-gray-800/50 border-b border-slate-100 dark:border-gray-800 text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider">
+        <div className="hidden sm:grid sm:grid-cols-12 gap-4 px-4 py-3 bg-gray-50/80 dark:bg-gray-900/20 border-b border-gray-100 dark:border-gray-700 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           <div className="col-span-4 lg:col-span-3">Catégorie & Date</div>
           <div className="col-span-5 lg:col-span-6 grid grid-cols-2 lg:grid-cols-6 gap-4">
             <div className="col-span-1 lg:col-span-2">Véhicule</div>
@@ -341,7 +341,7 @@ export default function ExpenseList({
           {filteredExpenses.map((expense) => (
             <div
               key={expense.id}
-              className="flex flex-col sm:grid sm:grid-cols-12 sm:items-center p-4 border-b border-slate-100 dark:border-gray-800 hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors gap-3 sm:gap-6"
+              className="flex flex-col sm:grid sm:grid-cols-12 sm:items-center p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors gap-3 sm:gap-6"
             >
               {/* Mobile Top Row / Desktop Col 1 */}
               <div className="flex justify-between items-start sm:items-center sm:col-span-4 lg:col-span-3">
@@ -349,44 +349,48 @@ export default function ExpenseList({
                   <div
                     className={`flex items-center justify-center p-2.5 sm:p-3 rounded-xl shrink-0 ${getCategoryColor(expense.type)}`}
                   >
-                    <Icon name={getCategoryIcon(expense.type)} size={18} />
+                    <Icon
+                      name={getCategoryIcon(expense.type)}
+                      size={18}
+                      className="invert dark:invert-0"
+                    />
                   </div>
                   <div>
-                    <div className="font-bold text-slate-900 dark:text-white">
+                    <div className="font-bold text-gray-900 dark:text-white">
                       {getCategoryLabel(expense)}
                     </div>
-                    <div className="text-xs font-medium text-slate-500 dark:text-gray-400 bg-slate-200 dark:bg-gray-700 px-2 py-0.5 rounded-full inline-block mt-1 sm:mt-0.5">
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full inline-block mt-1 sm:mt-0.5">
                       {formatDate(expense.date)}
                     </div>
                   </div>
                 </div>
                 {/* Mobile Amount (Hidden on Desktop) */}
                 <div className="flex flex-col items-end sm:hidden">
-                  <span className="text-base font-bold text-slate-900 dark:text-white">
+                  <span className="text-base font-bold text-gray-900 dark:text-white">
                     {expense.amount.toFixed(2)} €
                   </span>
                 </div>
               </div>
 
               {/* Mobile Bottom Row / Desktop Cols 2 & 3 */}
-              <div className="flex items-center justify-between text-sm bg-slate-50 dark:bg-gray-800 sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none border border-slate-100 dark:border-gray-700 sm:border-none sm:col-span-5 lg:col-span-6 sm:grid sm:grid-cols-2 lg:grid-cols-6 sm:gap-4">
-                <div className="flex items-center gap-1.5 text-slate-700 dark:text-gray-300 sm:col-span-1 lg:col-span-2">
+              <div className="flex items-center justify-between text-sm sm:bg-transparent p-2 sm:p-0 rounded-lg sm:rounded-none border border-gray-100 dark:border-gray-700 sm:border-none sm:col-span-5 lg:col-span-6 sm:grid sm:grid-cols-2 lg:grid-cols-6 sm:gap-4">
+                <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 sm:col-span-1 lg:col-span-2">
                   <span className="font-medium truncate max-w-[120px] sm:max-w-none">
                     {getVehicleName(expense.vehicle_id)}
                   </span>
                 </div>
-                <div className="truncate text-slate-500 dark:text-gray-400 max-w-[150px] sm:max-w-none text-right sm:text-left sm:col-span-1 lg:col-span-4">
+                <div className="truncate text-gray-500 dark:text-gray-400 max-w-[150px] sm:max-w-none text-right sm:text-left sm:col-span-1 lg:col-span-4">
                   {getDescription(expense) ? (
                     <div className="flex flex-col items-start">
                       <span>{getDescription(expense)}</span>
                       {getAdditionalDetails(expense) && (
-                        <span className="text-xs text-slate-400 dark:text-gray-500">
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
                           {getAdditionalDetails(expense)}
                         </span>
                       )}
                     </div>
                   ) : (
-                    <span className="hidden sm:inline text-slate-300 dark:text-gray-600 italic">
+                    <span className="hidden sm:inline text-gray-300 dark:text-gray-600 italic">
                       Aucune description
                     </span>
                   )}
@@ -395,7 +399,7 @@ export default function ExpenseList({
 
               {/* Desktop Amount and Actions (Hidden on Mobile) */}
               <div className="hidden sm:flex items-center justify-end sm:col-span-2 lg:col-span-2">
-                <span className="text-lg font-bold text-slate-900 dark:text-white">
+                <span className="text-lg font-bold text-gray-900 dark:text-white">
                   {expense.amount.toFixed(2)} €
                 </span>
               </div>
@@ -405,7 +409,7 @@ export default function ExpenseList({
             </div>
           ))}
           {filteredExpenses.length === 0 && (
-            <div className="p-8 text-center text-slate-500 dark:text-gray-400">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               Aucune transaction trouvée pour ces filtres.
             </div>
           )}

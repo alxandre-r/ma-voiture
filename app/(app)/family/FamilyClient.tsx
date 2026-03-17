@@ -91,10 +91,10 @@ export default function FamilyClient({
       {/* Page Title & Invite Button - Same row on desktop */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 md:justify-between">
         <div className="md:flex-1 text-center md:text-left">
-          <h1 className="text-3xl font-bold text-custom-2 dark:text-slate-100 tracking-tight flex items-center gap-2 justify-center md:justify-start">
+          <h1 className="text-3xl font-bold text-custom-2 dark:text-gray-100 tracking-tight flex items-center gap-2 justify-center md:justify-start">
             {familyData.name}
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             {/* eslint-disable-next-line react/no-unescaped-entities */}
             Vous partagez vos véhicules et l'historique de vos trajets avec votre famille
           </p>
@@ -108,12 +108,12 @@ export default function FamilyClient({
               className="inline-flex items-center justify-center gap-2 px-8 py-2 bg-custom-1 text-white font-semibold rounded-xl hover:bg-custom-1/90 transition-all shadow-lg shadow-custom-1/20 cursor-pointer whitespace-nowrap h-[44px]"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-          />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                />
               </svg>
               Inviter
             </button>
@@ -126,45 +126,45 @@ export default function FamilyClient({
               items-center justify-center flex cursor-pointer h-[44px] w-[44px]"
               aria-label="Paramètres"
             >
-              <Icon name="settings" size={20} className="text-slate-600 dark:text-slate-400" />
+              <Icon name="settings" size={20} className="text-gray-600 dark:text-gray-400" />
             </button>
             {isSettingsOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden">
-          {userIsOwner ? (
-            <>
-              <button
-                onClick={() => {
-            setIsSettingsOpen(false);
-            setIsRenameModalOpen(true);
-                }}
-                className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-              >
-                <Icon name="edit" size={16} className="text-slate-500" />
-                Renommer
-              </button>
-              <button
-                onClick={() => {
-            setIsSettingsOpen(false);
-            setIsDeleteModalOpen(true);
-                }}
-                className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-              >
-                <Icon name="delete" size={16} />
-                Supprimer la famille
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => {
-                setIsSettingsOpen(false);
-                setIsLeaveModalOpen(true);
-              }}
-              className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-            >
-              <Icon name="delete" size={16} />
-              Quitter la famille
-            </button>
-          )}
+                {userIsOwner ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsSettingsOpen(false);
+                        setIsRenameModalOpen(true);
+                      }}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      <Icon name="edit" size={16} className="text-gray-500" />
+                      Renommer
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsSettingsOpen(false);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                    >
+                      <Icon name="delete" size={16} />
+                      Supprimer la famille
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsSettingsOpen(false);
+                      setIsLeaveModalOpen(true);
+                    }}
+                    className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                  >
+                    <Icon name="delete" size={16} />
+                    Quitter la famille
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -182,7 +182,7 @@ export default function FamilyClient({
       </div>
 
       {/* Info Section */}
-      <div className="mt-12 bg-white dark:bg-gray-800/40 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
+      <div className="mt-12 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
             <svg
@@ -200,14 +200,14 @@ export default function FamilyClient({
             </svg>
           </div>
           <div>
-            <h5 className="font-bold text-slate-900 dark:text-slate-100">
+            <h5 className="font-bold text-gray-900 dark:text-gray-100">
               À propos des accès partagés
             </h5>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
               Les membres de la famille peuvent consulter les véhicules de tous les membres, ainsi
               qu&apos;aux données de pleins et maintenance et les statistiques associées. Seuls les
-              propriétaires des véhicules sont en mesure d&apos;ajouter des données à leur véhicule, mais
-              tous les membres peuvent les consulter.
+              propriétaires des véhicules sont en mesure d&apos;ajouter des données à leur véhicule,
+              mais tous les membres peuvent les consulter.
             </p>
           </div>
         </div>
@@ -237,7 +237,9 @@ export default function FamilyClient({
         onClose={() => setIsLeaveModalOpen(false)}
         onConfirm={handleLeave}
         title="Quitter la famille"
-        message={'Êtes-vous sûr de vouloir quitter la famille ? Vous perdrez l\'accès aux véhicules et données partagés.'}
+        message={
+          "Êtes-vous sûr de vouloir quitter la famille ? Vous perdrez l'accès aux véhicules et données partagés."
+        }
         confirmText="Quitter"
         cancelText="Annuler"
         confirmButtonColor="red"

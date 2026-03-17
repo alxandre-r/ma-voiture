@@ -24,8 +24,7 @@ import StatisticsClient from './StatisticsClient';
  */
 export default async function StatisticsPage() {
   const user = await getCurrentUserInfo();
-  if (!user)
-    redirect('/');
+  if (!user) redirect('/');
   else if (user.has_vehicles === false) {
     redirect('/garage');
   }

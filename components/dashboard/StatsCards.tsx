@@ -8,10 +8,7 @@ interface StatsCardsProps {
   totalExpenses: number;
 }
 
-export default function StatsCards({
-  avgConsumption,
-  totalExpenses,
-}: StatsCardsProps) {
+export default function StatsCards({ avgConsumption, totalExpenses }: StatsCardsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {statCard(

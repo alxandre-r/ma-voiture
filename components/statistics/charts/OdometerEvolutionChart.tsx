@@ -186,7 +186,12 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ left: -10, right: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                className="dark:stroke-slate-700"
+                stroke="#e2e8f0"
+                vertical={false}
+              />
 
               <XAxis
                 dataKey="ts"
@@ -198,6 +203,7 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
                 tick={{ fontSize: 10, fill: '#94a3b8' }}
                 axisLine={{ stroke: '#e2e8f0' }}
                 tickLine={false}
+                className="dark:axis-dark"
               />
 
               <YAxis
@@ -208,6 +214,7 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
                   isRelative ? `+${(v / 1000).toFixed(0)}k` : `${(v / 1000).toFixed(0)}k`
                 }
                 width={40}
+                className="dark:axis-dark"
               />
 
               <Tooltip content={<CustomTooltip mode={mode} />} />

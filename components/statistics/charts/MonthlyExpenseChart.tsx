@@ -66,8 +66,8 @@ const CustomTooltip = ({
 }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
-        <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{label}</p>
+      <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.dataKey}: {formatCurrency(entry.value)}
@@ -144,7 +144,11 @@ export default function MonthlyExpenseChart({
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <CardTitle>Dépenses mensuelles</CardTitle>
         {/* Toggle Switch */}
-        <div className="relative w-36 sm:w-40 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-100 hover:shadow-sm transition-all dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900 shrink-0 overflow-hidden p-1">
+        <div
+          className="relative w-36 sm:w-40 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full 
+        border border-gray-100 hover:shadow-sm transition-all 
+        dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900 shrink-0 overflow-hidden p-1"
+        >
           {/* Sliding background */}
           <motion.div
             className="absolute top-1 h-6 bg-gradient-to-r from-custom-1 to-violet-500 rounded-full shadow-md dark:shadow-xl"
@@ -160,7 +164,7 @@ export default function MonthlyExpenseChart({
             <button
               type="button"
               onClick={() => setChartMode('category')}
-              className={`flex-1 text-xs font-medium transition-colors duration-200 ${
+              className={`flex-1 text-xs font-medium transition-colors duration-200 cursor-pointer ${
                 !isVehicleMode ? 'text-white' : 'text-gray-700 dark:text-gray-300'
               }`}
             >
@@ -169,7 +173,7 @@ export default function MonthlyExpenseChart({
             <button
               type="button"
               onClick={() => setChartMode('vehicle')}
-              className={`flex-1 text-xs font-medium transition-colors duration-200 ${
+              className={`flex-1 text-xs font-medium transition-colors duration-200 cursor-pointer ${
                 isVehicleMode ? 'text-white' : 'text-gray-700 dark:text-gray-300'
               }`}
             >
@@ -182,18 +186,25 @@ export default function MonthlyExpenseChart({
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} stackOffset="sign" margin={{ left: -20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                className="dark:stroke-slate-700"
+                stroke="#e2e8f0"
+                vertical={false}
+              />
               <XAxis
                 dataKey="month"
                 tick={{ fontSize: 10, fill: '#94a3b8' }}
                 axisLine={{ stroke: '#e2e8f0' }}
                 tickLine={false}
+                className="dark:axis-dark"
               />
               <YAxis
                 tick={{ fontSize: 10, fill: '#94a3b8' }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(value) => `${value}€`}
+                className="dark:axis-dark"
               />
               <Tooltip content={<CustomTooltip />} />
               {/* Custom Legend with circles */}
@@ -211,7 +222,7 @@ export default function MonthlyExpenseChart({
                               className="w-2 h-2 sm:w-3 sm:h-3 rounded-full"
                               style={{ backgroundColor: getVehicleColor(vehicle.vehicle_id) }}
                             />
-                            <span className="text-slate-600 dark:text-slate-400 text-xs">
+                            <span className="text-gray-600 dark:text-gray-300 text-xs">
                               {vehicle.name}
                             </span>
                           </div>
@@ -222,7 +233,7 @@ export default function MonthlyExpenseChart({
                               className="w-2 h-2 sm:w-3 sm:h-3 rounded-full"
                               style={{ backgroundColor: getCategoryColor(category) }}
                             />
-                            <span className="text-slate-600 dark:text-slate-400 text-xs">
+                            <span className="text-gray-600 dark:text-gray-300 text-xs">
                               {category}
                             </span>
                           </div>

@@ -44,12 +44,12 @@ export function formatDate(dateStr: string | null | undefined): string {
 /**
  * Format a date string to short French locale format (for charts)
  * @param dateStr - The date string to format
- * @returns Short formatted date string (e.g., "jan. 24")
+ * @returns Short formatted date string (e.g., "24 janv.")
  */
 export function formatDateShort(dateStr: string | null | undefined): string {
   if (!dateStr) return 'N/A';
   return new Date(dateStr).toLocaleDateString('fr-FR', {
-    year: '2-digit',
+    day: 'numeric',
     month: 'short',
   });
 }

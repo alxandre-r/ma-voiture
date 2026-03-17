@@ -104,7 +104,7 @@ export default function MaintenanceTimeline({
         </CardHeader>
         <CardContent>
           {expenses.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
+            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               <Icon name="tool" size={48} className="mx-auto mb-4 opacity-50" />
               <p>Aucun entretien trouvé.</p>
               <p className="text-sm mt-1">
@@ -125,10 +125,10 @@ export default function MaintenanceTimeline({
                   <div key={expense.id} className="relative flex items-stretch gap-2 sm:gap-6">
                     {/* Desktop: Date on the left */}
                     <div className="hidden sm:block w-16 sm:w-24 shrink-0 text-right pt-1.5">
-                      <div className="text-sm sm:text-base font-bold text-slate-900">
+                      <div className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100">
                         {format(new Date(expense.date), 'dd MMM', { locale: fr })}
                       </div>
-                      <div className="text-xs sm:text-sm text-slate-500">
+                      <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                         {format(new Date(expense.date), 'yyyy', { locale: fr })}
                       </div>
                     </div>
@@ -136,40 +136,56 @@ export default function MaintenanceTimeline({
                     {/* Timeline: Desktop = logo, Mobile = date */}
                     <div className="relative flex flex-col items-center">
                       {/* Desktop: Logo on timeline node */}
-                      <div className="hidden sm:flex w-8 h-8 rounded-full bg-white border-2 border-custom-2 text-custom-2 items-center justify-center shrink-0 z-10">
+                      <div
+                        className="hidden sm:flex w-8 h-8 rounded-full bg-transparent
+                      border-2 border-custom-2 text-custom-2 items-center justify-center shrink-0 z-10"
+                      >
                         <Icon name="tool" size={14} />
                       </div>
                       {/* Mobile: Date on timeline node */}
-                      <div className="sm:hidden w-8 h-8 rounded-full bg-white border-2 border-custom-2 text-custom-2 flex flex-col items-center justify-center shrink-0 z-10 -ml-1">
-                        <span className="text-[10px] font-bold text-gray-800 leading-none">
+                      <div className="sm:hidden w-8 h-8 rounded-full bg-transparent border-2 border-custom-2 text-custom-2 flex flex-col items-center justify-center shrink-0 z-10 -ml-1">
+                        <span className="text-[10px] font-bold text-gray-800 dark:text-gray-100 leading-none">
                           {format(new Date(expense.date), 'dd')}
                         </span>
-                        <span className="text-[8px] text-gray-600 leading-none">
+                        <span className="text-[8px] text-gray-600 dark:text-gray-400 leading-none">
                           {format(new Date(expense.date), 'MMM', { locale: fr })}
                         </span>
                       </div>
-                      {!isLast && <div className="w-0.5 bg-slate-200 flex-1 my-1"></div>}
+                      {!isLast && <div className="w-0.5 bg-gray-200 flex-1 my-1"></div>}
                     </div>
 
                     {/* Content on the right */}
                     <div className={`flex-1 ${isLast ? '' : 'pb-8'}`}>
-                      <div className="bg-slate-50 rounded-xl p-4 sm:p-6 border border-slate-100 hover:shadow-sm transition-shadow relative">
+                      <div
+                        className="bg-gray-50 rounded-xl p-4 sm:p-6 
+                      dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700
+                      border border-gray-100 hover:shadow-sm transition-shadow relative"
+                      >
                         {/* More menu button - top right : display only if the expense is user's */}
                         {onEditExpense && expense.owner_id === userId && (
                           <div className="absolute top-3 right-3" ref={setMenuRef(expense.id)}>
                             <button
                               onClick={() => setOpenMenuId(isMenuOpen ? null : expense.id)}
-                              className="p-1.5 rounded-lg hover:bg-slate-200 transition-colors"
+                              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer flex items-center gap-1"
                             >
-                              <Icon name="more-vertical" size={18} className="text-slate-500" />
+                              <Icon
+                                name="more-vertical"
+                                size={18}
+                                className="text-gray-500 dark:text-gray-400"
+                              />
                             </button>
 
                             {/* Dropdown menu */}
                             {isMenuOpen && (
-                              <div className="absolute right-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-20">
+                              <div
+                                className="absolute right-0 top-full mt-1 w-36 bg-white 
+                              dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700
+                              rounded-lg shadow-lg border border-gray-200 py-1 z-20"
+                              >
                                 <button
                                   onClick={() => handleEdit(expense)}
-                                  className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2"
+                                  className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100
+                                  dark:text-gray-300 dark:hover:bg-gray-700 transition-colors cursor-pointer flex items-center gap-2"
                                 >
                                   <Icon name="edit" size={16} />
                                   Modifier
@@ -178,7 +194,8 @@ export default function MaintenanceTimeline({
                                   <button
                                     onClick={() => handleDeleteClick(expense.id)}
                                     disabled={deletingId === expense.id}
-                                    className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
+                                    className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 
+                                    dark:text-red-400 dark:hover:bg-red-700/50 transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                   >
                                     <Icon name="delete" size={16} />
                                     {deletingId === expense.id ? 'Suppression...' : 'Supprimer'}
@@ -192,14 +209,14 @@ export default function MaintenanceTimeline({
                         <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2 sm:gap-0 pr-8">
                           <div>
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                              <h4 className="text-lg font-bold text-slate-900">
+                              <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                                 {getDisplayLabel(expense)}
                               </h4>
-                              <span className="px-2 py-0.5 text-xs font-medium bg-custom-1/10 text-custom-1 rounded-full">
+                              <span className="px-2 py-0.5 text-xs font-medium bg-custom-1/10 text-custom-1 rounded-full border border-custom-1">
                                 {vehicleName}
                               </span>
                             </div>
-                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-slate-500">
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm text-gray-500 dark:text-gray-400">
                               {expense.odometer && (
                                 <span className="flex items-center">
                                   <Icon name="chart" size={14} className="mr-1.5" />
@@ -215,14 +232,14 @@ export default function MaintenanceTimeline({
                             </div>
                           </div>
                           <div className="sm:text-right">
-                            <span className="text-xl font-bold text-slate-900">
+                            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
                               {expense.amount.toFixed(2)} €
                             </span>
                           </div>
                         </div>
 
                         {expense.notes && (
-                          <p className="text-slate-600 border-t border-slate-200 pt-4 mt-4">
+                          <p className="text-gray-600 border-t border-gray-200 pt-4 mt-4 dark:text-gray-400 dark:border-gray-700 text-sm whitespace-pre-wrap">
                             {expense.notes}
                           </p>
                         )}

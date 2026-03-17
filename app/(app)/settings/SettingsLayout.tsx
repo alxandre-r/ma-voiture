@@ -1,4 +1,4 @@
-/* eslint-disable import/order */
+ 
 /**
  * @file src/app/settings/SettingsLayout.tsx
  * @description Layout for the settings page : displays the settings floating menu at left and the active section at right.
