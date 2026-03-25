@@ -1,12 +1,13 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 import type { PeriodType } from '@/types/period';
 import type { VehicleMinimal } from '@/types/vehicle';
-import type { ReactNode } from 'react';
 
 interface SelectorsContextType {
+  // Vehicles list
+  vehicles: VehicleMinimal[];
   // Vehicle selection
   selectedVehicleIds: number[];
   setSelectedVehicleIds: (ids: number[]) => void;
@@ -19,86 +20,65 @@ interface SelectorsContextType {
 
 const SelectorsContext = createContext<SelectorsContextType | undefined>(undefined);
 
-// Global state outside of React to persist across page navigations
-// This is a singleton that survives across component mounts
-let globalSelectedVehicleIds: number[] = [];
-let globalSelectedPeriod: PeriodType = 'year';
-
-// Track if we're in the browser for SSR handling
-let isBrowser = false;
-
-interface SelectorsProviderProps {
-  children: ReactNode;
-  initialVehicles: VehicleMinimal[];
-}
+// LocalStorage keys
+const STORAGE_KEYS = {
+  VEHICLE_IDS: 'ma-voiture-selected-vehicles',
+  PERIOD: 'ma-voiture-selected-period',
+} as const;
 
 /**
  * Global context for vehicle and period selection state.
- * Uses a singleton pattern to persist state across page navigations in the browser.
+ * Uses localStorage for persistence across page navigations in the browser.
  * The provider is placed at the layout level to ensure it's always available.
  */
 export function SelectorsProvider({ children, initialVehicles }: SelectorsProviderProps) {
-  // Use ref to track if this is the first render
-  const isFirstRender = useRef(true);
-  const hasInitialized = useRef(false);
-
-  // Initialize state from global values or from props
-  const [selectedVehicleIds, setSelectedVehicleIds] = useState<number[]>(() => {
-    if (isBrowser && globalSelectedVehicleIds.length > 0) {
-      return globalSelectedVehicleIds;
-    }
+  // Initialize state from localStorage or from props
+  const [selectedVehicleIds, setSelectedVehicleIdsState] = useState<number[]>(() => {
     return initialVehicles.map((v) => v.vehicle_id);
   });
 
-  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>(() => {
-    if (isBrowser && globalSelectedPeriod) {
-      return globalSelectedPeriod;
-    }
-    return 'year';
-  });
+  const [selectedPeriod, setSelectedPeriodState] = useState<PeriodType>(() => 'year');
 
-  // Mark as initialized after first render
+  // Hydrate from localStorage on mount
   useEffect(() => {
-    isBrowser = true;
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      hasInitialized.current = true;
-    }
-  }, []);
+    try {
+      const storedVehicleIds = localStorage.getItem(STORAGE_KEYS.VEHICLE_IDS);
+      const storedPeriod = localStorage.getItem(STORAGE_KEYS.PERIOD);
 
-  // Validate and update selected vehicles when initialVehicles changes
-  useEffect(() => {
-    // Only run after initial mount
-    if (!hasInitialized.current) return;
-
-    if (initialVehicles.length > 0) {
-      // Check if current selection is still valid
-      const validSelection = selectedVehicleIds.filter((id) =>
-        initialVehicles.some((v) => v.vehicle_id === id),
-      );
-
-      // If no valid selection, select all vehicles
-      if (validSelection.length === 0) {
-        const newSelection = initialVehicles.map((v) => v.vehicle_id);
-        setSelectedVehicleIds(newSelection);
-        globalSelectedVehicleIds = newSelection;
-      } else if (validSelection.length !== selectedVehicleIds.length) {
-        // Some vehicles no longer exist, update but keep valid ones
-        setSelectedVehicleIds(validSelection);
-        globalSelectedVehicleIds = validSelection;
+      if (storedVehicleIds) {
+        const parsed = JSON.parse(storedVehicleIds) as number[];
+        // Validate against current vehicles
+        const validIds = parsed.filter((id) => initialVehicles.some((v) => v.vehicle_id === id));
+        if (validIds.length > 0) {
+          setSelectedVehicleIdsState(validIds);
+        }
       }
+
+      if (storedPeriod && ['month', 'year', 'all'].includes(storedPeriod)) {
+        setSelectedPeriodState(storedPeriod as PeriodType);
+      }
+    } catch {
+      // Ignore localStorage errors
     }
   }, [initialVehicles]);
 
-  // Update global state when local state changes
-  const handleSetSelectedVehicleIds = (ids: number[]) => {
-    setSelectedVehicleIds(ids);
-    globalSelectedVehicleIds = ids;
+  // Update localStorage when state changes
+  const setSelectedVehicleIds = (ids: number[]) => {
+    setSelectedVehicleIdsState(ids);
+    try {
+      localStorage.setItem(STORAGE_KEYS.VEHICLE_IDS, JSON.stringify(ids));
+    } catch {
+      // Ignore storage errors
+    }
   };
 
-  const handleSetSelectedPeriod = (period: PeriodType) => {
-    setSelectedPeriod(period);
-    globalSelectedPeriod = period;
+  const setSelectedPeriod = (period: PeriodType) => {
+    setSelectedPeriodState(period);
+    try {
+      localStorage.setItem(STORAGE_KEYS.PERIOD, period);
+    } catch {
+      // Ignore storage errors
+    }
   };
 
   // Computed period label
@@ -112,13 +92,14 @@ export function SelectorsProvider({ children, initialVehicles }: SelectorsProvid
 
   const value = useMemo(
     () => ({
+      vehicles: initialVehicles,
       selectedVehicleIds,
-      setSelectedVehicleIds: handleSetSelectedVehicleIds,
+      setSelectedVehicleIds,
       selectedPeriod,
-      setSelectedPeriod: handleSetSelectedPeriod,
+      setSelectedPeriod,
       periodLabel,
     }),
-    [selectedVehicleIds, selectedPeriod, periodLabel],
+    [initialVehicles, selectedVehicleIds, selectedPeriod, periodLabel],
   );
 
   return <SelectorsContext.Provider value={value}>{children}</SelectorsContext.Provider>;
