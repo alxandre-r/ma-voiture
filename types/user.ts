@@ -11,5 +11,6 @@ export interface User {
   is_family_owner: boolean;
   has_vehicles: boolean;
   vehicle_count: number;
+  vehicle_ids: number[];
   created_at: string;
 }

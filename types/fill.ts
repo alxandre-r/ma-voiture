@@ -27,8 +27,8 @@ export interface FillFormData {
   date: string;
   odometer: number;
   liters: number;
-  amount: number;
-  price_per_liter: number;
+  amount: number | null;
+  price_per_liter: number | null;
   notes?: string;
   // Electric vehicle fields
   charge_type?: 'fill' | 'charge';

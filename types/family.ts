@@ -19,3 +19,13 @@ export interface FamilyMember {
 export interface FamilyWithMembers extends Family {
   members: FamilyMember[];
 }
+
+// Extended FamilyMember type for UI display (includes user info)
+export interface FamilyMemberDisplay {
+  user_id: string;
+  user_name: string;
+  email: string;
+  role: string;
+  joined_at: string;
+  avatar_url?: string;
+}
