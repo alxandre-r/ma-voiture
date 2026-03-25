@@ -64,12 +64,12 @@ export default function PatchnotesSection() {
             basé sur les données de maintenance (Contrôle technique à jour, entretiens récents, etc).
           </li>
           <li>
-            Ajout d'une statistique sur l'empreinte carbone dans la page statistiques, 
-            basée sur les données de consommation et le CO2 émis par litre d'essence/diesel ou kWh consommé
+            Ajout d&apos;une statistique sur l&apos;empreinte carbone dans la page statistiques, 
+            basée sur les données de consommation et le CO2 émis par litre d&apos;essence/diesel ou kWh consommé
             par le véhicule (nouveau champ présent dans les données du véhicule).
           </li>
           <li>
-            Amélioration de l&apos;affichage mobile pour l'ajout de dépenses.
+            Amélioration de l&apos;affichage mobile pour l&apos;ajout de dépenses.
           </li>
         </ul>
       ),
