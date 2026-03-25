@@ -2,11 +2,11 @@
 
 import Icon from '@/components/common/ui/Icon';
 
-import type { Fill } from '@/types/fill';
+import type { Fill, FillFormData } from '@/types/fill';
 
 export interface FillEditFormProps {
   fill: Fill;
-  editData: Partial<Fill>;
+  editData: FillFormData;
   onChangeField: (key: string, value: unknown) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
@@ -21,7 +21,8 @@ export default function FillEditForm({
   onCancelEdit,
   saving,
 }: FillEditFormProps) {
-  const v = <T,>(key: keyof Fill): T => (editData[key as keyof Fill] as T) ?? (fill[key] as T);
+  const v = <T,>(key: keyof FillFormData): T =>
+    (editData[key] as T) ?? (fill[key as keyof Fill] as T);
 
   const currentType = v<Fill['charge_type']>('charge_type');
 

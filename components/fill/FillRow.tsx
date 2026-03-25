@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/common/ui/Icon';
 import FillEditForm from '@/components/fill/forms/FillEditForm';
 
-import type { Fill } from '@/types/fill';
+import type { Fill, FillFormData } from '@/types/fill';
 
 export interface FillRowProps {
   fill: Fill;
@@ -14,7 +14,7 @@ export interface FillRowProps {
   isDeleting: boolean;
   showVehicleName?: boolean;
   isEditing?: boolean;
-  editData?: Partial<Fill>;
+  editData?: FillFormData;
   onChangeField?: (key: string, value: unknown) => void;
   onSaveEdit?: () => void;
   onCancelEdit?: () => void;
