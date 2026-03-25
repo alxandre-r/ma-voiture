@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
 
 import type { PeriodType } from '@/types/period';
 import type { VehicleMinimal } from '@/types/vehicle';
@@ -16,6 +16,11 @@ interface SelectorsContextType {
   setSelectedPeriod: (period: PeriodType) => void;
   // Computed
   periodLabel: string;
+}
+
+interface SelectorsProviderProps {
+  children: ReactNode;
+  initialVehicles: VehicleMinimal[];
 }
 
 const SelectorsContext = createContext<SelectorsContextType | undefined>(undefined);
