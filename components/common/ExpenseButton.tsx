@@ -1,42 +1,34 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useRef } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useRef, useState } from 'react';
 
-import FillForm from '@/components/common/forms/FillForm';
-import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
 import Icon from '@/components/common/ui/Icon';
-import { useFillActions } from '@/hooks/fill/useFillActions';
-import { useMaintenanceActions } from '@/hooks/maintenance/useMaintenanceActions';
 import { useClickOutside } from '@/lib/utils/clickOutside';
 
-import type { MaintenanceFormData } from '@/hooks/maintenance/useMaintenanceActions';
-import type { FillFormData } from '@/types/fill';
 import type { VehicleMinimal } from '@/types/vehicle';
 
-type ExpenseType = 'fill' | 'charge' | 'maintenance';
+export type ExpenseType = 'fill' | 'charge' | 'maintenance';
 
 interface ExpenseButtonProps {
   vehicles: VehicleMinimal[];
   currentUserId: string | undefined;
+  onSelectType: (type: ExpenseType) => void;
+  onAddReminder?: () => void;
 }
 
-export default function ExpenseButton({ vehicles, currentUserId }: ExpenseButtonProps) {
-  const router = useRouter();
-
+export default function ExpenseButton({
+  vehicles,
+  currentUserId,
+  onSelectType,
+  onAddReminder,
+}: ExpenseButtonProps) {
   const [showMenu, setShowMenu] = useState(false);
-  const [selectedExpenseType, setSelectedExpenseType] = useState<ExpenseType | null>(null);
-  const [showFillForm, setShowFillForm] = useState(false);
-  const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
+  const [showMobileSheet, setShowMobileSheet] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const { addFill } = useFillActions();
-  const { addMaintenance } = useMaintenanceActions();
-
-  // Close dropdown when clicking outside
   useClickOutside(menuRef, () => setShowMenu(false), showMenu);
 
-  // Get minimal vehicles for forms
   const minimalVehicles = vehicles
     .map((v) => ({
       vehicle_id: v.vehicle_id,
@@ -48,192 +40,186 @@ export default function ExpenseButton({ vehicles, currentUserId }: ExpenseButton
       status: v.status,
       owner_id: v.owner_id,
     }))
-    // Filter to only include active vehicles owned by the current user
     .filter((v) => {
       const isActive = v.status === 'active' || v.status === null || v.status === undefined;
       const isOwner = v.owner_id === currentUserId;
       return isActive && isOwner;
     });
 
-  // Filter vehicles for fill (fuel)
   const fillVehicles = minimalVehicles.filter((v) => {
     const fuelType = v.fuel_type;
     return fuelType !== 'Électrique' && fuelType !== 'Hybride non rechargeable';
   });
 
-  // Filter vehicles for charge (electric)
   const chargeVehicles = minimalVehicles.filter((v) => {
     const fuelType = v.fuel_type;
     return fuelType === 'Électrique' || fuelType === 'Hybride rechargeable';
   });
 
-  // Check if user has at least one active electric or rechargeable hybrid vehicle
-
   const hasActiveFuelVehicle = fillVehicles.length > 0;
   const hasActiveElectricVehicle = chargeVehicles.length > 0;
-  const hasActiveVehicle = minimalVehicles.length > 0;
-
-  // Get form vehicles based on type
-  const formVehicles = selectedExpenseType === 'charge' ? chargeVehicles : fillVehicles;
 
   const handleSelect = (type: ExpenseType) => {
-    setSelectedExpenseType(type);
     setShowMenu(false);
-
-    if (type === 'maintenance') {
-      setShowMaintenanceForm(true);
-    } else {
-      setShowFillForm(true);
-    }
+    setShowMobileSheet(false);
+    onSelectType(type);
   };
 
-  const handleSuccess = () => {
-    router.refresh();
-    setShowFillForm(false);
-    setShowMaintenanceForm(false);
-    setSelectedExpenseType(null);
+  const handleReminderSelect = () => {
+    setShowMenu(false);
+    setShowMobileSheet(false);
+    onAddReminder?.();
   };
 
-  // Handle fill form save
-  const handleFillSave = async (data: FillFormData) => {
-    const success = await addFill(data);
-    if (success) {
-      handleSuccess();
-    }
-    return success;
-  };
-
-  // Handle maintenance form save
-  const handleMaintenanceSave = async (data: MaintenanceFormData) => {
-    const success = await addMaintenance(data);
-    if (success) {
-      handleSuccess();
-    }
-    return success;
-  };
-
-  // Render the component based on state
-  // Note: All hooks must be called before any conditional returns
-
-  // If no active vehicle, show warning message
-  if (!hasActiveVehicle) {
-    return (
-      <div className="p-4 bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300">
-        <p className="font-medium">Aucun véhicule actif disponible</p>
-        <p className="text-sm">Veuillez ajouter un véhicule actif pour enregistrer des dépenses.</p>
-      </div>
-    );
-  }
-
-  // If showing fill form, render it
-  if (showFillForm && selectedExpenseType) {
-    return (
-      <FillForm
-        vehicles={formVehicles}
-        forcedType={selectedExpenseType === 'charge' ? 'charge' : 'fill'}
-        onSave={handleFillSave}
-        onCancel={() => {
-          setShowFillForm(false);
-          setSelectedExpenseType(null);
-        }}
-        saving={false}
-      />
-    );
-  }
-
-  // If showing maintenance form, render it
-  if (showMaintenanceForm) {
-    return (
-      <MaintenanceForm
-        vehicles={minimalVehicles}
-        onSave={handleMaintenanceSave}
-        onCancel={() => {
-          setShowMaintenanceForm(false);
-          setSelectedExpenseType(null);
-        }}
-        saving={false}
-      />
-    );
-  }
-
-  // Render the button
-  return (
-    <div className="relative" ref={menuRef}>
-      <button
-        onClick={() => setShowMenu(!showMenu)}
-        className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium 
-              transition-colors flex items-center gap-2 self-center sm:self-auto cursor-pointer"
-      >
-        <Icon name="add" size={18} className="invert dark:invert-0" />
-        Ajouter une dépense
-        <Icon name="arrow-down" size={14} className="invert dark:invert-0" />
-      </button>
-
-      {/* Dropdown Menu */}
-      {showMenu && (
-        <div
-          className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border 
-                border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2"
+  const menuOptions = (
+    <div className="py-1">
+      {hasActiveFuelVehicle && (
+        <button
+          onClick={() => handleSelect('fill')}
+          className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
         >
-          <div className="py-1">
-            {/* Fill button - only show if user has active fuel vehicles */}
-            {hasActiveFuelVehicle && (
-              <button
-                onClick={() => handleSelect('fill')}
-                className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 
-                      flex items-center gap-3 transition-colors cursor-pointer"
-              >
-                <Icon name="conso" size={20} className="text-orange-500" />
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
-                    Plein de carburant
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Ajouter un plein d&#39;essence ou diesel
-                  </div>
-                </div>
-              </button>
-            )}
+          <Icon name="conso" size={20} className="text-orange-500" />
+          <div>
+            <div className="font-medium text-gray-900 dark:text-gray-100">Plein de carburant</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Ajouter un plein d&#39;essence ou diesel
+            </div>
+          </div>
+        </button>
+      )}
 
-            {/* Charge button - only show if user has active electric vehicles */}
-            {hasActiveElectricVehicle && (
-              <button
-                onClick={() => handleSelect('charge')}
-                className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 
-                        flex items-center gap-3 transition-colors cursor-pointer"
-              >
-                <Icon name="elec" size={20} className="text-blue-500" />
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
-                    Recharge électrique
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Ajouter une recharge pour véhicule électrique
-                  </div>
-                </div>
-              </button>
-            )}
+      {hasActiveElectricVehicle && (
+        <button
+          onClick={() => handleSelect('charge')}
+          className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
+        >
+          <Icon name="elec" size={20} className="text-blue-500" />
+          <div>
+            <div className="font-medium text-gray-900 dark:text-gray-100">Recharge électrique</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Ajouter une recharge pour véhicule électrique
+            </div>
+          </div>
+        </button>
+      )}
 
-            <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+      <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
-            <button
-              onClick={() => handleSelect('maintenance')}
-              className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 
-                      flex items-center gap-3 transition-colors cursor-pointer"
-            >
-              <Icon name="tool" size={20} className="text-green-500" />
-              <div>
-                <div className="font-medium text-gray-900 dark:text-gray-100">
-                  Entretien / Réparation
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  Ajouter un entretien ou une réparation
-                </div>
-              </div>
-            </button>
+      <button
+        onClick={() => handleSelect('maintenance')}
+        className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
+      >
+        <Icon name="tool" size={20} className="text-green-500" />
+        <div>
+          <div className="font-medium text-gray-900 dark:text-gray-100">Entretien / Réparation</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Ajouter un entretien ou une réparation
           </div>
         </div>
+      </button>
+
+      {onAddReminder && (
+        <>
+          <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+          <button
+            onClick={handleReminderSelect}
+            className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
+          >
+            <Icon name="bell" size={20} className="text-purple-500" />
+            <div>
+              <div className="font-medium text-gray-900 dark:text-gray-100">Nouveau rappel</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Programmer un rappel d&#39;entretien
+              </div>
+            </div>
+          </button>
+        </>
       )}
     </div>
+  );
+
+  return (
+    <>
+      {/* Desktop button + dropdown */}
+      <div className="hidden sm:flex justify-end">
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
+          >
+            <Icon name="add" size={18} className="invert dark:invert-0" />
+            Ajouter une dépense
+            <Icon name="arrow-down" size={14} className="invert dark:invert-0" />
+          </button>
+
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+              {menuOptions}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile FAB */}
+      <button
+        onClick={() => setShowMobileSheet(true)}
+        className="sm:hidden fixed bottom-20 right-4 z-40 w-14 h-14 bg-custom-2 hover:bg-custom-2-hover text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer"
+        aria-label="Ajouter une dépense"
+      >
+        <Icon name="add" size={24} className="invert dark:invert-0" />
+      </button>
+
+      {/* Mobile Bottom Sheet */}
+      <AnimatePresence>
+        {showMobileSheet && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="sheet-backdrop"
+              className="sm:hidden fixed inset-0 bg-black/40 z-40"
+              style={{ marginBottom: 0 }} // fix space under the sheet (reason unknown)
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setShowMobileSheet(false)}
+            />
+
+            {/* Panel */}
+            <motion.div
+              key="sheet-panel"
+              className="sm:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-2xl z-50 pb-8"
+              style={{ marginBottom: 0 }} // fix space under the sheet (reason unknown)
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
+            >
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                  Ajouter une dépense
+                </h3>
+                <button
+                  onClick={() => setShowMobileSheet(false)}
+                  className="p-1 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 cursor-pointer"
+                  aria-label="Fermer"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              {menuOptions}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

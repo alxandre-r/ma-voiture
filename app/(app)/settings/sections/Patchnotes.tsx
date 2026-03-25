@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 
+import { VersionBlock } from '@/app/(app)/settings/components/versionBlock';
 import Icon from '@/components/common/ui/Icon';
-import { VersionBlock } from '@/components/patchnotes/versionBlock';
 
-import type { VersionBlockProps } from '@/components/patchnotes/versionBlock';
+import type { VersionBlockProps } from '@/app/(app)/settings/components/versionBlock';
 
 export default function PatchnotesSection() {
   // --- Données de patchnotes ---
@@ -46,6 +46,34 @@ export default function PatchnotesSection() {
         </ul>
       ),
       type: 'todo',
+    },
+        {
+      version: '1.2.2',
+      date: '16 Mars 2026',
+      summary: 'Ajout des Rappels, améliorations UX, mobile',
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>
+            Ajout de la fonctionnalité de <strong>Rappels</strong> pour les tâches de maintenance.
+            Permet de créer des rappels récurrents basés sur le temps (ex: tous les 6 mois) ou le
+            kilométrage (ex: tous les 10 000 km). Les rappels sont affichés dans la page Maintenance
+            et peuvent être marqués comme accomplis ou supprimés.
+          </li>
+          <li>
+            Ajout d&apos;un indicateur de santé du véhicule dans la page de détail du véhicule, 
+            basé sur les données de maintenance (Contrôle technique à jour, entretiens récents, etc).
+          </li>
+          <li>
+            Ajout d'une statistique sur l'empreinte carbone dans la page statistiques, 
+            basée sur les données de consommation et le CO2 émis par litre d'essence/diesel ou kWh consommé
+            par le véhicule (nouveau champ présent dans les données du véhicule).
+          </li>
+          <li>
+            Amélioration de l&apos;affichage mobile pour l'ajout de dépenses.
+          </li>
+        </ul>
+      ),
+      type: 'minor',
     },
     {
       version: '1.2.1',

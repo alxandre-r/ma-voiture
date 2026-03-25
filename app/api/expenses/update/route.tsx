@@ -8,7 +8,7 @@
 
 import { NextResponse } from 'next/server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * PATCH /api/expenses/update
@@ -59,15 +59,21 @@ export async function PATCH(request: Request) {
       );
     }
 
-    // Prepare update data (exclude id, owner, and maintenance-specific fields)
+    // Prepare update data — only keep columns that belong to the expenses table.
+    // Fill-specific fields (liters, price_per_liter, kwh, price_per_kwh, odometer) go to the
+    // fills table below. Maintenance/other fields are also excluded.
     const {
       id: _,
       owner_id: __,
       type: ___,
-      maintenance_type: __maintenance_type,
-      odometer: __odometer,
-      garage: __garage,
-      label: __label,
+      maintenance_type: _maintenance_type,
+      odometer: _odometer,
+      garage: _garage,
+      label: _label,
+      liters: _liters,
+      price_per_liter: _price_per_liter,
+      kwh: _kwh,
+      price_per_kwh: _price_per_kwh,
       ...updateData
     } = body;
 
@@ -156,6 +162,14 @@ export async function PATCH(request: Request) {
 
         if (maintenanceError) {
           console.error('Error updating maintenance_expenses:', maintenanceError);
+        }
+
+        // Recompute auto-reminder after edit (trigger only fires on INSERT)
+        if (body.maintenance_type && existingExpense.vehicle_id) {
+          await supabase.rpc('update_maintenance_reminder', {
+            p_vehicle_id: existingExpense.vehicle_id,
+            p_maintenance_type_id: body.maintenance_type,
+          });
         }
       } else {
         // Insert new maintenance_expenses

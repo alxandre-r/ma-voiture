@@ -8,9 +8,7 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 /**
  * LogoutButton Component
@@ -19,12 +17,12 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
  * Clears session and redirects to home page.
  */
 export default function LogoutButton({ className = '' }: { className?: string }) {
-  const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/');
+    // Use window.location for full page reload to ensure session is cleared before middleware runs
+    window.location.href = '/';
   };
 
   return (

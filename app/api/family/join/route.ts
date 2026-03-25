@@ -1,13 +1,11 @@
 /**
  * @file app/api/family/join/route.ts
  * @description API endpoint to join a family using an invitation token.
- *
- * This endpoint allows a user to join an existing family using a valid invitation token.
  */
 
 import { NextResponse } from 'next/server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
   try {
@@ -37,7 +35,7 @@ export async function POST(request: Request) {
       .from('family_members')
       .select('family_id')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (existingFamilyMember) {
       return NextResponse.json({ error: "Vous faites déjà partie d'une famille" }, { status: 400 });
@@ -48,10 +46,17 @@ export async function POST(request: Request) {
       .from('families')
       .select('*')
       .eq('invite_token', token)
-      .single();
+      .maybeSingle();
 
-    if (familyError || !family) {
-      console.error('Erreur Supabase lors de la recherche de la famille:', familyError);
+    if (familyError) {
+      console.error('Erreur Supabase:', familyError);
+      return NextResponse.json(
+        { error: 'Erreur lors de la recherche de la famille' },
+        { status: 500 },
+      );
+    }
+
+    if (!family) {
       return NextResponse.json(
         { error: "Token d'invitation invalide ou famille introuvable" },
         { status: 404 },
@@ -67,10 +72,10 @@ export async function POST(request: Request) {
         role: 'member',
       })
       .select()
-      .single();
+      .maybeSingle();
 
     if (memberError) {
-      console.error("Erreur Supabase lors de l'ajout du membre à la famille:", memberError);
+      console.error('Erreur Supabase:', memberError);
       return NextResponse.json({ error: "Erreur lors de l'ajout à la famille" }, { status: 500 });
     }
 
@@ -85,7 +90,7 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error('Erreur serveur lors de la jointure de la famille:', error);
+    console.error('Erreur serveur:', error);
     return NextResponse.json(
       { error: 'Erreur serveur lors de la jointure de la famille' },
       { status: 500 },

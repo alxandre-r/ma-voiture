@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 
+import useAccountActions from '@/app/(app)/settings/hooks/useAccountActions';
 import Icon from '@/components/common/ui/Icon';
 import Spinner from '@/components/common/ui/Spinner';
 import AvatarModal from '@/components/user/AvatarModal';
 import ProfilePicture from '@/components/user/ProfilePicture';
 import { useNotifications } from '@/contexts/NotificationContext';
-import useAccountActions from '@/hooks/account/useAccountActions';
 
 import type { User } from '@/types/user';
 

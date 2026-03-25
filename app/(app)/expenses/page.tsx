@@ -6,11 +6,7 @@
  * Expenses and fills are fetched client-side via API to avoid SSR performance issues.
  */
 
-import { redirect } from 'next/navigation';
-
-import { getCurrentUserInfo } from '@/lib/data/user';
 import { getAllVehicles } from '@/lib/data/vehicles';
-import { mapVehiclesToMinimal } from '@/lib/utils/vehicles/mapVehiclesToMinimal';
 
 import ExpensesClient from './ExpensesClient';
 
@@ -22,22 +18,11 @@ import ExpensesClient from './ExpensesClient';
  * @throws Redirects to "/" if no authenticated user is found.
  */
 export default async function ExpensesPage() {
-  const user = await getCurrentUserInfo();
-  if (!user) redirect('/');
-  else if (user.has_vehicles === false) {
-    redirect('/garage');
-  }
-
-  const vehicles = await getAllVehicles(user.id);
-  const selectorVehicles = mapVehiclesToMinimal(vehicles);
+  const vehicles = await getAllVehicles();
 
   return (
     <main>
-      <ExpensesClient
-        vehicles={vehicles}
-        currentUserId={user.id}
-        selectorVehicles={selectorVehicles}
-      />
+      <ExpensesClient vehicles={vehicles} />
     </main>
   );
 }

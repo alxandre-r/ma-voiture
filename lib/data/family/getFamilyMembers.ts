@@ -4,18 +4,11 @@
 
 import { cache } from 'react';
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-interface FamilyMember {
-  user_id: string;
-  user_name: string;
-  email: string;
-  role: string;
-  joined_at: string;
-  avatar_url?: string;
-}
+import type { FamilyMemberDisplay } from '@/types/family';
 
-export const getFamilyMembers = cache(async (familyId: string): Promise<FamilyMember[]> => {
+export const getFamilyMembers = cache(async (familyId: string): Promise<FamilyMemberDisplay[]> => {
   const supabase = await createSupabaseServerClient();
 
   // Get family members from the view
@@ -57,7 +50,7 @@ export const getFamilyMembers = cache(async (familyId: string): Promise<FamilyMe
   }
 
   // Add avatar URLs to members
-  const membersWithAvatars: FamilyMember[] = members.map((member) => ({
+  const membersWithAvatars: FamilyMemberDisplay[] = members.map((member) => ({
     user_id: member.user_id,
     user_name: member.user_name,
     email: member.email,

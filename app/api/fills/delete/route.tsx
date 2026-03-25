@@ -8,7 +8,7 @@
 
 import { NextResponse } from 'next/server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * DELETE /api/fills/delete

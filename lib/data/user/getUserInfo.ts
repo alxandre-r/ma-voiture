@@ -3,15 +3,17 @@
 
 import { cache } from 'react';
 
-import { createSupabaseServerClient } from '../../supabase/supabaseServer';
+import { createSupabaseServerClient } from '../../supabase/server';
 
-export const getUserInfo = cache(async (userId: string) => {
+export const getUserInfo = cache(async () => {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
-    .from('users_info') // On récupère les données depuis la vue
-    .select('*')
-    .eq('id', userId)
-    .single();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase.from('users_info').select('*').eq('id', user.id).single();
 
   if (error) {
     throw new Error(`Failed to fetch user info: ${error.message}`);

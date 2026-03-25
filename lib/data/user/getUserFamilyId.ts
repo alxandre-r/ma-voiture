@@ -2,15 +2,20 @@
 
 'use server';
 
-import { createSupabaseServerClient } from '../../supabase/supabaseServer';
+import { createSupabaseServerClient } from '../../supabase/server';
 
-export async function getUserFamilyId(userId: string): Promise<string | null> {
+export async function getUserFamilyId(): Promise<string | null> {
   const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
 
   const { data, error } = await supabase
     .from('family_members')
     .select('family_id')
-    .eq('user_id', userId)
+    .eq('user_id', user.id)
     .single();
 
   if (data && data.family_id) {

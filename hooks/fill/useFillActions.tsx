@@ -60,19 +60,20 @@ export function useFillActions() {
     // Use baseData if provided (for create mode), otherwise use editData (for edit mode)
     const base = baseData ?? editData;
 
-    // Use || instead of ?? to treat 0 as falsy (allow clearing fields)
-    const liters = data.liters ?? base?.liters ?? 0;
-    const amount = data.amount ?? base?.amount ?? 0;
-    const pricePerLiter = data.price_per_liter ?? base?.price_per_liter ?? 0;
+    // data is always a full spread of the previous state — no base fallback for numeric values.
+    // Using base as fallback caused a bug where clearing a field (null) would revert to old value.
+    const liters = data.liters ?? 0;
+    const amount = data.amount ?? 0;
+    const pricePerLiter = data.price_per_liter ?? 0;
     // Electric fields
-    const kwh = data.kwh ?? base?.kwh ?? 0;
-    const pricePerKwh = data.price_per_kwh ?? base?.price_per_kwh ?? 0;
+    const kwh = data.kwh ?? 0;
+    const pricePerKwh = data.price_per_kwh ?? 0;
     const chargeType = data.charge_type ?? base?.charge_type ?? 'fill';
 
     const result: FillFormData = {
       vehicle_id: data.vehicle_id ?? base?.vehicle_id ?? 0,
       date: data.date ?? base?.date ?? new Date().toISOString().split('T')[0],
-      odometer: data.odometer ?? base?.odometer ?? 0,
+      odometer: data.odometer ?? 0,
       liters: liters,
       amount: amount,
       price_per_liter: pricePerLiter,
@@ -83,19 +84,14 @@ export function useFillActions() {
       price_per_kwh: pricePerKwh,
     };
 
-    // Auto-calculate missing values based on charge type (only if value exists and is > 0)
+    // Auto-calculate quantity from price — never the reverse.
+    // liters/kwh are always derived (never user-entered), so we never use them to recalculate price.
     if (chargeType === 'charge') {
-      // For electric charges: calculate kWh from amount and price_per_kwh
       if (amount && pricePerKwh) {
         result.kwh = Number((amount / pricePerKwh).toFixed(2));
-      } else if (amount && kwh) {
-        result.price_per_kwh = Number((amount / kwh).toFixed(3));
       }
     } else {
-      // For fuel fills: calculate liters from amount and price_per_liter
-      if (amount && liters) {
-        result.price_per_liter = Number((amount / liters).toFixed(3));
-      } else if (amount && pricePerLiter) {
+      if (amount && pricePerLiter) {
         result.liters = Number((amount / pricePerLiter).toFixed(2));
       }
     }

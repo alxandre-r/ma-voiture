@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import type { Vehicle } from '@/types/vehicle';
 
@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       financing_mode,
       purchase_date,
       purchase_price,
+      co2_emission,
     } = body;
 
     // Helper to convert empty strings to null for date fields
@@ -85,6 +86,7 @@ export async function POST(request: Request) {
           financing_mode: financing_mode || null,
           purchase_date: toDate(purchase_date),
           purchase_price: toNumber(purchase_price),
+          co2_emission: toNumber(co2_emission),
         },
       ])
       .select()

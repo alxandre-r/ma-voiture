@@ -1,37 +1,61 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
+import {
+  ExpenseBreakdown,
+  RecentExpenses,
+  StatsCards,
+  VehicleQuickView,
+} from '@/app/(app)/dashboard/components';
+import AnomalyAlert from '@/app/(app)/dashboard/components/AnomalyAlert';
+import RemindersWidget from '@/app/(app)/dashboard/components/RemindersWidget';
+import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
+import ReminderForm from '@/app/(app)/reminders/components/ReminderForm';
 import ExpenseButton from '@/components/common/ExpenseButton';
-import SelectorsHeader from '@/components/common/SelectorsHeader';
-import { RecentExpenses, StatsCards } from '@/components/dashboard';
-import { SelectorsProvider, useSelectors } from '@/contexts/SelectorsContext';
+import FillForm from '@/components/common/forms/FillForm';
+import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
+import Drawer from '@/components/common/ui/Drawer';
+import { useSelectors } from '@/contexts/SelectorsContext';
+import { useUser } from '@/contexts/UserContext';
+import { useFillActions } from '@/hooks/fill/useFillActions';
+import { useReminderActions } from '@/hooks/reminders/useReminderActions';
+import { detectAnomalies } from '@/lib/utils/anomalyUtils';
+import { enrichReminder } from '@/lib/utils/reminderUtils';
 
+import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
+import type { ExpenseType } from '@/components/common/ExpenseButton';
 import type { Expense } from '@/types/expense';
+import type { FillFormData } from '@/types/fill';
+import type { Reminder, ReminderFormData } from '@/types/reminder';
 import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 interface DashboardClientProps {
-  currentUserId: string;
   vehicles: Vehicle[];
   expenses: Expense[];
-  selectorVehicles: VehicleMinimal[];
+  reminders: Reminder[];
+  fillExpenses: Expense[];
 }
 
-/**
- * Dashboard content component that uses shared selectors.
- */
-function DashboardContent({
-  currentUserId,
-  vehicles,
-  expenses,
-}: Omit<DashboardClientProps, 'selectorVehicles'>) {
+function DashboardContent({ vehicles, expenses, reminders, fillExpenses }: DashboardClientProps) {
+  const router = useRouter();
+  const user = useUser();
+  const currentUserId = user?.id;
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
-  // Filter and sort expenses by selected vehicles and period
+  const [selectedExpenseType, setSelectedExpenseType] = useState<ExpenseType | null>(null);
+  const [showFillForm, setShowFillForm] = useState(false);
+  const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
+  const [showReminderForm, setShowReminderForm] = useState(false);
+
+  const { addFill } = useFillActions();
+  const { addMaintenance } = useMaintenanceActions();
+  const { creating, createReminder } = useReminderActions();
+
   const filteredExpenses = useMemo(() => {
     let result = expenses.filter((e) => selectedVehicleIds.includes(e.vehicle_id));
 
-    // Filter by period
     if (selectedPeriod && selectedPeriod !== 'all') {
       const now = new Date();
       let cutoffDate: Date;
@@ -50,14 +74,17 @@ function DashboardContent({
     return result;
   }, [expenses, selectedVehicleIds, selectedPeriod]);
 
-  const sortedExpenses = [...filteredExpenses].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  const sortedExpenses = useMemo(
+    () =>
+      [...filteredExpenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [filteredExpenses],
   );
 
-  // Calculate stats
-  const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0);
+  const totalExpenses = useMemo(
+    () => filteredExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0),
+    [filteredExpenses],
+  );
 
-  // Calculate average consumption from fuel expenses
   const avgConsumption = useMemo(() => {
     const fuelExpenses = filteredExpenses.filter((e) => e.type === 'fuel');
     if (fuelExpenses.length === 0) return 0;
@@ -68,13 +95,9 @@ function DashboardContent({
 
     fuelExpenses.forEach((expense) => {
       const fillData = expense as unknown as { liters?: number; odometer?: number };
-      if (fillData.liters) {
-        totalLiters += fillData.liters;
-      }
+      if (fillData.liters) totalLiters += fillData.liters;
       if (fillData.odometer) {
-        if (!odometers[expense.vehicle_id]) {
-          odometers[expense.vehicle_id] = [];
-        }
+        if (!odometers[expense.vehicle_id]) odometers[expense.vehicle_id] = [];
         odometers[expense.vehicle_id].push(fillData.odometer);
       }
     });
@@ -86,55 +109,183 @@ function DashboardContent({
       }
     });
 
-    if (totalDistance > 0) {
-      return (totalLiters / totalDistance) * 100;
-    }
-    return 0;
+    return totalDistance > 0 ? (totalLiters / totalDistance) * 100 : 0;
   }, [filteredExpenses]);
+
+  const anomalies = useMemo(
+    () => detectAnomalies(fillExpenses, vehicles),
+    [fillExpenses, vehicles],
+  );
+
+  const overdueReminders = useMemo(
+    () =>
+      reminders
+        .filter((r) => !r.is_completed)
+        .filter((r) => {
+          const vehicle =
+            r.vehicle_id != null
+              ? (vehicles.find((v) => v.vehicle_id === r.vehicle_id) ?? null)
+              : null;
+          return enrichReminder(r, vehicle, fillExpenses).status === 'overdue';
+        }).length,
+    [reminders, vehicles, fillExpenses],
+  );
+
+  const ownedActiveVehicles = vehicles.filter((v) => {
+    const isActive = v.status === 'active' || v.status === null || v.status === undefined;
+    const isOwner = v.owner_id === currentUserId;
+    return isActive && isOwner;
+  });
+
+  const fillVehicles = ownedActiveVehicles.filter(
+    (v) => v.fuel_type !== 'Électrique' && v.fuel_type !== 'Hybride non rechargeable',
+  );
+  const chargeVehicles = ownedActiveVehicles.filter(
+    (v) => v.fuel_type === 'Électrique' || v.fuel_type === 'Hybride rechargeable',
+  );
+  const formVehicles = selectedExpenseType === 'charge' ? chargeVehicles : fillVehicles;
+
+  const vehiclesMinimal: VehicleMinimal[] = ownedActiveVehicles.map((v) => ({
+    vehicle_id: v.vehicle_id,
+    name: v.name ?? `${v.make} ${v.model}`,
+    make: v.make ?? '',
+    model: v.model ?? '',
+    fuel_type: v.fuel_type ?? null,
+    odometer: v.odometer,
+    status: v.status ?? 'active',
+    owner_id: v.owner_id,
+  }));
+
+  const handleSuccess = () => {
+    router.refresh();
+    setShowFillForm(false);
+    setShowMaintenanceForm(false);
+    setShowReminderForm(false);
+    setSelectedExpenseType(null);
+  };
+
+  const handleSelectType = (type: ExpenseType) => {
+    setSelectedExpenseType(type);
+    if (type === 'maintenance') {
+      setShowMaintenanceForm(true);
+    } else {
+      setShowFillForm(true);
+    }
+  };
+
+  const handleFillSave = async (data: FillFormData) => {
+    const success = await addFill(data);
+    if (success) handleSuccess();
+    return success;
+  };
+
+  const handleMaintenanceSave = async (data: MaintenanceFormData) => {
+    const success = await addMaintenance(data);
+    if (success) handleSuccess();
+    return success;
+  };
+
+  const handleReminderSave = async (data: ReminderFormData): Promise<boolean> => {
+    const success = await createReminder(data);
+    if (success) handleSuccess();
+    return success;
+  };
 
   return (
     <div className="space-y-6 px-2 sm:px-0 pb-8">
-      {/* Header row with Add button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <ExpenseButton vehicles={vehicles as VehicleMinimal[]} currentUserId={currentUserId} />
-      </div>
+      {/* Add expense button — desktop right-aligned + mobile FAB, both handled by ExpenseButton */}
+      <ExpenseButton
+        vehicles={vehicles as VehicleMinimal[]}
+        currentUserId={currentUserId}
+        onSelectType={handleSelectType}
+        onAddReminder={() => setShowReminderForm(true)}
+      />
 
       {/* Stats Cards */}
-      <StatsCards avgConsumption={avgConsumption} totalExpenses={totalExpenses} />
+      <StatsCards
+        avgConsumption={avgConsumption}
+        totalExpenses={totalExpenses}
+        overdueReminders={overdueReminders}
+      />
 
-      {/* Recent Expenses Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Anomaly alert — only renders if anomalies are detected */}
+      <AnomalyAlert anomalies={anomalies} />
+
+      {/* Recent Expenses + Reminders */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RecentExpenses expenses={sortedExpenses} vehicles={vehicles} />
+        <RemindersWidget reminders={reminders} vehicles={vehicles} fillExpenses={fillExpenses} />
       </div>
 
-      {/* New version messages */}
-      <div className="p-4 bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400 text-yellow-700 dark:text-yellow-300">
-        <p className="font-medium">Plus à venir</p>
-        <p className="text-sm mt-1">
-          Visitez la section &quot;Patchnotes&quot; de la page{' '}
-          <a href="/settings" className="text-yellow-600 underline">
-            Paramètres
-          </a>{' '}
-          pour découvrir les nouveautés de la version 1.2.0 ainsi que les améliorations à venir.
-        </p>
+      {/* Expense breakdown + Vehicle overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ExpenseBreakdown expenses={filteredExpenses} />
+        <VehicleQuickView vehicles={vehicles} reminders={reminders} expenses={expenses} />
       </div>
+
+      {/* Drawers */}
+      <Drawer
+        isOpen={showFillForm && !!selectedExpenseType}
+        onClose={() => {
+          setShowFillForm(false);
+          setSelectedExpenseType(null);
+        }}
+      >
+        <FillForm
+          vehicles={formVehicles as VehicleMinimal[]}
+          forcedType={selectedExpenseType === 'charge' ? 'charge' : 'fill'}
+          onSave={handleFillSave}
+          onCancel={() => {
+            setShowFillForm(false);
+            setSelectedExpenseType(null);
+          }}
+          saving={false}
+        />
+      </Drawer>
+
+      <Drawer
+        isOpen={showMaintenanceForm}
+        onClose={() => {
+          setShowMaintenanceForm(false);
+          setSelectedExpenseType(null);
+        }}
+      >
+        <MaintenanceForm
+          vehicles={vehiclesMinimal}
+          onSave={handleMaintenanceSave}
+          onCancel={() => {
+            setShowMaintenanceForm(false);
+            setSelectedExpenseType(null);
+          }}
+          saving={false}
+        />
+      </Drawer>
+
+      <Drawer isOpen={showReminderForm} onClose={() => setShowReminderForm(false)}>
+        <ReminderForm
+          initialReminder={null}
+          vehicles={vehiclesMinimal}
+          onSave={handleReminderSave}
+          onCancel={() => setShowReminderForm(false)}
+          saving={creating}
+        />
+      </Drawer>
     </div>
   );
 }
 
-/**
- * Dashboard client component with shared selectors.
- */
 export default function DashboardClient({
-  currentUserId,
   vehicles,
   expenses,
-  selectorVehicles,
+  reminders,
+  fillExpenses,
 }: DashboardClientProps) {
   return (
-    <SelectorsProvider initialVehicles={selectorVehicles}>
-      <SelectorsHeader title="Tableau de Bord" vehicles={selectorVehicles} />
-      <DashboardContent currentUserId={currentUserId} vehicles={vehicles} expenses={expenses} />
-    </SelectorsProvider>
+    <DashboardContent
+      vehicles={vehicles}
+      expenses={expenses}
+      reminders={reminders}
+      fillExpenses={fillExpenses}
+    />
   );
 }

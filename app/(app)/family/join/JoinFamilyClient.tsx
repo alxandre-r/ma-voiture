@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 
 import Spinner from '@/components/common/ui/Spinner';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useUser } from '@/contexts/UserContext';
 
 interface FamilyInvite {
   id: string;
@@ -25,35 +26,32 @@ export default function JoinFamilyClient() {
   const [hasFamily, setHasFamily] = useState(false);
   const [familyData, setFamilyData] = useState<FamilyInvite | null>(null);
 
+  const user = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { showNotification } = useNotifications();
+  const { showError } = useNotifications();
 
   useEffect(() => {
     const urlToken = searchParams.get('token');
+    setToken(urlToken);
+
     if (!urlToken) {
       setError("Token d'invitation manquant");
       setIsLoading(false);
       return;
     }
 
-    setToken(urlToken);
-
     const init = async () => {
       try {
-        // Vérifier utilisateur
-        const userRes = await fetch('/api/users/me');
-        const userData = await userRes.json();
-
-        if (!userRes.ok) throw new Error(userData.error);
-
-        if (userData.hasFamily) {
-          setHasFamily(true);
+        if (!user.has_family) {
+          setHasFamily(false);
           return;
+        } else {
+          setHasFamily(true);
         }
 
-        // Récupérer famille via API
-        const familyRes = await fetch(`/api/family/get?token=${urlToken}`);
+        // Récupérer famille via API pour afficher les infos de l'invitation dans le modal de confirmation
+        const familyRes = await fetch(`/api/family/getByInvitToken?token=${urlToken}`);
         const familyJson = await familyRes.json();
 
         if (!familyRes.ok) throw new Error(familyJson.error);
@@ -69,7 +67,7 @@ export default function JoinFamilyClient() {
     };
 
     init();
-  }, [searchParams]);
+  }, [searchParams, user.has_family]);
 
   const handleJoinFamily = async () => {
     if (!token) return;
@@ -91,7 +89,7 @@ export default function JoinFamilyClient() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la jointure';
       setError(message);
-      showNotification(message, 'error');
+      showError(message);
     } finally {
       setIsJoining(false);
     }

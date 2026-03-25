@@ -1,25 +1,35 @@
 'use client';
 
+/**
+ * @file MaintenanceClient.tsx
+ * @fileoverview Client component for the Maintenance page.
+ *
+ * Architecture:
+ * - Receives pre-fetched vehicles and expenses from server (SSR/streaming)
+ * - Handles form state (add/edit) locally
+ * - Client-side filtering by selected vehicles and period
+ * - Uses shared SelectorsContext for filter state
+ */
+
 import { useRouter } from 'next/navigation';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 
+import MaintenanceTimeline from '@/app/(app)/maintenance/components/MaintenanceTimeline';
+import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
-import SelectorsHeader from '@/components/common/SelectorsHeader';
+import Drawer from '@/components/common/ui/Drawer';
 import Icon from '@/components/common/ui/Icon';
-import MaintenanceTimeline from '@/components/maintenance/MaintenanceTimeline';
-import { SelectorsProvider, useSelectors } from '@/contexts/SelectorsContext';
-import { useMaintenanceActions } from '@/hooks/maintenance/useMaintenanceActions';
+import { useSelectors } from '@/contexts/SelectorsContext';
+import { useUser } from '@/contexts/UserContext';
 
-import type { MaintenanceFormData } from '@/hooks/maintenance/useMaintenanceActions';
+import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import type { Expense } from '@/types/expense';
-import type { User } from '@/types/user';
 import type { VehicleMinimal } from '@/types/vehicle';
 
 interface MaintenanceClientProps {
-  user: User;
   vehicles: VehicleMinimal[];
-  expenses: Expense[];
-  selectorVehicles: VehicleMinimal[];
+  vehicleIds: number[];
+  initialExpenses: Expense[];
 }
 
 /**
@@ -42,35 +52,69 @@ function getCutoffDate(period: string | null) {
 
 /**
  * Maintenance content component that uses shared selectors.
+ * Gets user from UserProvider via useUser() hook.
+ * Receives pre-fetched data from server for optimal SSR performance.
  */
 function MaintenanceContent({
-  user,
+  vehicleIds,
   vehicles: initialVehicles,
-  expenses,
+  initialExpenses,
 }: {
-  user: User;
+  vehicleIds: number[];
   vehicles: VehicleMinimal[];
-  expenses: Expense[];
+  initialExpenses: Expense[];
 }) {
   const router = useRouter();
 
+  // Get user from UserProvider (set up in layout)
+  const user = useUser();
+
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+
+  // Use ref to track if this is the initial load
+  const isInitialLoad = useRef(true);
+
+  // Expenses state - initialized with server data
+  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
+
+  // Track if we're refreshing data
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { saving, adding, deletingId, addMaintenance, updateMaintenance, deleteMaintenance } =
     useMaintenanceActions();
 
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
+  // Fetch fresh data only when vehicleIds change (not on every render)
+  useEffect(() => {
+    // Skip the initial load since we already have data from server
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+
+    // Fetch fresh data when vehicleIds change
+    if (vehicleIds.length > 0) {
+      setIsRefreshing(true);
+      fetch(`/api/expenses/maintenanceExpense?vehicleIds=${vehicleIds.join(',')}`)
+        .then((res) => res.json())
+        .then((data) => setExpenses(data.expenses || []))
+        .catch((error) => console.error('Failed to fetch maintenance expenses:', error))
+        .finally(() => setIsRefreshing(false));
+    }
+  }, [vehicleIds]);
+
   /**
    * Vehicles available in the form.
-   * All active vehicles (owned by the user or family members),
+   * Only active vehicles owned by the current user,
    * plus the vehicle of the expense being edited.
    */
   const vehicles = useMemo(() => {
     const activeVehicles = initialVehicles.filter((v) => {
       const isActive = v.status === 'active' || v.status == null;
-      return isActive;
+      const isOwner = v.owner_id === user.id;
+      return isActive && isOwner;
     });
 
     if (!editingExpense) return activeVehicles;
@@ -109,7 +153,6 @@ function MaintenanceContent({
   /**
    * Handlers
    */
-
   const handleEditExpense = useCallback((expense: Expense) => {
     setEditingExpense(expense);
     setShowForm(true);
@@ -139,11 +182,9 @@ function MaintenanceContent({
   const handleDeleteExpense = useCallback(
     async (expenseId: number): Promise<boolean> => {
       const success = await deleteMaintenance(expenseId);
-
       if (success) {
         router.refresh();
       }
-
       return success;
     },
     [deleteMaintenance, router],
@@ -161,35 +202,18 @@ function MaintenanceContent({
     );
   }
 
-  /**
-   * Form mode
-   */
-  if (showForm) {
-    const isAdding = !editingExpense;
+  const handleAddClick = () => {
+    setEditingExpense(null);
+    setShowForm(true);
+  };
 
-    return (
-      <MaintenanceForm
-        initialExpense={editingExpense}
-        vehicles={vehicles}
-        onSave={handleSaveForm}
-        onCancel={handleCancelForm}
-        saving={isAdding ? adding : saving}
-      />
-    );
-  }
-
-  /**
-   * Timeline view
-   */
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Desktop button */}
+      <div className="hidden sm:flex justify-end">
         <button
-          onClick={() => {
-            setEditingExpense(null);
-            setShowForm(true);
-          }}
-          className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium transition-colors flex items-center gap-2 self-center sm:self-auto cursor-pointer"
+          onClick={handleAddClick}
+          className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
         >
           <Icon name="add" size={18} className="invert dark:invert-0" />
           Ajouter une intervention
@@ -203,24 +227,47 @@ function MaintenanceContent({
         onEditExpense={handleEditExpense}
         onDeleteExpense={handleDeleteExpense}
         deletingId={deletingId}
+        isDataLoading={isRefreshing}
       />
+
+      {/* Mobile FAB */}
+      <button
+        onClick={handleAddClick}
+        className="sm:hidden fixed bottom-20 right-4 z-40 w-14 h-14 bg-custom-2 hover:bg-custom-2-hover text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer"
+        aria-label="Ajouter une intervention"
+      >
+        <Icon name="add" size={24} className="invert dark:invert-0" />
+      </button>
+
+      {/* Drawer */}
+      <Drawer isOpen={showForm} onClose={handleCancelForm}>
+        <MaintenanceForm
+          initialExpense={editingExpense}
+          vehicles={vehicles}
+          onSave={handleSaveForm}
+          onCancel={handleCancelForm}
+          saving={!editingExpense ? adding : saving}
+        />
+      </Drawer>
     </div>
   );
 }
 
 /**
  * Maintenance client component with shared selectors.
+ * SelectorsProvider is provided by the root layout.
+ * User is retrieved from UserProvider via useUser() hook.
  */
 export default function MaintenanceClient({
-  user,
   vehicles,
-  expenses,
-  selectorVehicles,
+  vehicleIds,
+  initialExpenses,
 }: MaintenanceClientProps) {
   return (
-    <SelectorsProvider initialVehicles={selectorVehicles}>
-      <SelectorsHeader title="Maintenance" vehicles={selectorVehicles} />
-      <MaintenanceContent user={user} vehicles={vehicles} expenses={expenses} />
-    </SelectorsProvider>
+    <MaintenanceContent
+      vehicles={vehicles}
+      vehicleIds={vehicleIds}
+      initialExpenses={initialExpenses}
+    />
   );
 }

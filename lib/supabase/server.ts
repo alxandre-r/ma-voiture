@@ -1,0 +1,41 @@
+/**
+ * @file lib/supabaseServer.ts
+ * @fileoverview Fournit un createSupabaseServerClient() asynchrone qui lit les cookies
+ *              via next/headers pour permettre au serveur (middleware, server components)
+ *              d'accéder à la session Supabase.
+ */
+'use server';
+
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+/**
+ * Retourne un Supabase client côté serveur lié aux cookies de la requête.
+ * @returns SupabaseClient
+ */
+
+export async function createSupabaseServerClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options),
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+      },
+    },
+  );
+}

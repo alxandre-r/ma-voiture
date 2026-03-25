@@ -4,24 +4,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 
 import Icon from '@/components/common/ui/Icon';
-
-import type { VehicleMinimal } from '@/types/vehicle';
+import { useSelectors } from '@/contexts/SelectorsContext';
 
 interface VehicleSelectorProps {
-  vehicles: VehicleMinimal[];
   value: number[];
   onChange: (vehicleIds: number[]) => void;
   disabled?: boolean;
 }
 
 export default function VehicleSelector({
-  vehicles,
   value,
   onChange,
   disabled = false,
 }: VehicleSelectorProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  // Get vehicles from context
+  const { vehicles } = useSelectors();
+
+  // Check if there's only one vehicle
+  const hasOnlyOneVehicle = vehicles.length === 1;
+
+  // Get the single vehicle name
+  const singleVehicleName = hasOnlyOneVehicle
+    ? vehicles[0].name || `${vehicles[0].make} ${vehicles[0].model}`
+    : '';
 
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
@@ -50,6 +58,10 @@ export default function VehicleSelector({
   };
 
   const label = () => {
+    // When there's only one vehicle, display its name
+    if (hasOnlyOneVehicle) {
+      return singleVehicleName;
+    }
     if (value.length === vehicles.length) return 'Tous les véhicules';
     if (value.length === 1) {
       const v = vehicles.find((v) => v.vehicle_id === value[0]);
@@ -58,31 +70,46 @@ export default function VehicleSelector({
     return `Tous les véhicules`;
   };
 
+  const handleToggle = () => {
+    // Don't open dropdown if only one vehicle
+    if (!hasOnlyOneVehicle && !disabled) {
+      setOpen((o) => !o);
+    }
+  };
+
   return (
-    <div ref={ref} className="relative w-full sm:w-[360px]">
+    <div ref={ref} className="vehicleSelector-Button relative w-full sm:w-[360px]">
       {/* Trigger */}
       <motion.button
         type="button"
-        disabled={disabled}
-        onClick={() => setOpen((o) => !o)}
-        whileTap={{ scale: 0.98 }}
-        className="
+        disabled={disabled || hasOnlyOneVehicle}
+        onClick={handleToggle}
+        className={`outer-button p-0.5
+          bg-gradient-to-r from-orange-400/70 to-custom-2
           flex items-center justify-between w-full
-          px-4 py-3 rounded-lg
-          bg-gray-100 dark:bg-gray-800 shadow-sm dark:shadow-xl
-          hover:shadow-md dark:hover:shadow-xl
-          transition-all hover:cursor-pointer
-        "
+          rounded-xl sm:min-w-[180px] min-w-[120px] 
+          transition-all
+          ${hasOnlyOneVehicle || disabled ? 'cursor-default' : 'hover:cursor-pointer active:scale-96'}
+        `}
       >
-        <span className={`truncate text-xs font-medium text-gray-900 dark:text-gray-100`}>
-          {label()}
-        </span>
+        <div
+          className={`inner-button bg-white dark:bg-gray-800
+          flex items-center justify-between w-full
+          px-4 py-3 rounded-[calc(1rem-6px)]
+        `}
+        >
+          <span className={`truncate text-xs font-medium text-gray-900 dark:text-gray-100`}>
+            {label()}
+          </span>
 
-        <Icon
-          name="arrow-down"
-          size={16}
-          className={`ml-2 transition-transform ${open ? 'rotate-180' : ''}`}
-        />
+          {!hasOnlyOneVehicle && !disabled && (
+            <Icon
+              name="arrow-down"
+              size={16}
+              className={`ml-2 transition-transform ${open ? 'rotate-180' : ''}`}
+            />
+          )}
+        </div>
       </motion.button>
 
       {/* Dropdown */}
@@ -145,7 +172,7 @@ function DropdownItem({
       className={`
         flex items-center gap-3 w-full
         px-4 py-2 text-left
-        rounded-lg
+        rounded-xl
         hover:cursor-pointer
         transition-all
         ${checked ? '' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}

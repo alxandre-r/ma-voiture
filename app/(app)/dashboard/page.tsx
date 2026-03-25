@@ -3,33 +3,36 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 import { getAllExpenses } from '@/lib/data/expenses';
-import { getCurrentUserInfo } from '@/lib/data/user';
+import { getReminders } from '@/lib/data/reminders';
 import { getAllVehicles } from '@/lib/data/vehicles';
-import { mapVehiclesToMinimal } from '@/lib/utils/vehicles/mapVehiclesToMinimal';
 
 import DashboardClient from './DashboardClient';
 
 import type { Expense } from '@/types/expense';
-import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
+import type { Reminder } from '@/types/reminder';
+import type { Vehicle } from '@/types/vehicle';
 
 export default async function DashboardPage() {
-  const user = await getCurrentUserInfo();
-  if (!user) redirect('/');
-
-  const vehicles = (await getAllVehicles(user.id)) as Vehicle[];
+  const vehicles = (await getAllVehicles()) as Vehicle[];
   if (!vehicles || vehicles.length === 0) redirect('/dashboard/landing'); // If user has no vehicles, redirect to landing page to encourage them to add one
-  const selectorVehicles = mapVehiclesToMinimal(vehicles) as VehicleMinimal[];
-  const expenses = (await getAllExpenses(
-    vehicles.map((v) => v.vehicle_id).filter((id) => id > 0),
-  )) as Expense[];
+
+  const vehicleIds = vehicles.map((v) => v.vehicle_id).filter((id) => id > 0);
+
+  const [expenses, reminders] = await Promise.all([
+    getAllExpenses(vehicleIds) as Promise<Expense[]>,
+    getReminders() as Promise<Reminder[]>,
+  ]);
+
+  // Fill expenses for smart prediction in widget
+  const fillExpenses = expenses.filter((e) => e.type === 'fuel' || e.type === 'electric_charge');
 
   return (
     <main>
       <DashboardClient
-        currentUserId={user.id}
         vehicles={vehicles}
         expenses={expenses}
-        selectorVehicles={selectorVehicles}
+        reminders={reminders}
+        fillExpenses={fillExpenses}
       />
     </main>
   );

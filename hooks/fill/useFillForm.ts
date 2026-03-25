@@ -37,8 +37,8 @@ function buildInitialFormData(
     date: initialFill?.date ?? new Date().toISOString().split('T')[0],
     odometer: initialFill?.odometer ?? 0,
     liters: initialFill?.liters ?? 0,
-    amount: initialFill?.amount ?? 0,
-    price_per_liter: initialFill?.price_per_liter ?? 0,
+    amount: initialFill?.amount ?? null,
+    price_per_liter: initialFill?.price_per_liter ?? null,
     notes: initialFill?.notes ?? '',
     charge_type: initialFill?.charge_type ?? resolveDefaultChargeType(fuelType),
     kwh: initialFill?.kwh ?? 0,
@@ -82,11 +82,20 @@ export function useFillForm(
     }
   }, [formData.vehicle_id]);
 
+  const numericFields = new Set([
+    'amount',
+    'liters',
+    'price_per_liter',
+    'kwh',
+    'price_per_kwh',
+    'odometer',
+  ]);
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       const { name, value, type } = e.target;
 
-      if (type === 'number') {
+      if (type === 'number' || numericFields.has(name)) {
         const parsed = value === '' ? null : parseFloat(value.replace(',', '.'));
         const numeric = Number.isNaN(parsed as number) ? null : parsed;
         setFormData((prev) => calculateFillValues({ ...prev, [name]: numeric }, prev));

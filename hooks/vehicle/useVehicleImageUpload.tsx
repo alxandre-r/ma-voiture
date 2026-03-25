@@ -5,7 +5,7 @@
 
 'use client';
 
-import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 interface UseVehicleImageUploadProps {
   showNotification: (message: string, type: 'success' | 'error') => void;

@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 import Spinner from '@/components/common/ui/Spinner';
 import { useNotifications } from '@/contexts/NotificationContext';
-import { createSupabaseBrowserClient } from '@/lib/supabase/supabaseBrowser';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 export default function SignUpForm() {
   const supabase = createSupabaseBrowserClient();

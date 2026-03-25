@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server';
 
-import { createSupabaseServerClient } from '@/lib/supabase/supabaseServer';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import type { Vehicle } from '@/types/vehicle';
 
@@ -32,6 +32,7 @@ const VALID_FIELDS = [
   'financing_mode',
   'purchase_date',
   'purchase_price',
+  'co2_emission',
 ];
 
 // Helper to convert empty strings to null for date fields
@@ -88,7 +89,7 @@ export async function PATCH(request: Request) {
       }
       if (key === 'tech_control_expiry' || key === 'purchase_date') {
         updateData[key] = toDate(value as string);
-      } else if (key === 'purchase_price') {
+      } else if (key === 'purchase_price' || key === 'co2_emission') {
         updateData[key] = toNumber(value as number);
       } else if (key === 'plate' || key === 'vin') {
         updateData[key] = toUpperCase(value as string);
