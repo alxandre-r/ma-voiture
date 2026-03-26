@@ -12,13 +12,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Token d'invitation requis" }, { status: 400 });
     }
 
-    // Get family directly by invite token from family_for_display view
-    // where invite_token is token and role is 'owner' (to get owner info in the same query)
+    // Query families directly — RLS is USING(true) for authenticated users,
+    // so any authenticated user can look up a family by invite token.
+    // We avoid joining users here because the viewer is not yet a family member,
+    // so RLS on users would block reading the owner's row (security_invoker view).
     const { data: family, error } = await supabase
-      .from('family_for_display')
-      .select('family_id, family_name, created_at, user_name, user_id, email')
+      .from('families')
+      .select('id, name, created_at, owner_id')
       .eq('invite_token', inviteToken)
-      .eq('role', 'owner')
       .maybeSingle();
 
     if (error) {
@@ -34,15 +35,11 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({
-      id: family.family_id,
-      name: family.family_name,
+      id: family.id,
+      name: family.name,
       created_at: family.created_at,
-      owner_id: family.user_id,
-      owner_user: {
-        id: family.user_id,
-        name: family.user_name || 'Propriétaire',
-        email: family.email,
-      },
+      owner_id: family.owner_id,
+      owner_user: null,
     });
   } catch (err) {
     console.error('Erreur serveur:', err);

@@ -15,7 +15,7 @@ interface FamilyInvite {
   owner_user: {
     id: string;
     name: string;
-  };
+  } | null;
 }
 
 export default function JoinFamilyClient() {
@@ -43,11 +43,9 @@ export default function JoinFamilyClient() {
 
     const init = async () => {
       try {
-        if (!user.has_family) {
-          setHasFamily(false);
-          return;
-        } else {
+        if (user.has_family) {
           setHasFamily(true);
+          return;
         }
 
         // Récupérer famille via API pour afficher les infos de l'invitation dans le modal de confirmation
@@ -125,13 +123,28 @@ export default function JoinFamilyClient() {
   }
 
   if (error || !familyData) {
+    const isNotFound = error?.includes('invalide') || error?.includes('introuvable');
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow p-6 text-center">
+          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-600 text-xl">✕</span>
+          </div>
           <h2 className="text-xl font-semibold text-red-600">Invitation invalide</h2>
           <p className="mt-3 text-gray-600 dark:text-gray-400">
             {error ?? 'Impossible de charger les informations de la famille.'}
           </p>
+          {isNotFound && (
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">
+              Le lien d&apos;invitation est peut-être expiré ou a déjà été utilisé. Demandez un
+              nouveau lien au propriétaire de la famille.
+            </p>
+          )}
+          {!isNotFound && error && (
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">
+              Si le problème persiste, vérifiez que vous êtes bien connecté et réessayez.
+            </p>
+          )}
           <button
             onClick={() => router.push('/dashboard')}
             className="mt-6 w-full py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 cursor-pointer"
@@ -148,7 +161,9 @@ export default function JoinFamilyClient() {
       <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-custom-1/10 dark:bg-custom-1/20 p-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {`${familyData.owner_user.name} vous invite à rejoindre sa famille`}
+            {familyData.owner_user
+              ? `${familyData.owner_user.name} vous invite à rejoindre sa famille`
+              : `Vous avez été invité à rejoindre une famille`}
           </h1>
         </div>
 
@@ -162,9 +177,11 @@ export default function JoinFamilyClient() {
                 <span className="font-medium">Créée le :</span>{' '}
                 {new Date(familyData.created_at).toLocaleDateString()}
               </p>
-              <p>
-                <span className="font-medium">Propriétaire :</span> {familyData.owner_user.name}
-              </p>
+              {familyData.owner_user && (
+                <p>
+                  <span className="font-medium">Propriétaire :</span> {familyData.owner_user.name}
+                </p>
+              )}
             </div>
           </div>
 
