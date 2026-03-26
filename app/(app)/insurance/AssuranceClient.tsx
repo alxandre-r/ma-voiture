@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-
 import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import Icon from '@/components/common/ui/Icon';
 import Spinner from '@/components/common/ui/Spinner';

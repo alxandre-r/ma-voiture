@@ -1,11 +1,10 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useMemo  } from 'react';
-
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 import type { PeriodType } from '@/types/period';
 import type { VehicleMinimal } from '@/types/vehicle';
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 
 interface SelectorsContextType {
   // Vehicles list

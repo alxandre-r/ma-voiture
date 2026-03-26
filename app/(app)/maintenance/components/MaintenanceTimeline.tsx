@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/ui/card';
 import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
@@ -34,42 +34,6 @@ export default function MaintenanceTimeline({
   isDataLoading = false,
 }: MaintenanceTimelineProps) {
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
-  const menuRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const openMenuId = openMenuIdRef.current;
-      if (openMenuId !== null) {
-        const menuRef = menuRefs.current.get(openMenuId);
-        if (menuRef && !menuRef.contains(event.target as Node)) {
-          setOpenMenuId(null);
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  // Use ref to track current openMenuId in event listener
-  const openMenuIdRef = useRef<number | null>(null);
-  useEffect(() => {
-    openMenuIdRef.current = openMenuId;
-  }, [openMenuId]);
-
-  // Callback to set menu ref for each expense
-  const setMenuRef = useCallback(
-    (id: number) => (el: HTMLDivElement | null) => {
-      if (el) {
-        menuRefs.current.set(id, el);
-      } else {
-        menuRefs.current.delete(id);
-      }
-    },
-    [],
-  );
 
   const handleDeleteConfirm = async () => {
     if (deleteConfirmId !== null && onDeleteExpense) {
@@ -77,20 +41,6 @@ export default function MaintenanceTimeline({
       setDeleteConfirmId(null);
       if (onRefresh) onRefresh();
     }
-  };
-
-  // Handle edit with menu close
-  const handleEdit = (expense: Expense) => {
-    setOpenMenuId(null);
-    if (onEditExpense) {
-      onEditExpense(expense);
-    }
-  };
-
-  // Handle delete with menu close
-  const handleDeleteClick = (expenseId: number) => {
-    setOpenMenuId(null);
-    setDeleteConfirmId(expenseId);
   };
 
   return (
@@ -119,19 +69,16 @@ export default function MaintenanceTimeline({
               {expenses.map((expense, index) => {
                 const vehicle = vehicles.find((v) => v.vehicle_id === expense.vehicle_id);
                 const isLast = index === expenses.length - 1;
-                const isMenuOpen = openMenuId === expense.id;
 
                 return (
                   <MaintenanceCard
                     key={expense.id}
-                    ref={setMenuRef(expense.id)}
                     expense={expense}
                     vehicle={vehicle}
                     isLast={isLast}
-                    isMenuOpen={isMenuOpen}
                     userId={userId}
-                    onEdit={() => handleEdit(expense)}
-                    onDeleteClick={() => handleDeleteClick(expense.id)}
+                    onEdit={() => onEditExpense?.(expense)}
+                    onDeleteClick={() => setDeleteConfirmId(expense.id)}
                     deletingId={deletingId}
                   />
                 );

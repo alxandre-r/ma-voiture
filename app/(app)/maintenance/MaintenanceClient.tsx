@@ -193,7 +193,7 @@ function MaintenanceContent({
 
       <MaintenanceTimeline
         userId={user.id}
-        vehicles={vehicles}
+        vehicles={initialVehicles}
         expenses={filteredExpenses}
         onEditExpense={handleEditExpense}
         onDeleteExpense={handleDeleteExpense}
