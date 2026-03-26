@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui
 
 import type React from 'react';
 
-
 // ---------------------------------------------------------------------------
 // 1. StatisticsOverview — grid grid-cols-3 gap-2
 // ---------------------------------------------------------------------------
@@ -179,7 +178,7 @@ function BottomStatsSkeleton() {
           {STAT_ROWS.map((stat) => (
             <div
               key={stat.label}
-              className="bg-white p-3 rounded-xl border border-slate-100 flex items-center gap-4 dark:bg-slate-800/50 dark:border-slate-700"
+              className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-4 dark:bg-gray-800/50 dark:border-gray-700"
             >
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${COLOR_CLASSES[stat.color]}`}
@@ -187,7 +186,7 @@ function BottomStatsSkeleton() {
                 {stat.icon}
               </div>
               <div>
-                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">
+                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">
                   {stat.label}
                 </p>
                 <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-0.5" />

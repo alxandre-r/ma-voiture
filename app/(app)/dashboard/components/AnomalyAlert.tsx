@@ -92,12 +92,12 @@ export default function AnomalyAlert({ anomalies }: AnomalyAlertProps) {
   const hasIncrease = anomalies.some((a) => a.direction === 'up');
 
   return (
-    <Card className="border-orange-200 dark:border-orange-800/50">
+    <Card className="border-orange-200 dark:border-orange-300/50">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-orange-100 dark:border-orange-900/30">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-orange-100 dark:border-orange-300/30">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-orange-100 dark:bg-orange-900/40 rounded-lg items-center justify-center flex">
-            <Icon name="conso" size={16} className="text-orange-600 dark:text-orange-400" />
+          <div className="p-1.5 bg-gray-100 dark:bg-gray-900/40 rounded-lg items-center justify-center flex">
+            <Icon name="conso" size={20} />
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">

@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import Icon from '@/components/common/ui/Icon';
 import InfoTooltip from '@/components/common/ui/InfoTooltip';
@@ -55,21 +57,6 @@ function buildMethodDetails(
   ];
 }
 
-function buildFormulaLine(
-  co2Method: 'official' | 'ademe' | 'mixed',
-  totalKilometers: number,
-  co2PerKm: number,
-  totalLiters: number,
-): string {
-  if (co2Method === 'official') {
-    return `${totalKilometers.toLocaleString('fr-FR')} km × ${co2PerKm} g/km ÷ 1 000`;
-  }
-  if (co2Method === 'ademe' && totalLiters > 0) {
-    return `${Math.round(totalLiters)} L × facteurs ADEME 2023`;
-  }
-  return `Facteurs ADEME 2023 (kWh)`;
-}
-
 export default function CarbonFootprint({
   totalCO2Kg,
   co2PerKm,
@@ -82,7 +69,6 @@ export default function CarbonFootprint({
   if (totalCO2Kg === 0 || totalKilometers === 0) return null;
 
   const projectedKm = annualKmProjection > 0 ? annualKmProjection : FR_ANNUAL_KM;
-  const usesUserData = annualKmProjection > 0;
 
   const treeEquivalent = Math.round(totalCO2Kg / KG_PER_TREE_YEAR);
   const annualProjection =
@@ -105,19 +91,20 @@ export default function CarbonFootprint({
     totalLiters,
   );
 
-  const formulaLine = buildFormulaLine(co2Method, totalKilometers, co2PerKm, totalLiters);
-
   // Bar comparison: annualized projection vs FR annual reference
   const barMax = Math.max(annualProjection, FR_ANNUAL_KG) * 1.15;
   const userBarPct = barMax > 0 ? (annualProjection / barMax) * 100 : 0;
   const refBarPct = barMax > 0 ? (FR_ANNUAL_KG / barMax) * 100 : 0;
+
+  // Date
+  const currentYear = new Date().getFullYear();
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg shrink-0 flex items-center justify-center">
-            <Icon name="leaf-green" size={24} className="dark:invert-0" />
+            <Image src="/icons/leaf-green.svg" alt="CO₂" width={24} height={24} />
           </div>
           <CardTitle className="flex items-center gap-1.5">
             Empreinte carbone
@@ -127,7 +114,7 @@ export default function CarbonFootprint({
         <span
           className={`text-xs font-semibold px-2 py-1 rounded-full shrink-0 ${
             isBetterThanAvg
-              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
           }`}
         >
@@ -169,41 +156,42 @@ export default function CarbonFootprint({
               )}
             </p>
 
-            {/* Formula */}
-            <div className="flex items-center gap-1 mt-2">
-              <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">
-                {formulaLine}
-              </span>
-              <InfoTooltip
-                title={`Calcul CO₂ (${methodTitle})`}
-                details={methodDetails}
-                position="below"
-              />
-            </div>
-
-            {/* Rate badge — secondary */}
-            <div className="mt-3 inline-flex items-center gap-2 self-start">
-              <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2 py-1 rounded-md font-mono">
-                {co2PerKm.toFixed(1)} g/km
-              </span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">taux d&apos;émission</span>
-            </div>
+            {/* Tree equivalent */}
+            {treeEquivalent > 0 && (
+              <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <Icon name="leaf" size={14} />
+                <span>
+                  Équivalent à{' '}
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">
+                    {treeEquivalent} arbre{treeEquivalent > 1 ? 's' : ''}
+                  </span>{' '}
+                  à planter pour compenser
+                </span>
+                <InfoTooltip
+                  title="Équivalent arbres"
+                  details={[
+                    `Un arbre absorbe ~${KG_PER_TREE_YEAR} kg CO₂/an (ADEME)`,
+                    `Formule : ${totalCO2Kg} kg ÷ ${KG_PER_TREE_YEAR} kg/arbre`,
+                    `= ${treeEquivalent} arbre${treeEquivalent > 1 ? 's' : ''}`,
+                  ]}
+                  position="above"
+                />
+              </div>
+            )}
           </div>
 
-          {/* ── Right: comparison + equivalences ── */}
+          {/* ── Right: comparison + rate ── */}
           <div className="space-y-4">
             {/* Annual projection comparison bar */}
             {annualProjection > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                  <span className="font-medium">Projection annuelle</span>
+                  <span className="font-medium">Projection {currentYear}</span>
                   <InfoTooltip
                     title="Projection annuelle"
                     details={[
-                      usesUserData
-                        ? `Basé sur ${Math.round(projectedKm).toLocaleString('fr-FR')} km/an (votre projection)`
-                        : `Basé sur ${FR_ANNUAL_KM.toLocaleString('fr-FR')} km/an (distance moy. française)`,
-                      `Formule : ${co2PerKm.toFixed(1)} g/km × ${Math.round(projectedKm).toLocaleString('fr-FR')} km ÷ 1 000`,
+                      `Basé sur ${FR_ANNUAL_KM.toLocaleString('fr-FR')} km/an (distance moy. française)`,
+                      `Formule : ${co2PerKm.toFixed(1)} g/km × ${FR_ANNUAL_KM.toLocaleString('fr-FR')} km ÷ 1 000`,
                       `= ${annualProjection.toLocaleString('fr-FR')} kg CO₂/an`,
                       `Référence : ${FR_ANNUAL_KG.toLocaleString('fr-FR')} kg/an (ADEME)`,
                     ]}
@@ -218,14 +206,14 @@ export default function CarbonFootprint({
                       Votre projection
                     </span>
                     <span
-                      className={`text-xs font-bold tabular-nums ${isBetterThanAvg ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}
+                      className={`text-xs font-bold tabular-nums ${isBetterThanAvg ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
                     >
                       {annualProjection.toLocaleString('fr-FR')} kg/an
                     </span>
                   </div>
-                  <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-100 dark:bg-gray-900/80 rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full ${isBetterThanAvg ? 'bg-emerald-500' : 'bg-red-400'}`}
+                      className={`h-full rounded-full ${isBetterThanAvg ? 'bg-green-500' : 'bg-red-400'}`}
                       style={{ width: `${userBarPct}%` }}
                     />
                   </div>
@@ -239,7 +227,7 @@ export default function CarbonFootprint({
                       {FR_ANNUAL_KG.toLocaleString('fr-FR')} kg/an
                     </span>
                   </div>
-                  <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-100 dark:bg-gray-900/80 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gray-300 dark:bg-gray-600"
                       style={{ width: `${refBarPct}%` }}
@@ -249,29 +237,16 @@ export default function CarbonFootprint({
               </div>
             )}
 
-            {/* Equivalences */}
-            <div className="flex flex-col gap-2 pt-1 border-t border-gray-100 dark:border-gray-800">
-              {treeEquivalent > 0 && (
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <Icon name="leaf" size={14} />
-                  <span>
-                    Équivalent à{' '}
-                    <span className="font-semibold text-gray-700 dark:text-gray-300">
-                      {treeEquivalent} arbre{treeEquivalent > 1 ? 's' : ''}
-                    </span>{' '}
-                    à planter pour compenser
-                  </span>
-                  <InfoTooltip
-                    title="Équivalent arbres"
-                    details={[
-                      `Un arbre absorbe ~${KG_PER_TREE_YEAR} kg CO₂/an (ADEME)`,
-                      `Formule : ${totalCO2Kg} kg ÷ ${KG_PER_TREE_YEAR} kg/arbre`,
-                      `= ${treeEquivalent} arbre${treeEquivalent > 1 ? 's' : ''}`,
-                    ]}
-                    position="above"
-                  />
-                </div>
-              )}
+            {/* Rate badge */}
+            <div className="pt-1 border-t border-gray-100 dark:border-gray-800">
+              <div className="inline-flex items-center gap-2">
+                <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2 py-1 rounded-md font-mono">
+                  {co2PerKm.toFixed(1)} g/km
+                </span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  taux d&apos;émission
+                </span>
+              </div>
             </div>
           </div>
         </div>

@@ -58,9 +58,8 @@ export default function Header({ title, content, onMenuOpen }: HeaderProps) {
         <div className="hidden sm:flex items-center gap-4">
           {content}
           {user && (
-            <Link href="/profile" className="flex items-center gap-2">
-              <ProfilePicture avatarUrl={user.avatar_url} name={user.name} size="sm" />
-              <span className="text-sm text-gray-600 dark:text-gray-400">{user.name}</span>
+            <Link href="/settings" className="flex items-center gap-2">
+              <ProfilePicture avatarUrl={user.avatar_url} name={user.name} size="md" />
             </Link>
           )}
         </div>

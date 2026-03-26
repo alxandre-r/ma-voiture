@@ -71,11 +71,11 @@ export default function StatsCards({
                 >
                   <Icon name={stat.iconName} size={18} />
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 text-center leading-tight">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 text-center leading-tight">
                   {stat.mobileTitle}
                 </p>
                 <p
-                  className={`text-sm font-bold text-center leading-tight truncate w-full px-1 ${stat.valueColor ?? 'text-slate-900 dark:text-slate-100'}`}
+                  className={`text-sm font-bold text-center leading-tight truncate w-full px-1 ${stat.valueColor ?? 'text-gray-900 dark:text-gray-100'}`}
                 >
                   {stat.value}
                 </p>
@@ -96,9 +96,9 @@ export default function StatsCards({
                 <Icon name={stat.iconName} size={24} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{stat.title}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{stat.title}</p>
                 <p
-                  className={`text-xl font-bold truncate ${stat.valueColor ?? 'text-slate-900 dark:text-slate-100'}`}
+                  className={`text-xl font-bold truncate ${stat.valueColor ?? 'text-gray-900 dark:text-gray-100'}`}
                 >
                   {stat.value}
                 </p>

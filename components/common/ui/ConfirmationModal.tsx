@@ -12,7 +12,7 @@ interface ConfirmationModalProps {
   message: string;
   confirmText?: string;
   cancelText?: string;
-  confirmButtonColor?: 'red' | 'primary' | 'neutral';
+  confirmButtonColor?: 'red' | 'primary' | 'gray';
   isLoading?: boolean;
 }
 
@@ -31,7 +31,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const buttonColors = {
     red: 'bg-red-600 hover:bg-red-700',
     primary: 'bg-custom-1 hover:bg-custom-1-hover',
-    neutral: 'bg-gray-600 hover:bg-gray-700',
+    gray: 'bg-gray-600 hover:bg-gray-700',
   };
 
   return (

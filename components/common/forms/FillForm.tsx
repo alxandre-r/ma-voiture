@@ -112,7 +112,8 @@ export default function FillForm({
         <button
           type="button"
           onClick={onCancel}
-          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 flex items-center justify-center
+          dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
           aria-label="Retour"
         >
           <Icon name="arrow-back" size={18} />
@@ -262,7 +263,7 @@ export default function FillForm({
               </>
             ) : (
               <>
-                <Icon name="check" size={16} className="invert" />
+                <Icon name="check" size={16} className="invert dark:invert-0" />
                 Enregistrer
               </>
             )}

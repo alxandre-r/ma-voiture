@@ -33,7 +33,7 @@ export default function StatisticsClient({ vehicles }: StatisticsClientProps) {
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
   const vehicleIds = useMemo(() => vehicles.map((v) => v.vehicle_id), [vehicles]);
 
-  const { expenses, isLoading } = useExpenses(vehicleIds);
+  const { expenses, isLoading, isError } = useExpenses(vehicleIds);
 
   const filteredExpenses = useMemo(
     () => filterExpenses(expenses, selectedVehicleIds, selectedPeriod),
@@ -46,8 +46,19 @@ export default function StatisticsClient({ vehicles }: StatisticsClientProps) {
     [filteredExpenses, expenses, vehicles, selectedVehicleIds, selectedPeriod],
   );
 
-  if (isLoading) {
-    return <Loading />;
+  if (isLoading) return <Loading />;
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Impossible de charger les statistiques.
+        </p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          Vérifiez votre connexion et rechargez la page.
+        </p>
+      </div>
+    );
   }
 
   const vehiclesForChart = selectedVehicleIds.map((id) => {
@@ -75,7 +86,7 @@ export default function StatisticsClient({ vehicles }: StatisticsClientProps) {
         vehicles={vehiclesForChart}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         {stats.vehicleStats.length > 1 && (
           <VehicleComparison vehicleStats={stats.vehicleStats} totalCost={stats.totalCost} />
         )}

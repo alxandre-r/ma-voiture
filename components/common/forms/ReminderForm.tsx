@@ -111,7 +111,8 @@ export default function ReminderForm({
         <button
           type="button"
           onClick={onCancel}
-          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 flex items-center justify-center
+          dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
           aria-label="Retour"
         >
           <Icon name="arrow-back" size={18} />
@@ -215,7 +216,7 @@ export default function ReminderForm({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               set('is_recurring', e.target.checked)
             }
-            className="w-4 h-4 rounded text-orange-500 focus:ring-orange-500"
+            className="w-4 h-4 rounded text-custom-1 focus:ring-custom-1"
           />
           <label
             htmlFor="is_recurring"
@@ -274,7 +275,7 @@ export default function ReminderForm({
               </>
             ) : (
               <>
-                <Icon name="check" size={16} className="invert" />
+                <Icon name="check" size={16} className="invert dark:invert-0" />
                 {isEditing ? 'Enregistrer' : 'Créer le rappel'}
               </>
             )}

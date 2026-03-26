@@ -21,6 +21,7 @@ import Drawer from '@/components/common/ui/Drawer';
 import Icon from '@/components/common/ui/Icon';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
+import { filterByVehiclesAndPeriod } from '@/lib/utils/filterUtils';
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import type { Expense } from '@/types/expense';
@@ -30,24 +31,6 @@ interface MaintenanceClientProps {
   vehicles: VehicleMinimal[];
   vehicleIds: number[];
   initialExpenses: Expense[];
-}
-
-/**
- * Compute cutoff date based on selected period.
- */
-function getCutoffDate(period: string | null) {
-  const now = new Date();
-
-  switch (period) {
-    case 'month':
-      return new Date(now.getFullYear(), now.getMonth(), 1);
-
-    case 'year':
-      return new Date(now.getFullYear(), 0, 1);
-
-    default:
-      return null;
-  }
 }
 
 /**
@@ -133,22 +116,10 @@ function MaintenanceContent({
   /**
    * Filter expenses according to selectors.
    */
-  const filteredExpenses = useMemo(() => {
-    let result = expenses;
-
-    if (selectedVehicleIds.length > 0) {
-      const vehicleSet = new Set(selectedVehicleIds);
-      result = result.filter((e) => vehicleSet.has(e.vehicle_id));
-    }
-
-    const cutoffDate = getCutoffDate(selectedPeriod);
-
-    if (cutoffDate) {
-      result = result.filter((e) => new Date(e.date) >= cutoffDate);
-    }
-
-    return result;
-  }, [expenses, selectedVehicleIds, selectedPeriod]);
+  const filteredExpenses = useMemo(
+    () => filterByVehiclesAndPeriod(expenses, selectedVehicleIds, selectedPeriod),
+    [expenses, selectedVehicleIds, selectedPeriod],
+  );
 
   /**
    * Handlers

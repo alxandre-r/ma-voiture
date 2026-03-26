@@ -98,6 +98,7 @@ function colorFromGrade(grade: HealthGrade): {
  * - Due-soon reminders: −10 each, capped at −20
  * - No recent fill (>6 months, active vehicle): −10
  * - No maintenance in >18 months: −10
+ * - No active insurance contract: −20
  *
  * @param vehicle  The vehicle to score
  * @param options  Optional context data for richer scoring
@@ -107,6 +108,8 @@ export function computeHealthScore(
   options?: {
     reminders?: Reminder[];
     expenses?: Expense[];
+    /** Pass false to apply the no-insurance penalty. undefined = data unavailable (no penalty). */
+    hasActiveInsurance?: boolean;
   },
 ): VehicleHealthScore {
   const factors: HealthFactor[] = [];
@@ -234,6 +237,25 @@ export function computeHealthScore(
         });
       }
     }
+  }
+
+  // ── Insurance ─────────────────────────────────────────────────────────────
+  if (options?.hasActiveInsurance === false) {
+    penalty += 20;
+    factors.push({
+      label: 'Assurance',
+      penalty: 20,
+      status: 'critical',
+      detail: "Aucun contrat d'assurance actif",
+      recommendation: 'Souscrivez à une assurance via la page Assurance',
+    });
+  } else if (options?.hasActiveInsurance === true) {
+    factors.push({
+      label: 'Assurance',
+      penalty: 0,
+      status: 'good',
+      detail: "Contrat d'assurance actif",
+    });
   }
 
   const score = Math.max(0, Math.min(100, 100 - penalty));

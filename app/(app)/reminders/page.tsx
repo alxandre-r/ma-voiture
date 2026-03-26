@@ -31,11 +31,13 @@ async function getFillExpenses(vehicleIds: number[]): Promise<Expense[]> {
 }
 
 export default async function RemindersPage() {
-  const [reminders, vehicles] = await Promise.all([getReminders(), getAllVehicles()]);
-
+  const vehicles = await getAllVehicles();
   const vehicleIds = vehicles.map((v) => v.vehicle_id).filter((id) => id > 0);
 
-  const fillExpenses = await getFillExpenses(vehicleIds);
+  const [reminders, fillExpenses] = await Promise.all([
+    getReminders(vehicleIds),
+    getFillExpenses(vehicleIds),
+  ]);
 
   return (
     <main>

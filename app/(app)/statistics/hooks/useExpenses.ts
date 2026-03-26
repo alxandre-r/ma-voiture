@@ -2,10 +2,17 @@ import { useEffect, useState } from 'react';
 
 import type { Expense } from '@/types/expense';
 
+interface UseExpensesResult {
+  expenses: Expense[];
+  isLoading: boolean;
+  isError: boolean;
+}
+
 /** Fetches all expenses for the given vehicle IDs from the API. */
-export function useExpenses(vehicleIds: number[]): { expenses: Expense[]; isLoading: boolean } {
+export function useExpenses(vehicleIds: number[]): UseExpensesResult {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!vehicleIds.length) {
@@ -13,14 +20,15 @@ export function useExpenses(vehicleIds: number[]): { expenses: Expense[]; isLoad
       return;
     }
 
+    setIsError(false);
     fetch(`/api/expenses/get?vehicleIds=${vehicleIds.join(',')}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.expenses) setExpenses(data.expenses);
       })
-      .catch((err) => console.error('Failed to fetch expenses:', err))
+      .catch(() => setIsError(true))
       .finally(() => setIsLoading(false));
   }, [vehicleIds]);
 
-  return { expenses, isLoading };
+  return { expenses, isLoading, isError };
 }

@@ -47,7 +47,7 @@ export default function PatchnotesSection() {
       ),
       type: 'todo',
     },
-        {
+    {
       version: '1.2.2',
       date: '16 Mars 2026',
       summary: 'Ajout des Rappels, améliorations UX, mobile',
@@ -60,17 +60,15 @@ export default function PatchnotesSection() {
             et peuvent être marqués comme accomplis ou supprimés.
           </li>
           <li>
-            Ajout d&apos;un indicateur de santé du véhicule dans la page de détail du véhicule, 
-            basé sur les données de maintenance (Contrôle technique à jour, entretiens récents, etc).
+            Ajout d&apos;un indicateur de santé du véhicule dans la page de détail du véhicule, basé
+            sur les données de maintenance (Contrôle technique à jour, entretiens récents, etc).
           </li>
           <li>
-            Ajout d&apos;une statistique sur l&apos;empreinte carbone dans la page statistiques, 
-            basée sur les données de consommation et le CO2 émis par litre d&apos;essence/diesel ou kWh consommé
-            par le véhicule (nouveau champ présent dans les données du véhicule).
+            Ajout d&apos;une statistique sur l&apos;empreinte carbone dans la page statistiques,
+            basée sur les données de consommation et le CO2 émis par litre d&apos;essence/diesel ou
+            kWh consommé par le véhicule (nouveau champ présent dans les données du véhicule).
           </li>
-          <li>
-            Amélioration de l&apos;affichage mobile pour l&apos;ajout de dépenses.
-          </li>
+          <li>Amélioration de l&apos;affichage mobile pour l&apos;ajout de dépenses.</li>
         </ul>
       ),
       type: 'minor',

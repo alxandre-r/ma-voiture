@@ -188,7 +188,7 @@ export default function MonthlyExpenseChart({
             <BarChart data={chartData} stackOffset="sign" margin={{ left: -20 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
-                className="dark:stroke-slate-700"
+                className="dark:stroke-gray-700"
                 stroke="#e2e8f0"
                 vertical={false}
               />

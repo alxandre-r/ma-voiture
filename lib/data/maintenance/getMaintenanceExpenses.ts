@@ -3,6 +3,8 @@
  * @fileoverview Server-side function to fetch maintenance expenses directly from the database.
  */
 
+import { cache } from 'react';
+
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import type { Expense } from '@/types/expense';
@@ -15,7 +17,9 @@ import type { Expense } from '@/types/expense';
  * @param vehicleIds - Array of vehicle IDs to filter by. If empty, returns all maintenance expenses.
  * @returns Array of maintenance expense records.
  */
-export async function getMaintenanceExpenses(vehicleIds: number[] = []): Promise<Expense[]> {
+export const getMaintenanceExpenses = cache(async function getMaintenanceExpenses(
+  vehicleIds: number[] = [],
+): Promise<Expense[]> {
   const supabase = await createSupabaseServerClient();
 
   let query = supabase
@@ -36,4 +40,4 @@ export async function getMaintenanceExpenses(vehicleIds: number[] = []): Promise
   }
 
   return expenses || [];
-}
+});

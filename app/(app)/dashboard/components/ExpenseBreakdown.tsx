@@ -89,7 +89,7 @@ export default function ExpenseBreakdown({ expenses }: ExpenseBreakdownProps) {
                   </span>
                 </div>
               </div>
-              <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-100 dark:bg-gray-900/80 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{ width: `${cat.pct}%`, backgroundColor: cat.color }}
@@ -99,7 +99,7 @@ export default function ExpenseBreakdown({ expenses }: ExpenseBreakdownProps) {
           ))}
 
           {/* Total */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
             <span className="text-sm text-gray-500 dark:text-gray-400">Total</span>
             <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
               {formatCurrency(total)}

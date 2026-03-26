@@ -13,12 +13,14 @@ interface GarageVehiclesListProps {
   vehicles: Vehicle[];
   onVehicleClick: (vehicle: Vehicle) => void;
   onAddVehicle: () => void;
+  activeInsuranceVehicleIds?: number[];
 }
 
 export function GarageVehiclesList({
   vehicles,
   onVehicleClick,
   onAddVehicle,
+  activeInsuranceVehicleIds,
 }: GarageVehiclesListProps) {
   return (
     <section>
@@ -37,7 +39,12 @@ export function GarageVehiclesList({
       {vehicles.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {vehicles.map((vehicle) => (
-            <VehicleCard key={vehicle.vehicle_id} vehicle={vehicle} onClick={onVehicleClick} />
+            <VehicleCard
+              key={vehicle.vehicle_id}
+              vehicle={vehicle}
+              onClick={onVehicleClick}
+              hasActiveInsurance={activeInsuranceVehicleIds?.includes(vehicle.vehicle_id)}
+            />
           ))}
         </div>
       ) : (

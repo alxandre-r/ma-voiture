@@ -56,7 +56,7 @@ export default function VehicleComparison({ vehicleStats, totalCost }: VehicleCo
             return (
               <div
                 key={vehicle.vehicleId}
-                className="flex overflow-hidden border border-gray-100 hover:border-orange-500/50 dark:border-gray-700 dark:hover:border-orange-500/50 rounded-lg transition-colors"
+                className="flex overflow-hidden border border-gray-100 hover:border-custom-1 dark:border-gray-700 dark:hover:border-custom-1 rounded-lg transition-colors"
               >
                 {/* Vehicle Image - full left side */}
                 <div className="relative w-24 shrink-0">
@@ -94,7 +94,7 @@ export default function VehicleComparison({ vehicleStats, totalCost }: VehicleCo
                             ? `${vehicleData.make} ${vehicleData.model}`
                             : vehicle.vehicleName}
                         </h4>
-                        <p className="text-base font-bold text-orange-600 dark:text-orange-500">
+                        <p className="text-base font-bold text-custom-1 dark:text-custom-1">
                           {vehicle.cost.toLocaleString('fr-FR', {
                             style: 'currency',
                             currency: 'EUR',

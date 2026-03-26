@@ -148,7 +148,7 @@ export default function BottomStats({
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white p-3 rounded-xl border border-slate-100 flex items-center gap-4 dark:bg-slate-800/50 dark:border-slate-700"
+              className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-4 dark:bg-gray-800/50 dark:border-gray-700"
             >
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${getColorClasses(stat.color)}`}
@@ -156,7 +156,7 @@ export default function BottomStats({
                 {stat.icon}
               </div>
               <div>
-                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">
+                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">
                   {stat.title}
                 </p>
                 <p className="text-lg font-bold">{stat.value}</p>

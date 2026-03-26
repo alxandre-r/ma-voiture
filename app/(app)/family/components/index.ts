@@ -11,7 +11,6 @@ export { default as FamilySharedInfo } from './FamilySharedInfo';
 // UI Components
 export { FamilyInfoUI } from './FamilyInfoUI';
 export { FamilyInfoHeader } from './FamilyInfoHeader';
-export { default as FamilyMembersSection } from './FamilyMembersSection';
 export { FamilyMembersSkeleton } from './FamilyMembersSkeleton';
 
 // Member components

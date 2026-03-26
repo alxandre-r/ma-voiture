@@ -29,7 +29,7 @@ export function VehicleCardSkeleton() {
             </div>
           </h4>
 
-          <div className="h-4 w-20 bg-orange-200 dark:bg-orange-800 rounded mt-1" />
+          <div className="h-4 w-20 custom-1/10 dark:bg-custom-1/30 rounded mt-1" />
         </div>
 
         {/* Stats grid */}

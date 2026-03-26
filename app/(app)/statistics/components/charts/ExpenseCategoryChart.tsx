@@ -34,9 +34,9 @@ const CustomTooltip = ({
   if (active && payload && payload.length) {
     const data = payload[0];
     return (
-      <div className="bg-white dark:bg-slate-800 p-3 z-50 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
-        <p className="font-semibold text-slate-900 dark:text-slate-100">{data.name}</p>
-        <p className="text-sm text-slate-500">{formatCurrency(data.value)}</p>
+      <div className="bg-white dark:bg-gray-800 p-3 z-50 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <p className="font-semibold text-gray-900 dark:text-gray-100">{data.name}</p>
+        <p className="text-sm text-gray-500">{formatCurrency(data.value)}</p>
       </div>
     );
   }
@@ -84,10 +84,10 @@ export default function ExpenseCategoryChart({ data, totalCost }: ExpenseCategor
 
             {/* Center text */}
             <div className="absolute flex flex-col items-center pointer-events-none">
-              <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
+              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {totalCost > 0 ? formatCurrency(totalCost) : '0 €'}
               </p>
-              <p className="text-[8px] sm:text-[10px] text-slate-500 uppercase tracking-wider">
+              <p className="text-[8px] sm:text-[10px] text-gray-500 uppercase tracking-wider">
                 Total
               </p>
             </div>
@@ -104,7 +104,7 @@ export default function ExpenseCategoryChart({ data, totalCost }: ExpenseCategor
                       className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0"
                       style={{ backgroundColor: item.color }}
                     />
-                    <p className="text-slate-600 dark:text-slate-400 truncate">{item.name}</p>
+                    <p className="text-gray-600 dark:text-gray-400 truncate">{item.name}</p>
                   </div>
                 ))}
               </div>
@@ -116,10 +116,10 @@ export default function ExpenseCategoryChart({ data, totalCost }: ExpenseCategor
                     key={`data-${index}`}
                     className="flex items-center justify-end gap-1 text-xs sm:text-sm"
                   >
-                    <p className="text-slate-900 dark:text-slate-100 font-bold">
+                    <p className="text-gray-900 dark:text-gray-100 font-bold">
                       {formatCurrency(item.value)}
                     </p>
-                    <p className="text-slate-500 dark:text-slate-400">
+                    <p className="text-gray-500 dark:text-gray-400">
                       ({item.percentage.toFixed(1)}%)
                     </p>
                   </div>

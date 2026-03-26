@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import React from 'react';
 
 import { getAllExpenses } from '@/lib/data/expenses';
+import { getActiveInsuranceVehicleIds } from '@/lib/data/insurance/getActiveInsuranceVehicleIds';
 import { getReminders } from '@/lib/data/reminders';
 import { getAllVehicles } from '@/lib/data/vehicles';
 
@@ -18,9 +19,10 @@ export default async function DashboardPage() {
 
   const vehicleIds = vehicles.map((v) => v.vehicle_id).filter((id) => id > 0);
 
-  const [expenses, reminders] = await Promise.all([
+  const [expenses, reminders, activeInsuranceVehicleIds] = await Promise.all([
     getAllExpenses(vehicleIds) as Promise<Expense[]>,
     getReminders() as Promise<Reminder[]>,
+    getActiveInsuranceVehicleIds(vehicleIds),
   ]);
 
   // Fill expenses for smart prediction in widget
@@ -33,6 +35,7 @@ export default async function DashboardPage() {
         expenses={expenses}
         reminders={reminders}
         fillExpenses={fillExpenses}
+        activeInsuranceVehicleIds={activeInsuranceVehicleIds}
       />
     </main>
   );

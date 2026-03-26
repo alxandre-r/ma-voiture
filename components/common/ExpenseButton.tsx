@@ -78,7 +78,7 @@ export default function ExpenseButton({
           onClick={() => handleSelect('fill')}
           className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
         >
-          <Icon name="conso" size={20} className="text-orange-500" />
+          <Icon name="conso" size={20} />
           <div>
             <div className="font-medium text-gray-900 dark:text-gray-100">Plein de carburant</div>
             <div className="text-xs text-gray-500 dark:text-gray-400">

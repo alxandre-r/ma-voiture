@@ -2,17 +2,17 @@
 
 import { useMemo } from 'react';
 
-
 import EmptyReminders from '@/app/(app)/reminders/components/EmptyReminders';
 import OverdueReminders from '@/app/(app)/reminders/components/OverdueReminders';
-import ReminderForm from '@/app/(app)/reminders/components/ReminderForm';
 import UpcomingReminders from '@/app/(app)/reminders/components/UpcomingReminders';
 import { useRemindersPage } from '@/app/(app)/reminders/hooks/useRemindersPage';
+import ReminderForm from '@/components/common/forms/ReminderForm';
 import Drawer from '@/components/common/ui/Drawer';
 import Icon from '@/components/common/ui/Icon';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useReminderActions } from '@/hooks/reminders/useReminderActions';
+import { getPeriodCutoff } from '@/lib/utils/filterUtils';
 import { enrichReminder, sortReminders } from '@/lib/utils/reminderUtils';
 
 import type { Expense } from '@/types/expense';
@@ -52,21 +52,16 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
   }, [reminders, vehicles, fillExpenses]);
 
   const filteredReminders = useMemo(() => {
-    let result = enrichedReminders;
+    let result =
+      selectedVehicleIds.length > 0
+        ? enrichedReminders.filter(
+            (r) => r.vehicle_id != null && selectedVehicleIds.includes(r.vehicle_id),
+          )
+        : enrichedReminders;
 
-    if (selectedVehicleIds.length > 0) {
-      result = result.filter(
-        (r) => r.vehicle_id != null && selectedVehicleIds.includes(r.vehicle_id),
-      );
-    }
-
-    if (selectedPeriod && selectedPeriod !== 'all') {
-      const now = new Date();
-      const cutoffDate =
-        selectedPeriod === 'month'
-          ? new Date(now.getFullYear(), now.getMonth(), 1)
-          : new Date(now.getFullYear(), 0, 1);
-      result = result.filter((r) => !r.due_date || new Date(r.due_date) >= cutoffDate);
+    const cutoff = getPeriodCutoff(selectedPeriod);
+    if (cutoff) {
+      result = result.filter((r) => !r.due_date || new Date(r.due_date) >= cutoff);
     }
 
     return result;

@@ -44,7 +44,7 @@ export default function useAccountActions({ user, showNotification }: UseAccount
 
     const previousUser = localUser;
 
-    // Optimistic update
+    // Optigrayic update
     setLocalUser((u) => ({
       ...u,
       name,

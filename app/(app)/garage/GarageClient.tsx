@@ -29,6 +29,7 @@ interface GarageClientProps {
   familyVehicles?: Vehicle[] | null;
   familyMembers?: FamilyMemberDisplay[] | null;
   expenses?: Expense[];
+  activeInsuranceVehicleIds?: number[];
 }
 
 export default function GarageClient({
@@ -36,6 +37,7 @@ export default function GarageClient({
   familyVehicles,
   familyMembers,
   expenses,
+  activeInsuranceVehicleIds,
 }: GarageClientProps) {
   const searchParams = useSearchParams();
 
@@ -111,6 +113,7 @@ export default function GarageClient({
         isFamilyVehicle={isFamilyVehicle(selectedVehicle)}
         owner={detailOwnerInfo ?? undefined}
         expenses={expenses}
+        hasActiveInsurance={activeInsuranceVehicleIds?.includes(selectedVehicle.vehicle_id)}
       />
     );
   }
@@ -134,6 +137,7 @@ export default function GarageClient({
         vehicles={personalVehicles}
         onVehicleClick={handleVehicleClick}
         onAddVehicle={handleAddNew}
+        activeInsuranceVehicleIds={activeInsuranceVehicleIds}
       />
 
       {/* Section: Véhicules de la Famille */}

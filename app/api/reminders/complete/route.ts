@@ -1,3 +1,4 @@
+import { addMonths } from 'date-fns';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -5,6 +6,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 /**
  * PATCH /api/reminders/complete
  * Toggle is_completed on a reminder.
+ * If the reminder is recurring and is being marked as done,
+ * automatically creates the next occurrence.
  */
 export async function PATCH(request: Request) {
   const supabase = await createSupabaseServerClient();
@@ -26,7 +29,20 @@ export async function PATCH(request: Request) {
 
     const is_completed = body.is_completed ?? true;
 
-    const { data, error } = await supabase
+    // Fetch the full reminder to check recurrence fields
+    const { data: reminder, error: fetchError } = await supabase
+      .from('reminders')
+      .select('*')
+      .eq('id', body.id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (fetchError || !reminder) {
+      return NextResponse.json({ error: 'Rappel introuvable' }, { status: 404 });
+    }
+
+    // Mark the reminder as completed
+    const { data: updated, error: updateError } = await supabase
       .from('reminders')
       .update({
         is_completed,
@@ -37,15 +53,56 @@ export async function PATCH(request: Request) {
       .select()
       .single();
 
-    if (error) {
-      console.error('Error completing reminder:', error);
+    if (updateError) {
+      console.error('Error completing reminder:', updateError);
       return NextResponse.json(
         { error: 'Erreur lors de la mise à jour du rappel' },
         { status: 500 },
       );
     }
 
-    return NextResponse.json({ reminder: data });
+    // Create the next occurrence if the reminder is recurring and being marked as done
+    if (
+      is_completed &&
+      reminder.is_recurring &&
+      reminder.recurrence_type &&
+      reminder.recurrence_value
+    ) {
+      let nextDueDate: string | null = null;
+      let nextDueOdometer: number | null = null;
+
+      if (reminder.recurrence_type === 'time') {
+        const base = reminder.due_date ? new Date(reminder.due_date) : new Date();
+        nextDueDate = addMonths(base, reminder.recurrence_value).toISOString();
+      } else if (reminder.recurrence_type === 'km' && reminder.vehicle_id) {
+        // Fetch the vehicle's current odometer
+        const { data: vehicle } = await supabase
+          .from('vehicles')
+          .select('odometer')
+          .eq('id', reminder.vehicle_id)
+          .single();
+
+        const baseOdometer = vehicle?.odometer ?? reminder.due_odometer ?? 0;
+        nextDueOdometer = baseOdometer + reminder.recurrence_value;
+      }
+
+      await supabase.from('reminders').insert({
+        user_id: user.id,
+        vehicle_id: reminder.vehicle_id,
+        type: reminder.type,
+        title: reminder.title,
+        description: reminder.description,
+        due_date: nextDueDate,
+        due_odometer: nextDueOdometer,
+        is_recurring: true,
+        recurrence_type: reminder.recurrence_type,
+        recurrence_value: reminder.recurrence_value,
+        maintenance_type_id: reminder.maintenance_type_id,
+        is_completed: false,
+      });
+    }
+
+    return NextResponse.json({ reminder: updated });
   } catch {
     return NextResponse.json({ error: 'Erreur serveur inattendue' }, { status: 500 });
   }

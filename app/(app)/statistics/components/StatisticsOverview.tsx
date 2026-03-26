@@ -101,7 +101,7 @@ export default function StatisticsOverview({
           ? 'text-red-500'
           : trendPercentage < 0
             ? 'text-green-500'
-            : 'text-slate-500',
+            : 'text-gray-500',
       sub:
         costPerKm > 0 && totalKilometers > 0
           ? `~${costPerKm.toFixed(3).replace('.', ',')} €/km · ${totalKilometers.toLocaleString('fr-FR')} km`
@@ -133,7 +133,7 @@ export default function StatisticsOverview({
             title: 'Moyenne / mois',
             value: `${(totalCost / displayPeriodMonths).toFixed(0)} €/mois`,
             trend: undefined,
-            trendColor: 'text-slate-500',
+            trendColor: 'text-gray-500',
             footer: `Sur ${displayPeriodMonths} mois`,
             valueTooltip: {
               title: 'Moyenne mensuelle',
@@ -151,7 +151,7 @@ export default function StatisticsOverview({
       key: 'projection' as CardKey,
       title: `Projection ${currentYear}`,
       value: `${Math.round(annualProjection).toLocaleString('fr-FR')} €`,
-      trendColor: 'text-slate-500',
+      trendColor: 'text-gray-500',
       sub:
         annualKmProjection > 0
           ? `~${Math.round(annualKmProjection).toLocaleString('fr-FR')} km projetés`
@@ -163,9 +163,7 @@ export default function StatisticsOverview({
           `Moyenne mensuelle: ${(annualProjection / 12).toFixed(2)} €/mois`,
           `Projection: ${annualProjection.toFixed(2)} €`,
           ...(annualKmProjection > 0
-            ? [
-                `Distance projetée : ~${Math.round(annualKmProjection).toLocaleString('fr-FR')} km`,
-              ]
+            ? [`Distance projetée : ~${Math.round(annualKmProjection).toLocaleString('fr-FR')} km`]
             : []),
         ],
       },
@@ -210,7 +208,7 @@ function StatCard({
           <CardTitle className="text-xs text-gray-500">{stat.title}</CardTitle>
           <div className="flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-4 mt-1">
             <h3
-              className="font-bold text-slate-900 dark:text-slate-100 cursor-help hover:underline decoration-dashed text-lg"
+              className="font-bold text-gray-900 dark:text-gray-100 cursor-help hover:underline decoration-dashed text-lg"
               onMouseEnter={() => showTooltip(stat.key, stat.valueTooltip)}
               onMouseLeave={hideTooltip}
             >
@@ -239,7 +237,7 @@ function StatCard({
             </div>
           </div>
           {stat.sub && (
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{stat.sub}</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{stat.sub}</p>
           )}
         </CardHeader>
       </Card>
@@ -251,11 +249,11 @@ function StatCard({
 
 function Tooltip({ tooltipData }: { tooltipData: TooltipData }) {
   return (
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 z-50">
-      <div className="bg-slate-900 dark:bg-slate-700 text-white p-4 rounded-lg shadow-xl max-w-xs">
+    <div className="absolute top-full left-1/2 -trangray-x-1/2 mt-4 z-50">
+      <div className="bg-gray-900 dark:bg-gray-700 text-white p-4 rounded-lg shadow-xl max-w-xs">
         <p className="font-semibold text-sm mb-2">{tooltipData.title}</p>
 
-        <ul className="text-xs text-slate-300 space-y-1">
+        <ul className="text-xs text-gray-300 space-y-1">
           {tooltipData.details.map((detail, index) => (
             <li key={index}>{detail}</li>
           ))}

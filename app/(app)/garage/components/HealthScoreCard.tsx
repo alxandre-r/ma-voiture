@@ -70,6 +70,7 @@ const METHODOLOGY_DETAILS = [
   'Rappel imminent : −10 pts (max −20)',
   'Pas de plein depuis 6 mois : −10 pts',
   "Pas d'entretien depuis 18 mois : −10 pts",
+  "Pas d'assurance active : −20 pts",
   '─────────────────────',
   'Les données manquantes ne sont pas prises en compte.',
 ];
@@ -97,7 +98,7 @@ export default function HealthScoreCard({ health }: HealthScoreCardProps) {
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
               />
             </svg>
-            Score de santé
+            État du véhicule
             <InfoTooltip
               title="Comment est calculé ce score ?"
               details={METHODOLOGY_DETAILS}

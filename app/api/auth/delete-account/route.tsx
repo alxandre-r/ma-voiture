@@ -25,8 +25,9 @@ export async function POST() {
     const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id);
 
     if (error) {
+      console.error('Delete account error:', error.message);
       return NextResponse.json(
-        { error: 'Erreur lors de la suppression du compte. DEBUG: ' + error.message },
+        { error: 'Erreur lors de la suppression du compte.' },
         { status: 500 },
       );
     }
@@ -36,9 +37,7 @@ export async function POST() {
 
     return NextResponse.json({ message: 'Compte supprimé avec succès' }, { status: 200 });
   } catch (err) {
-    return NextResponse.json(
-      { error: 'Erreur serveur: ' + (err as Error).message },
-      { status: 500 },
-    );
+    console.error('Delete account unexpected error:', err);
+    return NextResponse.json({ error: 'Erreur serveur inattendue.' }, { status: 500 });
   }
 }

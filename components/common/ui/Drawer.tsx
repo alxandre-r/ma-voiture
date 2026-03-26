@@ -48,7 +48,7 @@ export default function Drawer({ isOpen, onClose, children }: DrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-            className="fixed inset-y-0 right-0 z-60 w-full lg:w-[760px] bg-gray-50 dark:bg-gray-900 overflow-y-auto shadow-2xl"
+            className="fixed inset-y-0 right-0 z-60 w-full lg:w-[760px] bg-gray-50 dark:bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 overflow-y-auto shadow-2xl"
           >
             <div className="p-4 sm:p-6">{children}</div>
           </motion.div>

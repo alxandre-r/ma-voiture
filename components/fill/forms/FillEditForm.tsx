@@ -79,7 +79,7 @@ export default function FillEditForm({
               className="w-full px-3 py-2 pr-8 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500"
               placeholder="0.00"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+            <span className="absolute right-3 top-1/2 -trangray-y-1/2 text-gray-500">€</span>
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export default function FillEditForm({
               placeholder="0"
               className="w-full px-3 py-2 pr-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+            <span className="absolute right-3 top-1/2 -trangray-y-1/2 text-gray-500 text-xs">
               km
             </span>
           </div>
@@ -123,7 +123,7 @@ export default function FillEditForm({
                 placeholder="0.00"
                 className="w-full px-3 py-2 pr-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <span className="absolute right-3 top-1/2 -trangray-y-1/2 text-gray-500 text-xs">
                 L
               </span>
             </div>
@@ -148,7 +148,7 @@ export default function FillEditForm({
                 placeholder="0.000"
                 className="w-full px-3 py-2 pr-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs">
+              <span className="absolute right-3 top-1/2 -trangray-y-1/2 text-gray-500 text-xs">
                 €/L
               </span>
             </div>

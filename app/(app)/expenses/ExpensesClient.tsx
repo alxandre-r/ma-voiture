@@ -1,11 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 import ExpenseList from '@/app/(app)/expenses/components/ExpenseList';
 import { useExpenseActions } from '@/app/(app)/expenses/hooks/useExpenseActions';
-import Loading from '@/app/(app)/expenses/loading';
 import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import ExpenseButton from '@/components/common/ExpenseButton';
 import FillForm from '@/components/common/forms/FillForm';
@@ -16,6 +15,7 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useFillActions } from '@/hooks/fill/useFillActions';
+import { filterByVehiclesAndPeriod } from '@/lib/utils/filterUtils';
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import type { ExpenseType } from '@/components/common/ExpenseButton';
@@ -25,6 +25,7 @@ import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 interface ExpensesClientProps {
   vehicles: (Vehicle | VehicleMinimal)[];
+  initialExpenses: Expense[];
 }
 
 type EditFormType = 'fill' | 'maintenance' | null;
@@ -32,7 +33,13 @@ type EditFormType = 'fill' | 'maintenance' | null;
 /**
  * Expenses content component that uses shared selectors.
  */
-function ExpensesContent({ vehicles }: { vehicles: (Vehicle | VehicleMinimal)[] }) {
+function ExpensesContent({
+  vehicles,
+  initialExpenses,
+}: {
+  vehicles: (Vehicle | VehicleMinimal)[];
+  initialExpenses: Expense[];
+}) {
   const router = useRouter();
   const user = useUser();
 
@@ -49,9 +56,7 @@ function ExpensesContent({ vehicles }: { vehicles: (Vehicle | VehicleMinimal)[] 
   const [showAddFillForm, setShowAddFillForm] = useState(false);
   const [showAddMaintenanceForm, setShowAddMaintenanceForm] = useState(false);
 
-  // Client-side data fetching
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [expenses] = useState<Expense[]>(initialExpenses);
 
   const { showError } = useNotifications();
   const { deleteExpense } = useExpenseActions();
@@ -59,68 +64,11 @@ function ExpensesContent({ vehicles }: { vehicles: (Vehicle | VehicleMinimal)[] 
   const { addMaintenance } = useMaintenanceActions();
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
-  // Get all vehicle IDs as an array (fetch all data once)
-  const vehicleIds = useMemo(
-    () => vehicles.map((v) => (v as Vehicle | VehicleMinimal).vehicle_id).filter((id) => id > 0),
-    [vehicles],
-  );
-
-  // Fetch ALL expenses from API on client-side (once, with all vehicles)
-  useEffect(() => {
-    const fetchData = async () => {
-      if (vehicleIds.length === 0) {
-        setExpenses([]);
-        setIsLoadingData(false);
-        return;
-      }
-
-      try {
-        const vehicleIdsParam = vehicleIds.join(',');
-
-        // Fetch ALL expenses for all vehicles
-        const expensesResponse = await fetch(`/api/expenses/get?vehicleIds=${vehicleIdsParam}`);
-        const expensesData = await expensesResponse.json();
-
-        if (expensesData.expenses) {
-          setExpenses(expensesData.expenses);
-        }
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setIsLoadingData(false);
-      }
-    };
-
-    fetchData();
-  }, [vehicleIds]);
-
   // Filter expenses by selected vehicles and period (client-side)
-  const filteredExpenses = useMemo(() => {
-    let result = [...expenses];
-
-    // Filter by selected vehicles
-    if (selectedVehicleIds.length > 0) {
-      result = result.filter((e) => selectedVehicleIds.includes(e.vehicle_id));
-    }
-
-    // Filter by period
-    if (selectedPeriod && selectedPeriod !== 'all') {
-      const now = new Date();
-      let cutoffDate: Date;
-
-      if (selectedPeriod === 'month') {
-        cutoffDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      } else if (selectedPeriod === 'year') {
-        cutoffDate = new Date(now.getFullYear(), 0, 1);
-      } else {
-        cutoffDate = new Date(0);
-      }
-
-      result = result.filter((e) => new Date(e.date) >= cutoffDate);
-    }
-
-    return result;
-  }, [expenses, selectedVehicleIds, selectedPeriod]);
+  const filteredExpenses = useMemo(
+    () => filterByVehiclesAndPeriod(expenses, selectedVehicleIds, selectedPeriod),
+    [expenses, selectedVehicleIds, selectedPeriod],
+  );
 
   // Handle successful operations - refresh SSR data
   const handleSuccess = () => {
@@ -343,11 +291,6 @@ function ExpensesContent({ vehicles }: { vehicles: (Vehicle | VehicleMinimal)[] 
     );
   }
 
-  // Early return for loading state - must be after all hooks
-  if (isLoadingData) {
-    return <Loading />;
-  }
-
   return (
     <div className="space-y-6">
       {/* Add expense button — desktop right-aligned + mobile FAB, both handled by ExpenseButton */}
@@ -446,6 +389,6 @@ function ExpensesContent({ vehicles }: { vehicles: (Vehicle | VehicleMinimal)[] 
  * Expenses client component with shared selectors.
  * SelectorsProvider is provided by the root layout.
  */
-export default function ExpensesClient({ vehicles }: ExpensesClientProps) {
-  return <ExpensesContent vehicles={vehicles} />;
+export default function ExpensesClient({ vehicles, initialExpenses }: ExpensesClientProps) {
+  return <ExpensesContent vehicles={vehicles} initialExpenses={initialExpenses} />;
 }

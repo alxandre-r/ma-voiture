@@ -16,6 +16,7 @@ import { computeHealthScore } from '@/lib/utils/vehicleHealthUtils';
 import { ConfirmationModal } from '../../../../components/common/ui/ConfirmationModal';
 
 import HealthScoreCard from './HealthScoreCard';
+import InsuranceSection from './InsuranceSection';
 
 import type { Expense } from '@/types/expense';
 import type { Reminder } from '@/types/reminder';
@@ -35,6 +36,7 @@ interface VehicleDetailProps {
   owner?: VehicleOwner;
   expenses?: Expense[];
   reminders?: Reminder[];
+  hasActiveInsurance?: boolean;
 }
 
 export default function VehicleDetail({
@@ -45,6 +47,7 @@ export default function VehicleDetail({
   owner,
   expenses,
   reminders,
+  hasActiveInsurance,
 }: VehicleDetailProps) {
   const { showSuccess, showError } = useNotifications();
   const router = useRouter();
@@ -97,7 +100,7 @@ export default function VehicleDetail({
 
   const vehicleImage = vehicle.image;
   const vehicleName = vehicle.name || (vehicle.make ? `${vehicle.make} ${vehicle.model}` : '');
-  const health = computeHealthScore(vehicle, { expenses, reminders });
+  const health = computeHealthScore(vehicle, { expenses, reminders, hasActiveInsurance });
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -263,22 +266,7 @@ export default function VehicleDetail({
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Icon name="secure" size={18} className="text-gray-500" /> Assurance
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <CardRow label="Date de début" value={formatDate(vehicle.insurance_start_date)} />
-            <CardRow
-              label="Coût mensuel"
-              value={
-                vehicle.insurance_monthly_cost ? `${vehicle.insurance_monthly_cost} €/mois` : '—'
-              }
-            />
-          </CardContent>
-        </Card>
+        <InsuranceSection vehicleId={vehicle.vehicle_id} isFamilyVehicle={isFamilyVehicle} />
 
         <Card>
           <CardHeader className="pb-3">

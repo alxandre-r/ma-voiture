@@ -20,6 +20,7 @@ const MENU_ITEMS: MenuItem[] = [
   { name: 'Dépenses', path: '/expenses', icon: '/icons/euro.svg' },
   { name: 'Maintenance', path: '/maintenance', icon: '/icons/tool.svg' },
   { name: 'Rappels', path: '/reminders', icon: '/icons/bell.svg' },
+  { name: 'Assurance', path: '/insurance', icon: '/icons/secure.svg' },
   { name: 'Garage', path: '/garage', icon: '/icons/garage.svg' },
   { name: 'Famille', path: '/family', icon: '/icons/family.svg' },
 ];

@@ -79,8 +79,8 @@ const CustomTooltip = ({
 }) => {
   if (!active || !payload?.length || label === undefined) return null;
   return (
-    <div className="bg-white dark:bg-slate-800 p-3 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700">
-      <p className="font-semibold text-slate-900 dark:text-slate-100 mb-2">{fmtFullDate(label)}</p>
+    <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+      <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">{fmtFullDate(label)}</p>
       {payload.map((entry, i) => (
         <p key={i} className="text-sm" style={{ color: entry.color }}>
           {entry.name} :{' '}
@@ -99,7 +99,7 @@ const CustomTooltip = ({
 // ---------------------------------------------------------------------------
 
 export default function OdometerEvolutionChart({ series }: OdometerEvolutionChartProps) {
-  const [mode, setMode] = useState<ChartMode>('absolute');
+  const [mode, setMode] = useState<ChartMode>('relative');
 
   const hasData = series.some((s) => s.entries?.length > 0);
 
@@ -188,7 +188,7 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
             <LineChart data={chartData} margin={{ left: -10, right: 10 }}>
               <CartesianGrid
                 strokeDasharray="3 3"
-                className="dark:stroke-slate-700"
+                className="dark:stroke-gray-700"
                 stroke="#e2e8f0"
                 vertical={false}
               />
@@ -229,7 +229,7 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
                           className="w-2 h-2 sm:w-3 sm:h-3 rounded-full"
                           style={{ backgroundColor: s.color || '#6B7280' }}
                         />
-                        <span className="text-slate-600 dark:text-slate-400 text-xs">{s.name}</span>
+                        <span className="text-gray-600 dark:text-gray-400 text-xs">{s.name}</span>
                       </div>
                     ))}
                   </div>

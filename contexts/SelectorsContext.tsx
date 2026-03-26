@@ -1,9 +1,11 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo  } from 'react';
+
 
 import type { PeriodType } from '@/types/period';
 import type { VehicleMinimal } from '@/types/vehicle';
+import type {ReactNode} from 'react';
 
 interface SelectorsContextType {
   // Vehicles list
@@ -52,10 +54,15 @@ export function SelectorsProvider({ children, initialVehicles }: SelectorsProvid
 
       if (storedVehicleIds) {
         const parsed = JSON.parse(storedVehicleIds) as number[];
-        // Validate against current vehicles
+        // Keep previously-selected IDs that still exist
         const validIds = parsed.filter((id) => initialVehicles.some((v) => v.vehicle_id === id));
-        if (validIds.length > 0) {
-          setSelectedVehicleIdsState(validIds);
+        // Auto-select any new vehicles (e.g. family vehicles added since last visit)
+        const newIds = initialVehicles
+          .map((v) => v.vehicle_id)
+          .filter((id) => !parsed.includes(id));
+        const merged = [...validIds, ...newIds];
+        if (merged.length > 0) {
+          setSelectedVehicleIdsState(merged);
         }
       }
 

@@ -19,6 +19,7 @@ interface VehicleCardProps {
   onClick?: (vehicle: Vehicle) => void;
   isFamilyVehicle?: boolean;
   owner?: VehicleOwner;
+  hasActiveInsurance?: boolean;
 }
 
 export default function VehicleCard({
@@ -26,6 +27,7 @@ export default function VehicleCard({
   onClick,
   isFamilyVehicle,
   owner,
+  hasActiveInsurance,
 }: VehicleCardProps) {
   // Handle card click - use callback instead of navigation
   const handleClick = () => {
@@ -35,13 +37,13 @@ export default function VehicleCard({
   };
 
   const vehicleImage = vehicle.image;
-  const health = computeHealthScore(vehicle);
+  const health = computeHealthScore(vehicle, { hasActiveInsurance });
 
   return (
     <div
       className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm 
       dark:bg-gray-800 dark:border-gray-700
-      hover:shadow-md transition-shadow hover:-translate-y-1 hover:border-custom-1/70 cursor-pointer transition-transform"
+      hover:shadow-md transition-shadow hover:-trangray-y-1 hover:border-custom-1/70 cursor-pointer transition-transform"
       onClick={handleClick}
     >
       {/* Click to view details - the whole card is clickable */}
@@ -70,9 +72,9 @@ export default function VehicleCard({
         <div className="absolute bottom-3 left-3">
           <span
             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold backdrop-blur-sm ${health.bgClass} ${health.textClass}`}
-            title={`Score santé : ${health.score}/100`}
+            title={`État du véhicule : ${health.score}/100`}
           >
-            <span>Santé</span>
+            <span>État</span>
             <span className={`font-black tabular-nums ${health.textClass}`}>{health.score}</span>
             <span className="font-normal opacity-60 text-[10px]">/100</span>
           </span>
@@ -107,7 +109,7 @@ export default function VehicleCard({
               ></div>
             </div>
           </h4>
-          <span className="text-xs font-mono font-bold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded inline-block mt-1">
+          <span className="text-xs font-mono font-bold text-custom-1 bg-custom-1/10 px-2 py-0.5 rounded inline-block mt-1">
             {vehicle.plate || '—'}
           </span>
         </div>
@@ -141,10 +143,10 @@ export default function VehicleCard({
           {vehicle.co2_emission != null && (
             <div className="col-span-2 flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
               <span className="text-[10px] text-gray-400 font-bold uppercase flex items-center gap-1">
-                <Icon name="leaf-green" size={12} className="dark:invert-0" />
+                <Image src="icons/leaf-green.svg" alt="CO₂" width={14} height={14} />
                 CO₂ homologué
               </span>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-sm font-bold text-green-600 dark:text-green-600">
                 {vehicle.co2_emission} g/km
               </span>
             </div>

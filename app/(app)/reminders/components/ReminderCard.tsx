@@ -161,10 +161,10 @@ export default function ReminderCard({
           {/* Recurrence */}
           {reminder.is_recurring && reminder.recurrence_value && reminder.recurrence_type && (
             <span className="flex items-center gap-1">
-              <Icon name="arrow-curved" size={14} />
+              <Icon name="history" size={14} />
               {reminder.recurrence_type === 'km'
-                ? `/ ${reminder.recurrence_value.toLocaleString('fr-FR')} km`
-                : `/ ${reminder.recurrence_value} mois`}
+                ? `Tous les ${reminder.recurrence_value.toLocaleString('fr-FR')} km`
+                : `Tous les ${reminder.recurrence_value} mois`}
             </span>
           )}
         </div>

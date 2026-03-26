@@ -22,7 +22,7 @@ export default function InfoTooltip({
   const [visible, setVisible] = useState(false);
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({
     left: '50%',
-    transform: 'translateX(-50%)',
+    transform: 'trangrayX(-50%)',
   });
   const triggerRef = useRef<HTMLSpanElement>(null);
 
@@ -42,7 +42,7 @@ export default function InfoTooltip({
 
   const handleMouseLeave = () => {
     setVisible(false);
-    setPopupStyle({ left: '50%', transform: 'translateX(-50%)' });
+    setPopupStyle({ left: '50%', transform: 'trangrayX(-50%)' });
   };
 
   return (
@@ -70,9 +70,9 @@ export default function InfoTooltip({
           className={`absolute z-50 ${position === 'above' ? 'bottom-full mb-2' : 'top-full mt-2'}`}
           style={{ display: 'block', ...popupStyle }}
         >
-          <span className="block bg-slate-900 dark:bg-slate-700 text-white p-4 rounded-lg shadow-xl w-64 pointer-events-none">
+          <span className="block bg-gray-900 dark:bg-gray-700 text-white p-4 rounded-lg shadow-xl w-64 pointer-events-none">
             <span className="block font-semibold text-sm mb-2">{title}</span>
-            <span className="block text-xs text-slate-300">
+            <span className="block text-xs text-gray-300">
               {details.map((detail, i) => (
                 <span key={i} className="block leading-relaxed">
                   {detail}

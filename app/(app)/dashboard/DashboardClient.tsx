@@ -12,16 +12,17 @@ import {
 import AnomalyAlert from '@/app/(app)/dashboard/components/AnomalyAlert';
 import RemindersWidget from '@/app/(app)/dashboard/components/RemindersWidget';
 import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
-import ReminderForm from '@/app/(app)/reminders/components/ReminderForm';
 import ExpenseButton from '@/components/common/ExpenseButton';
 import FillForm from '@/components/common/forms/FillForm';
 import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
+import ReminderForm from '@/components/common/forms/ReminderForm';
 import Drawer from '@/components/common/ui/Drawer';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useFillActions } from '@/hooks/fill/useFillActions';
 import { useReminderActions } from '@/hooks/reminders/useReminderActions';
 import { detectAnomalies } from '@/lib/utils/anomalyUtils';
+import { getPeriodCutoff } from '@/lib/utils/filterUtils';
 import { enrichReminder } from '@/lib/utils/reminderUtils';
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
@@ -36,9 +37,16 @@ interface DashboardClientProps {
   expenses: Expense[];
   reminders: Reminder[];
   fillExpenses: Expense[];
+  activeInsuranceVehicleIds?: number[];
 }
 
-function DashboardContent({ vehicles, expenses, reminders, fillExpenses }: DashboardClientProps) {
+function DashboardContent({
+  vehicles,
+  expenses,
+  reminders,
+  fillExpenses,
+  activeInsuranceVehicleIds,
+}: DashboardClientProps) {
   const router = useRouter();
   const user = useUser();
   const currentUserId = user?.id;
@@ -54,24 +62,9 @@ function DashboardContent({ vehicles, expenses, reminders, fillExpenses }: Dashb
   const { creating, createReminder } = useReminderActions();
 
   const filteredExpenses = useMemo(() => {
-    let result = expenses.filter((e) => selectedVehicleIds.includes(e.vehicle_id));
-
-    if (selectedPeriod && selectedPeriod !== 'all') {
-      const now = new Date();
-      let cutoffDate: Date;
-
-      if (selectedPeriod === 'month') {
-        cutoffDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      } else if (selectedPeriod === 'year') {
-        cutoffDate = new Date(now.getFullYear(), 0, 1);
-      } else {
-        cutoffDate = new Date(0);
-      }
-
-      result = result.filter((e) => new Date(e.date) >= cutoffDate);
-    }
-
-    return result;
+    const byVehicle = expenses.filter((e) => selectedVehicleIds.includes(e.vehicle_id));
+    const cutoff = getPeriodCutoff(selectedPeriod);
+    return cutoff ? byVehicle.filter((e) => new Date(e.date) >= cutoff) : byVehicle;
   }, [expenses, selectedVehicleIds, selectedPeriod]);
 
   const sortedExpenses = useMemo(
@@ -220,7 +213,12 @@ function DashboardContent({ vehicles, expenses, reminders, fillExpenses }: Dashb
       {/* Expense breakdown + Vehicle overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ExpenseBreakdown expenses={filteredExpenses} />
-        <VehicleQuickView vehicles={vehicles} reminders={reminders} expenses={expenses} />
+        <VehicleQuickView
+          vehicles={vehicles}
+          reminders={reminders}
+          expenses={expenses}
+          activeInsuranceVehicleIds={activeInsuranceVehicleIds}
+        />
       </div>
 
       {/* Drawers */}
@@ -279,6 +277,7 @@ export default function DashboardClient({
   expenses,
   reminders,
   fillExpenses,
+  activeInsuranceVehicleIds,
 }: DashboardClientProps) {
   return (
     <DashboardContent
@@ -286,6 +285,7 @@ export default function DashboardClient({
       expenses={expenses}
       reminders={reminders}
       fillExpenses={fillExpenses}
+      activeInsuranceVehicleIds={activeInsuranceVehicleIds}
     />
   );
 }
