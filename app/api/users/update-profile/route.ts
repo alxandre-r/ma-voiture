@@ -3,6 +3,7 @@
  * @description Unified endpoint for updating user profile (name + email)
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -96,6 +97,7 @@ export async function POST(request: Request) {
       );
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         success: true,

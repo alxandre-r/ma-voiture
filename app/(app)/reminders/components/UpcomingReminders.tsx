@@ -15,6 +15,8 @@ interface UpcomingRemindersProps {
   completingId: number | null;
   deletingId: number | null;
   showCompleted?: boolean;
+  onDeleteAttachment?: (attachmentId: number) => void;
+  deletingAttachmentId?: number | null;
 }
 
 function groupByVehicle(
@@ -53,6 +55,8 @@ export default function UpcomingReminders({
   completingId,
   deletingId,
   showCompleted = false,
+  onDeleteAttachment,
+  deletingAttachmentId,
 }: UpcomingRemindersProps) {
   if (reminders.length === 0) return null;
 
@@ -81,6 +85,8 @@ export default function UpcomingReminders({
                   onDelete={onDelete}
                   isCompleting={completingId === reminder.id}
                   isDeleting={deletingId === reminder.id}
+                  onDeleteAttachment={onDeleteAttachment}
+                  deletingAttachmentId={deletingAttachmentId}
                 />
               );
             })}

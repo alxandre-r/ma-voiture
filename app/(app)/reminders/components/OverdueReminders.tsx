@@ -14,6 +14,8 @@ interface OverdueRemindersProps {
   onDelete: (id: number) => void;
   completingId: number | null;
   deletingId: number | null;
+  onDeleteAttachment?: (attachmentId: number) => void;
+  deletingAttachmentId?: number | null;
 }
 
 export default function OverdueReminders({
@@ -24,6 +26,8 @@ export default function OverdueReminders({
   onDelete,
   completingId,
   deletingId,
+  onDeleteAttachment,
+  deletingAttachmentId,
 }: OverdueRemindersProps) {
   if (reminders.length === 0) return null;
 
@@ -51,6 +55,8 @@ export default function OverdueReminders({
                 onDelete={onDelete}
                 isCompleting={completingId === reminder.id}
                 isDeleting={deletingId === reminder.id}
+                onDeleteAttachment={onDeleteAttachment}
+                deletingAttachmentId={deletingAttachmentId}
               />
             );
           })}

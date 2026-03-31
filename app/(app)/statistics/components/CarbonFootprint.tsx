@@ -240,11 +240,11 @@ export default function CarbonFootprint({
             {/* Rate badge */}
             <div className="pt-1 border-t border-gray-100 dark:border-gray-800">
               <div className="inline-flex items-center gap-2">
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  Taux d&apos;émission renseigné :
+                </span>
                 <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2 py-1 rounded-md font-mono">
                   {co2PerKm.toFixed(1)} g/km
-                </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">
-                  taux d&apos;émission
                 </span>
               </div>
             </div>

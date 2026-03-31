@@ -56,18 +56,16 @@ function ExpensesContent({
   const [showAddFillForm, setShowAddFillForm] = useState(false);
   const [showAddMaintenanceForm, setShowAddMaintenanceForm] = useState(false);
 
-  const [expenses] = useState<Expense[]>(initialExpenses);
-
   const { showError } = useNotifications();
   const { deleteExpense } = useExpenseActions();
-  const { addFill } = useFillActions();
+  const { addFill, adding } = useFillActions();
   const { addMaintenance } = useMaintenanceActions();
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
   // Filter expenses by selected vehicles and period (client-side)
   const filteredExpenses = useMemo(
-    () => filterByVehiclesAndPeriod(expenses, selectedVehicleIds, selectedPeriod),
-    [expenses, selectedVehicleIds, selectedPeriod],
+    () => filterByVehiclesAndPeriod(initialExpenses, selectedVehicleIds, selectedPeriod),
+    [initialExpenses, selectedVehicleIds, selectedPeriod],
   );
 
   // Handle successful operations - refresh SSR data
@@ -85,8 +83,12 @@ function ExpensesContent({
     }
   };
 
-  const handleAddFillSave = async (data: FillFormData): Promise<boolean> => {
-    const success = await addFill(data);
+  const handleAddFillSave = async (
+    data: FillFormData,
+    _fillId?: number,
+    pendingFiles?: File[],
+  ): Promise<boolean> => {
+    const success = await addFill(data, pendingFiles);
     if (success) {
       handleSuccess();
       setShowAddFillForm(false);
@@ -95,8 +97,12 @@ function ExpensesContent({
     return success;
   };
 
-  const handleAddMaintenanceSave = async (data: MaintenanceFormData): Promise<boolean> => {
-    const success = await addMaintenance(data);
+  const handleAddMaintenanceSave = async (
+    data: MaintenanceFormData,
+    _expenseId?: number,
+    pendingFiles?: File[],
+  ): Promise<boolean> => {
+    const success = await addMaintenance(data, pendingFiles);
     if (success) {
       handleSuccess();
       setShowAddMaintenanceForm(false);
@@ -337,7 +343,7 @@ function ExpensesContent({
             setShowAddFillForm(false);
             setAddExpenseType(null);
           }}
-          saving={false}
+          saving={adding}
         />
       </Drawer>
 

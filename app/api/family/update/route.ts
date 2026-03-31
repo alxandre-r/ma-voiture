@@ -5,6 +5,7 @@
  * This endpoint handles updating family name and other properties.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -84,6 +85,7 @@ export async function PATCH(request: Request) {
       );
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         success: true,

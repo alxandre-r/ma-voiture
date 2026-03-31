@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
 import type { PeriodType } from '@/types/period';
+import type { UserPreferences } from '@/types/userPreferences';
 import type { VehicleMinimal } from '@/types/vehicle';
 import type { ReactNode } from 'react';
 
@@ -22,6 +23,8 @@ interface SelectorsContextType {
 interface SelectorsProviderProps {
   children: ReactNode;
   initialVehicles: VehicleMinimal[];
+  initialPreferences?: UserPreferences | null;
+  currentUserId?: string;
 }
 
 const SelectorsContext = createContext<SelectorsContextType | undefined>(undefined);
@@ -30,6 +33,8 @@ const SelectorsContext = createContext<SelectorsContextType | undefined>(undefin
 const STORAGE_KEYS = {
   VEHICLE_IDS: 'ma-voiture-selected-vehicles',
   PERIOD: 'ma-voiture-selected-period',
+  PREFS_SYNCED_AT: 'ma-voiture-prefs-synced-at',
+  KNOWN_VEHICLE_IDS: 'ma-voiture-known-vehicles',
 } as const;
 
 /**
@@ -37,32 +42,82 @@ const STORAGE_KEYS = {
  * Uses localStorage for persistence across page navigations in the browser.
  * The provider is placed at the layout level to ensure it's always available.
  */
-export function SelectorsProvider({ children, initialVehicles }: SelectorsProviderProps) {
+export function SelectorsProvider({
+  children,
+  initialVehicles,
+  initialPreferences,
+  currentUserId,
+}: SelectorsProviderProps) {
   // Initialize state from localStorage or from props
   const [selectedVehicleIds, setSelectedVehicleIdsState] = useState<number[]>(() => {
     return initialVehicles.map((v) => v.vehicle_id);
   });
 
-  const [selectedPeriod, setSelectedPeriodState] = useState<PeriodType>(() => 'year');
+  const [selectedPeriod, setSelectedPeriodState] = useState<PeriodType>(
+    () => (initialPreferences?.default_period as PeriodType) ?? 'year',
+  );
 
-  // Hydrate from localStorage on mount
+  // Hydrate from localStorage on mount, respecting DB preferences when they are newer
   useEffect(() => {
     try {
       const storedVehicleIds = localStorage.getItem(STORAGE_KEYS.VEHICLE_IDS);
       const storedPeriod = localStorage.getItem(STORAGE_KEYS.PERIOD);
+      const storedPrefsSyncedAt = localStorage.getItem(STORAGE_KEYS.PREFS_SYNCED_AT);
 
+      const dbUpdatedAt = initialPreferences?.updated_at ?? null;
+      // DB preferences win when they are newer than the last time we synced them to localStorage
+      const preferencesAreNewer =
+        !!dbUpdatedAt && (!storedPrefsSyncedAt || dbUpdatedAt > storedPrefsSyncedAt);
+
+      const storedKnownVehicleIds = localStorage.getItem(STORAGE_KEYS.KNOWN_VEHICLE_IDS);
+
+      if (preferencesAreNewer && initialPreferences) {
+        // Apply DB preferences and re-sync localStorage
+        const period = initialPreferences.default_period as PeriodType;
+        setSelectedPeriodState(period);
+        localStorage.setItem(STORAGE_KEYS.PERIOD, period);
+
+        const scope = initialPreferences.default_vehicle_scope;
+        let ids: number[];
+        if (scope === 'personal' && currentUserId) {
+          ids = initialVehicles
+            .filter((v) => v.owner_id === currentUserId)
+            .map((v) => v.vehicle_id);
+        } else if (scope === 'family' && currentUserId) {
+          ids = initialVehicles
+            .filter((v) => v.owner_id !== currentUserId)
+            .map((v) => v.vehicle_id);
+        } else {
+          ids = initialVehicles.map((v) => v.vehicle_id);
+        }
+        if (ids.length > 0) setSelectedVehicleIdsState(ids);
+        const allIds = initialVehicles.map((v) => v.vehicle_id);
+        localStorage.setItem(STORAGE_KEYS.VEHICLE_IDS, JSON.stringify(ids));
+        localStorage.setItem(STORAGE_KEYS.KNOWN_VEHICLE_IDS, JSON.stringify(allIds));
+        localStorage.setItem(STORAGE_KEYS.PREFS_SYNCED_AT, dbUpdatedAt);
+        return;
+      }
+
+      // localStorage wins — apply stored values
       if (storedVehicleIds) {
         const parsed = JSON.parse(storedVehicleIds) as number[];
         // Keep previously-selected IDs that still exist
         const validIds = parsed.filter((id) => initialVehicles.some((v) => v.vehicle_id === id));
-        // Auto-select any new vehicles (e.g. family vehicles added since last visit)
-        const newIds = initialVehicles
-          .map((v) => v.vehicle_id)
-          .filter((id) => !parsed.includes(id));
+        // Auto-select only vehicles that are genuinely new (absent from knownVehicleIds at last save).
+        // If knownVehicleIds is not present we cannot safely distinguish "new" from "intentionally
+        // excluded", so we skip auto-add to avoid overriding preference-based selections.
+        const newIds = storedKnownVehicleIds
+          ? initialVehicles
+              .map((v) => v.vehicle_id)
+              .filter((id) => !(JSON.parse(storedKnownVehicleIds) as number[]).includes(id))
+          : [];
         const merged = [...validIds, ...newIds];
-        if (merged.length > 0) {
-          setSelectedVehicleIdsState(merged);
-        }
+        if (merged.length > 0) setSelectedVehicleIdsState(merged);
+        // Update known vehicles to current list
+        localStorage.setItem(
+          STORAGE_KEYS.KNOWN_VEHICLE_IDS,
+          JSON.stringify(initialVehicles.map((v) => v.vehicle_id)),
+        );
       }
 
       if (storedPeriod && ['month', 'year', 'all'].includes(storedPeriod)) {
@@ -78,6 +133,11 @@ export function SelectorsProvider({ children, initialVehicles }: SelectorsProvid
     setSelectedVehicleIdsState(ids);
     try {
       localStorage.setItem(STORAGE_KEYS.VEHICLE_IDS, JSON.stringify(ids));
+      // Track all currently known vehicles so future sessions can distinguish new vs excluded
+      localStorage.setItem(
+        STORAGE_KEYS.KNOWN_VEHICLE_IDS,
+        JSON.stringify(initialVehicles.map((v) => v.vehicle_id)),
+      );
     } catch {
       // Ignore storage errors
     }

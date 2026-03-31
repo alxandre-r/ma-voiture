@@ -6,6 +6,7 @@
  * Includes proper authentication and authorization checks.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -71,6 +72,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: deleteError.message }, { status: 500 });
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       { message: 'Vehicle deleted successfully', vehicle_id },
       { status: 200 },

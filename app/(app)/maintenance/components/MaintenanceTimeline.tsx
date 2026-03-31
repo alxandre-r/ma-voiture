@@ -21,6 +21,8 @@ interface MaintenanceTimelineProps {
   onDeleteExpense?: (expenseId: number) => Promise<boolean>;
   deletingId?: number | null;
   isDataLoading?: boolean;
+  onDeleteAttachment?: (attachmentId: number) => void;
+  deletingAttachmentId?: number | null;
 }
 
 export default function MaintenanceTimeline({
@@ -32,6 +34,8 @@ export default function MaintenanceTimeline({
   onDeleteExpense,
   deletingId,
   isDataLoading = false,
+  onDeleteAttachment,
+  deletingAttachmentId,
 }: MaintenanceTimelineProps) {
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
@@ -80,6 +84,8 @@ export default function MaintenanceTimeline({
                     onEdit={() => onEditExpense?.(expense)}
                     onDeleteClick={() => setDeleteConfirmId(expense.id)}
                     deletingId={deletingId}
+                    onDeleteAttachment={onDeleteAttachment}
+                    deletingAttachmentId={deletingAttachmentId}
                   />
                 );
               })}

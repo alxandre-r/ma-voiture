@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import { useMaintenanceForm } from '@/app/(app)/maintenance/hooks/useMaintenanceForm';
+import AttachmentSection from '@/components/common/attachments/AttachmentSection';
 import { FormField, FormInput, FormDate } from '@/components/common/ui/form';
 import Icon from '@/components/common/ui/Icon';
 import Spinner from '@/components/common/ui/Spinner';
@@ -18,7 +21,11 @@ const SELECT_CLASS =
 interface MaintenanceFormProps {
   initialExpense?: Expense | null;
   vehicles: VehicleMinimal[];
-  onSave: (data: MaintenanceFormData, expenseId?: number) => Promise<boolean>;
+  onSave: (
+    data: MaintenanceFormData,
+    expenseId?: number,
+    pendingFiles?: File[],
+  ) => Promise<boolean>;
   onCancel: () => void;
   saving?: boolean;
 }
@@ -32,6 +39,7 @@ export default function MaintenanceForm({
 }: MaintenanceFormProps) {
   const isEditing = !!initialExpense;
   const { formData, handleChange } = useMaintenanceForm(vehicles, initialExpense);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   const getVehicleName = (id: number) => {
     const v = vehicles.find((v) => v.vehicle_id === id);
@@ -40,7 +48,7 @@ export default function MaintenanceForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(formData, initialExpense?.id);
+    await onSave(formData, initialExpense?.id, pendingFiles);
   };
 
   const title = isEditing ? "Modifier l'intervention" : 'Ajouter une intervention';
@@ -170,6 +178,20 @@ export default function MaintenanceForm({
             rows={4}
             placeholder="Détails supplémentaires sur l'intervention..."
             className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2.5 text-sm resize-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
+          />
+        </div>
+
+        {/* Pièces jointes */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Icon name="notes" size={16} className="inline mr-2 text-gray-500" />
+            Pièces jointes
+          </label>
+          <AttachmentSection
+            savedAttachments={initialExpense?.attachments}
+            entityType="expense"
+            entityId={initialExpense?.id}
+            onPendingFilesChange={setPendingFiles}
           />
         </div>
 

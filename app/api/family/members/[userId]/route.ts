@@ -5,6 +5,7 @@
  * This endpoint allows the family owner to remove a member from the family.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -56,5 +57,6 @@ export async function DELETE(
     return NextResponse.json({ error: 'Erreur lors de la suppression' }, { status: 500 });
   }
 
+  revalidatePath('/', 'layout');
   return NextResponse.json({ success: true }, { status: 200 });
 }

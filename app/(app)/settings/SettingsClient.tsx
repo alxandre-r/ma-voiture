@@ -11,15 +11,20 @@ import { useState } from 'react';
 import { useUser } from '@/contexts/UserContext';
 
 import AccountSection from './sections/Account';
-import AppearanceSection from './sections/Appearance';
+import PreferencesSection from './sections/Appearance';
 import LogoutSection from './sections/Logout';
 import PatchnotesSection from './sections/Patchnotes';
 import PrivacySection from './sections/Privacy';
 import SettingsMenu from './SettingsMenu';
 
 import type { User } from '@/types/user';
+import type { UserPreferences } from '@/types/userPreferences';
 
-export default function SettingsClient() {
+interface SettingsClientProps {
+  initialPreferences: UserPreferences | null;
+}
+
+export default function SettingsClient({ initialPreferences }: SettingsClientProps) {
   const user: User = useUser();
   const [activeSection, setActiveSection] = useState('account');
 
@@ -34,7 +39,9 @@ export default function SettingsClient() {
         {/* Active section content */}
         <div className="lg:col-span-3">
           {activeSection === 'account' && <AccountSection user={user} />}
-          {activeSection === 'appearance' && <AppearanceSection />}
+          {activeSection === 'preferences' && (
+            <PreferencesSection initialPreferences={initialPreferences} />
+          )}
           {activeSection === 'patchnotes' && <PatchnotesSection />}
           {activeSection === 'privacy' && <PrivacySection />}
           {activeSection === 'logout' && <LogoutSection />}

@@ -5,6 +5,7 @@
  * This endpoint handles the process of a user leaving a family.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -72,6 +73,7 @@ export async function POST(request: Request) {
       );
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         success: true,

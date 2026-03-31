@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 import EmptyReminders from '@/app/(app)/reminders/components/EmptyReminders';
 import OverdueReminders from '@/app/(app)/reminders/components/OverdueReminders';
@@ -26,10 +27,26 @@ interface RemindersClientProps {
 }
 
 function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClientProps) {
+  const router = useRouter();
   const { showForm, editingReminder, filter, setFilter, openCreate, openEdit, closeForm } =
     useRemindersPage();
 
   const user = useUser();
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState<number | null>(null);
+
+  const handleDeleteAttachment = async (attachmentId: number) => {
+    setDeletingAttachmentId(attachmentId);
+    try {
+      const res = await fetch('/api/attachments/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attachment_id: attachmentId }),
+      });
+      if (res.ok) router.refresh();
+    } finally {
+      setDeletingAttachmentId(null);
+    }
+  };
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
   const {
@@ -150,6 +167,8 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
           completingId={completingId}
           deletingId={deletingId}
           showCompleted
+          onDeleteAttachment={handleDeleteAttachment}
+          deletingAttachmentId={deletingAttachmentId}
         />
       ) : filter === 'all' ? (
         <div className="space-y-6">
@@ -161,6 +180,8 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            onDeleteAttachment={handleDeleteAttachment}
+            deletingAttachmentId={deletingAttachmentId}
           />
           <UpcomingReminders
             reminders={nonOverdueActive}
@@ -170,6 +191,8 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            onDeleteAttachment={handleDeleteAttachment}
+            deletingAttachmentId={deletingAttachmentId}
           />
           {hasCompleted && (
             <UpcomingReminders
@@ -181,6 +204,8 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
               completingId={completingId}
               deletingId={deletingId}
               showCompleted
+              onDeleteAttachment={handleDeleteAttachment}
+              deletingAttachmentId={deletingAttachmentId}
             />
           )}
         </div>
@@ -195,6 +220,8 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            onDeleteAttachment={handleDeleteAttachment}
+            deletingAttachmentId={deletingAttachmentId}
           />
           <UpcomingReminders
             reminders={nonOverdueActive}
@@ -204,6 +231,8 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            onDeleteAttachment={handleDeleteAttachment}
+            deletingAttachmentId={deletingAttachmentId}
           />
           {activeReminders.length === 0 && <EmptyReminders onAdd={openCreate} />}
         </div>

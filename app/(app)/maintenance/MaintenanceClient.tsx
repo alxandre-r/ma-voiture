@@ -54,6 +54,7 @@ function MaintenanceContent({
 
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState<number | null>(null);
 
   // Use ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -135,10 +136,14 @@ function MaintenanceContent({
   }, []);
 
   const handleSaveForm = useCallback(
-    async (data: MaintenanceFormData, expenseId?: number): Promise<boolean> => {
+    async (
+      data: MaintenanceFormData,
+      expenseId?: number,
+      pendingFiles?: File[],
+    ): Promise<boolean> => {
       const success = expenseId
         ? await updateMaintenance(expenseId, data)
-        : await addMaintenance(data);
+        : await addMaintenance(data, pendingFiles);
 
       if (success) {
         handleCancelForm();
@@ -148,6 +153,23 @@ function MaintenanceContent({
       return success;
     },
     [addMaintenance, updateMaintenance, handleCancelForm, router],
+  );
+
+  const handleDeleteAttachment = useCallback(
+    async (attachmentId: number) => {
+      setDeletingAttachmentId(attachmentId);
+      try {
+        const res = await fetch('/api/attachments/delete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ attachment_id: attachmentId }),
+        });
+        if (res.ok) router.refresh();
+      } finally {
+        setDeletingAttachmentId(null);
+      }
+    },
+    [router],
   );
 
   const handleDeleteExpense = useCallback(
@@ -199,6 +221,8 @@ function MaintenanceContent({
         onDeleteExpense={handleDeleteExpense}
         deletingId={deletingId}
         isDataLoading={isRefreshing}
+        onDeleteAttachment={handleDeleteAttachment}
+        deletingAttachmentId={deletingAttachmentId}
       />
 
       {/* Mobile FAB */}

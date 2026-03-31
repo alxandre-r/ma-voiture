@@ -10,28 +10,34 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui
 import type React from 'react';
 
 // ---------------------------------------------------------------------------
-// 1. StatisticsOverview — grid grid-cols-3 gap-2
+// 1. StatisticsOverview — grid grid-cols-2 md:grid-cols-4 gap-2
 // ---------------------------------------------------------------------------
 
 function OverviewSkeleton() {
   const currentYear = new Date().getFullYear();
   const cards = [
-    { title: 'Dépenses totales' },
-    { title: 'Moyenne / mois' },
-    { title: `Projection ${currentYear}` },
+    { title: 'Dépenses totales', hasTrend: true },
+    { title: 'Moyenne / mois', hasTrend: false },
+    { title: `Projection ${currentYear}`, hasTrend: true },
+    { title: 'Coût au km', hasTrend: false },
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
       {cards.map((card) => (
-        <Card key={card.title}>
-          <CardHeader className="p-3 flex flex-col h-full">
-            <CardTitle className="text-xs text-gray-500">{card.title}</CardTitle>
-            <div className="flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-4 mt-1">
-              <div className="h-7 w-28 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-              <div className="h-3.5 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse min-h-[14px]" />
-            </div>
-          </CardHeader>
+        <Card key={card.title} className="p-4">
+          {/* Top row: title + optional trend badge */}
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-gray-500">{card.title}</span>
+            {card.hasTrend && (
+              <div className="h-3.5 w-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            )}
+          </div>
+          {/* Value + unit */}
+          <div className="flex items-baseline gap-1">
+            <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-4 w-8 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+          </div>
         </Card>
       ))}
     </div>

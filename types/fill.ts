@@ -1,6 +1,9 @@
+import type { Attachment } from '@/types/attachment';
+
 // Represents a single fuel fill-up entry.
 export interface Fill {
   id?: number;
+  expense_id?: number;
   vehicle_id: number;
   owner: string;
   date: string; // YYYY-MM-DD
@@ -19,6 +22,8 @@ export interface Fill {
   // Vehicle info (from fills_for_display view)
   vehicle_name?: string | null;
   fuel_type?: string | null; // Vehicle fuel type (Essence, Diesel, Électrique, Hybride)
+
+  attachments?: Attachment[];
 }
 
 // Form data structure for submitting a fill

@@ -22,6 +22,7 @@ import { useGarageActions } from './hooks/useGarageActions';
 
 import type { Expense } from '@/types/expense';
 import type { FamilyMemberDisplay } from '@/types/family';
+import type { UserPreferences } from '@/types/userPreferences';
 import type { Vehicle } from '@/types/vehicle';
 
 interface GarageClientProps {
@@ -30,6 +31,7 @@ interface GarageClientProps {
   familyMembers?: FamilyMemberDisplay[] | null;
   expenses?: Expense[];
   activeInsuranceVehicleIds?: number[];
+  familyOwnerPreferences?: Record<string, UserPreferences>;
 }
 
 export default function GarageClient({
@@ -38,6 +40,7 @@ export default function GarageClient({
   familyMembers,
   expenses,
   activeInsuranceVehicleIds,
+  familyOwnerPreferences,
 }: GarageClientProps) {
   const searchParams = useSearchParams();
 
@@ -105,6 +108,10 @@ export default function GarageClient({
       ? getOwnerInfo(selectedVehicle)
       : undefined;
 
+    const ownerPrefs = detailOwnerInfo?.user_id
+      ? (familyOwnerPreferences?.[detailOwnerInfo.user_id] ?? null)
+      : null;
+
     return (
       <VehicleDetail
         vehicle={selectedVehicle}
@@ -114,6 +121,7 @@ export default function GarageClient({
         owner={detailOwnerInfo ?? undefined}
         expenses={expenses}
         hasActiveInsurance={activeInsuranceVehicleIds?.includes(selectedVehicle.vehicle_id)}
+        ownerPreferences={ownerPrefs}
       />
     );
   }

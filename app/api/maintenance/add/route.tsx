@@ -6,6 +6,7 @@
  * with proper authentication and validation.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -123,6 +124,7 @@ export async function POST(request: Request) {
       vehicle_name: vehicle.name || `${vehicle.make} ${vehicle.model}`,
     };
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         expense: response,

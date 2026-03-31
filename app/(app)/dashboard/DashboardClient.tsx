@@ -57,7 +57,7 @@ function DashboardContent({
   const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
   const [showReminderForm, setShowReminderForm] = useState(false);
 
-  const { addFill } = useFillActions();
+  const { addFill, adding } = useFillActions();
   const { addMaintenance } = useMaintenanceActions();
   const { creating, createReminder } = useReminderActions();
 
@@ -166,14 +166,18 @@ function DashboardContent({
     }
   };
 
-  const handleFillSave = async (data: FillFormData) => {
-    const success = await addFill(data);
+  const handleFillSave = async (data: FillFormData, _fillId?: number, pendingFiles?: File[]) => {
+    const success = await addFill(data, pendingFiles);
     if (success) handleSuccess();
     return success;
   };
 
-  const handleMaintenanceSave = async (data: MaintenanceFormData) => {
-    const success = await addMaintenance(data);
+  const handleMaintenanceSave = async (
+    data: MaintenanceFormData,
+    _expenseId?: number,
+    pendingFiles?: File[],
+  ) => {
+    const success = await addMaintenance(data, pendingFiles);
     if (success) handleSuccess();
     return success;
   };
@@ -237,7 +241,7 @@ function DashboardContent({
             setShowFillForm(false);
             setSelectedExpenseType(null);
           }}
-          saving={false}
+          saving={adding}
         />
       </Drawer>
 

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
+import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 import type { Fill, FillFormData } from '@/types/fill';
 
@@ -191,7 +192,7 @@ export function useFillActions() {
   };
 
   /** --- Add new fill --- */
-  const addFill = async (fillData: FillFormData) => {
+  const addFill = async (fillData: FillFormData, pendingFiles?: File[]) => {
     setAdding(true);
 
     try {
@@ -228,6 +229,11 @@ export function useFillActions() {
       if (!res.ok) {
         throw new Error(data.error || "Erreur lors de l'ajout du plein");
       }
+
+      if (pendingFiles?.length && data.fill?.expense_id) {
+        await uploadPendingAttachments(pendingFiles, 'expense', data.fill.expense_id);
+      }
+
       showSuccess(
         fillData.charge_type === 'charge'
           ? 'Recharge ajoutée avec succès'

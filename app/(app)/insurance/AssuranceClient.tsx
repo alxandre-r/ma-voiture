@@ -8,6 +8,7 @@ import Icon from '@/components/common/ui/Icon';
 import Spinner from '@/components/common/ui/Spinner';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { getActiveContract, getNextMonthlyPaymentDate } from '@/lib/utils/insuranceUtils';
+import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 import InsuranceContractDrawer from './components/InsuranceContractDrawer';
 import InsuranceStatsGrid from './components/InsuranceStatsGrid';
@@ -76,7 +77,10 @@ export default function AssuranceClient({ vehicles, ownedVehicleIds }: Assurance
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
-  const handleSave = async (formData: InsuranceFormData): Promise<boolean> => {
+  const handleSave = async (
+    formData: InsuranceFormData,
+    pendingFiles: File[],
+  ): Promise<boolean> => {
     if (!drawer.vehicleId || !drawer.mode) return false;
     setSaving(true);
     try {
@@ -95,6 +99,10 @@ export default function AssuranceClient({ vehicles, ownedVehicleIds }: Assurance
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
+
+      if (pendingFiles.length && data.contract?.id) {
+        await uploadPendingAttachments(pendingFiles, 'insurance_contract', data.contract.id);
+      }
 
       showSuccess(SAVE_MESSAGES[drawer.mode]);
       const vid = drawer.vehicleId;

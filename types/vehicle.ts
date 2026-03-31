@@ -1,3 +1,5 @@
+import type { Attachment } from '@/types/attachment';
+
 // User type definition based on the "users_info" view in Supabase.
 export interface Vehicle {
   vehicle_id: number;
@@ -28,6 +30,7 @@ export interface Vehicle {
   financing_mode?: 'owned' | 'lld' | 'loa' | null;
   purchase_date?: string | null;
   purchase_price?: number | null;
+  attachments?: Attachment[];
 }
 
 // Owner info for family vehicles display

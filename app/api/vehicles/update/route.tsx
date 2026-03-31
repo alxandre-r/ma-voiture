@@ -3,6 +3,7 @@
  * @fileoverview API route to update an existing vehicle.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -184,6 +185,7 @@ export async function PATCH(request: Request) {
       }
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       { message: 'Vehicle updated successfully', vehicle: data },
       { status: 200 },

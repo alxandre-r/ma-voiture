@@ -1,9 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 
-import { Card, CardHeader, CardTitle } from '@/components/common/ui/card';
+import { Card } from '@/components/common/ui/card';
 
 interface StatisticsOverviewProps {
   totalCost: number;
@@ -11,6 +10,7 @@ interface StatisticsOverviewProps {
   annualProjection: number;
   monthsWithData?: number;
   previousPeriodCost?: number;
+  previousYearTotal?: number;
   selectedPeriod?: string;
   totalKilometers?: number;
   costPerKm?: number;
@@ -22,17 +22,16 @@ interface TooltipData {
   details: string[];
 }
 
-type CardKey = 'cost' | 'consumption' | 'projection' | null;
+type CardKey = 'cost' | 'consumption' | 'projection' | 'efficiency' | null;
 
 interface StatItem {
   key: CardKey;
   title: string;
   value: string;
-  sub?: string;
+  valueUnit: string;
   trend?: string;
   trendIconPath?: string;
   trendColor?: string;
-  footer: string;
   valueTooltip: TooltipData;
   trendTooltip?: TooltipData;
 }
@@ -43,6 +42,7 @@ export default function StatisticsOverview({
   annualProjection,
   monthsWithData,
   previousPeriodCost,
+  previousYearTotal = 0,
   selectedPeriod = '12m',
   totalKilometers = 0,
   costPerKm = 0,
@@ -62,16 +62,20 @@ export default function StatisticsOverview({
   const trendPercentage = hasTrend
     ? ((totalCost - previousPeriodCost!) / previousPeriodCost!) * 100
     : 0;
-  const trendLabel =
-    selectedPeriod === 'month'
-      ? 'vs mois dernier'
-      : selectedPeriod === 'year'
-        ? 'vs année dernière'
-        : undefined;
 
   const showTooltip = (card: CardKey, data: TooltipData) => {
     setActiveCard(card);
     setTooltipData(data);
+  };
+
+  const toggleTooltip = (card: CardKey, data: TooltipData) => {
+    if (activeCard === card) {
+      setActiveCard(null);
+      setTooltipData(null);
+    } else {
+      setActiveCard(card);
+      setTooltipData(data);
+    }
   };
 
   const hideTooltip = () => {
@@ -79,15 +83,23 @@ export default function StatisticsOverview({
     setTooltipData(null);
   };
 
+  // Projection trend vs previous year
+  const hasProjectionTrend = previousYearTotal > 0;
+  const projectionTrendPercentage = hasProjectionTrend
+    ? ((annualProjection - previousYearTotal) / previousYearTotal) * 100
+    : 0;
+
   // Build stats based on period
   const currentYear = new Date().getFullYear();
+  const previousYear = currentYear - 1;
 
   const stats: StatItem[] = [
     // Card 1: Total expenses with trend
     {
       key: 'cost' as CardKey,
       title: 'Dépenses totales',
-      value: `${totalCost.toLocaleString('fr-FR')} €`,
+      value: `${totalCost.toLocaleString('fr-FR')}`,
+      valueUnit: '€',
       trend: hasTrend
         ? `${trendPercentage > 0 ? '+' : ''}${trendPercentage.toFixed(1)}%`
         : undefined,
@@ -102,11 +114,6 @@ export default function StatisticsOverview({
           : trendPercentage < 0
             ? 'text-green-500'
             : 'text-gray-500',
-      sub:
-        costPerKm > 0 && totalKilometers > 0
-          ? `~${costPerKm.toFixed(3).replace('.', ',')} €/km · ${totalKilometers.toLocaleString('fr-FR')} km`
-          : undefined,
-      footer: trendLabel || `Total des ${fillsCount} dépenses`,
       valueTooltip: {
         title: 'Dépenses totales',
         details: [
@@ -131,10 +138,10 @@ export default function StatisticsOverview({
           {
             key: 'consumption' as CardKey,
             title: 'Moyenne / mois',
-            value: `${(totalCost / displayPeriodMonths).toFixed(0)} €/mois`,
+            value: `${(totalCost / displayPeriodMonths).toFixed(0)}`,
+            valueUnit: '€/mois',
             trend: undefined,
             trendColor: 'text-gray-500',
-            footer: `Sur ${displayPeriodMonths} mois`,
             valueTooltip: {
               title: 'Moyenne mensuelle',
               details: [
@@ -146,32 +153,69 @@ export default function StatisticsOverview({
           },
         ]
       : []),
-    // Card 3: Projection - always based on current year
+    // Card 3: Projection - always based on current year, trend compared to last year.
     {
       key: 'projection' as CardKey,
       title: `Projection ${currentYear}`,
-      value: `${Math.round(annualProjection).toLocaleString('fr-FR')} €`,
-      trendColor: 'text-gray-500',
-      sub:
-        annualKmProjection > 0
-          ? `~${Math.round(annualKmProjection).toLocaleString('fr-FR')} km projetés`
-          : undefined,
-      footer: 'Basée sur les mois passés',
+      value: `${Math.round(annualProjection).toLocaleString('fr-FR')}`,
+      valueUnit: '€',
+      trend: hasProjectionTrend
+        ? `${projectionTrendPercentage > 0 ? '+' : ''}${projectionTrendPercentage.toFixed(1)}%`
+        : undefined,
+      trendIconPath: hasProjectionTrend
+        ? projectionTrendPercentage > 0
+          ? '/icons/trend-up-red.svg'
+          : '/icons/trend-down-green.svg'
+        : undefined,
+      trendColor: hasProjectionTrend
+        ? projectionTrendPercentage > 0
+          ? 'text-red-500'
+          : projectionTrendPercentage < 0
+            ? 'text-green-500'
+            : 'text-gray-500'
+        : 'text-gray-500',
       valueTooltip: {
         title: `Projection (${currentYear})`,
         details: [
           `Moyenne mensuelle: ${(annualProjection / 12).toFixed(2)} €/mois`,
           `Projection: ${annualProjection.toFixed(2)} €`,
+          ...(hasProjectionTrend
+            ? [
+                `${previousYear} (réel): ${previousYearTotal.toFixed(2)} €`,
+                `Variation: ${projectionTrendPercentage > 0 ? '+' : ''}${projectionTrendPercentage.toFixed(1)}%`,
+              ]
+            : []),
           ...(annualKmProjection > 0
             ? [`Distance projetée : ~${Math.round(annualKmProjection).toLocaleString('fr-FR')} km`]
             : []),
         ],
       },
     },
+    // Card 4: Cost per km - only shown when km data is available
+    ...(costPerKm > 0
+      ? [
+          {
+            key: 'efficiency' as CardKey,
+            title: 'Coût au km',
+            value: costPerKm.toFixed(2).replace('.', ','),
+            valueUnit: '€/km',
+            trend: undefined,
+            trendColor: 'text-gray-500',
+            valueTooltip: {
+              title: 'Coût au kilomètre',
+              details: [
+                `Coût total: ${totalCost.toFixed(2)} €`,
+                `Distance: ${totalKilometers.toLocaleString('fr-FR')} km`,
+                `Coût au km: ${costPerKm.toFixed(3).replace('.', ',')} €/km`,
+              ],
+            },
+          },
+        ]
+      : []),
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
       {stats.map((stat) => (
         <StatCard
           key={stat.key}
@@ -180,6 +224,7 @@ export default function StatisticsOverview({
           tooltipData={tooltipData}
           showTooltip={showTooltip}
           hideTooltip={hideTooltip}
+          toggleTooltip={toggleTooltip}
         />
       ))}
     </div>
@@ -192,55 +237,47 @@ function StatCard({
   tooltipData,
   showTooltip,
   hideTooltip,
+  toggleTooltip,
 }: {
   stat: StatItem;
   activeCard: CardKey;
   tooltipData: TooltipData | null;
   showTooltip: (card: CardKey, data: TooltipData) => void;
   hideTooltip: () => void;
+  toggleTooltip: (card: CardKey, data: TooltipData) => void;
 }) {
   const hasTrend = !!(stat.trend || stat.trendIconPath);
 
   return (
-    <div className="relative h-full">
-      <Card className="h-full">
-        <CardHeader className="p-3 flex flex-col h-full">
-          <CardTitle className="text-xs text-gray-500">{stat.title}</CardTitle>
-          <div className="flex flex-col sm:flex-row sm:items-end gap-1 sm:gap-4 mt-1">
-            <h3
-              className="font-bold text-gray-900 dark:text-gray-100 cursor-help hover:underline decoration-dashed text-lg"
-              onMouseEnter={() => showTooltip(stat.key, stat.valueTooltip)}
-              onMouseLeave={hideTooltip}
-            >
-              {stat.value}
-            </h3>
-            {/* Always render a placeholder for trend to maintain alignment */}
-            <div className={`text-xs min-h-[14px] ${hasTrend ? '' : 'invisible'}`}>
-              {hasTrend && (
-                <span
-                  className={`inline-flex items-center font-semibold cursor-help ${stat.trendColor}`}
-                  onMouseEnter={() => showTooltip(stat.key, stat.trendTooltip || stat.valueTooltip)}
-                  onMouseLeave={hideTooltip}
-                >
-                  {stat.trendIconPath && (
-                    <Image
-                      src={stat.trendIconPath}
-                      alt="trend"
-                      width={14}
-                      height={14}
-                      className="mr-1"
-                    />
-                  )}
-                  {stat.trend}
-                </span>
-              )}
-            </div>
+    <div className="relative">
+      <button
+        onClick={() => toggleTooltip(stat.key, stat.valueTooltip)}
+        className="w-full text-left"
+        onMouseEnter={() => showTooltip(stat.key, stat.valueTooltip)}
+        onMouseLeave={hideTooltip}
+      >
+        <Card className="p-4 h-full transition hover:shadow-sm active:scale-[0.98]">
+          {/* Top row */}
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-gray-500">{stat.title}</span>
+
+            {hasTrend && (
+              <span className={`text-xs font-semibold whitespace-nowrap ${stat.trendColor}`}>
+                {stat.trend}
+              </span>
+            )}
           </div>
-          {stat.sub && (
-            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{stat.sub}</p>
-          )}
-        </CardHeader>
-      </Card>
+
+          {/* Value */}
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+              {stat.value}
+            </span>
+
+            <span className="text-sm text-gray-500">{stat.valueUnit}</span>
+          </div>
+        </Card>
+      </button>
 
       {activeCard === stat.key && tooltipData && <Tooltip tooltipData={tooltipData} />}
     </div>
@@ -249,8 +286,8 @@ function StatCard({
 
 function Tooltip({ tooltipData }: { tooltipData: TooltipData }) {
   return (
-    <div className="absolute top-full left-1/2 -trangray-x-1/2 mt-4 z-50">
-      <div className="bg-gray-900 dark:bg-gray-700 text-white p-4 rounded-lg shadow-xl max-w-xs">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 z-50 w-52 sm:w-auto max-w-[calc(100vw-2rem)]">
+      <div className="bg-gray-900 dark:bg-gray-700 text-white p-4 rounded-lg shadow-xl sm:max-w-xs">
         <p className="font-semibold text-sm mb-2">{tooltipData.title}</p>
 
         <ul className="text-xs text-gray-300 space-y-1">

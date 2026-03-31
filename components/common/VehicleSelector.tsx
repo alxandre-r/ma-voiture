@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 
 import Icon from '@/components/common/ui/Icon';
 import { useSelectors } from '@/contexts/SelectorsContext';
+import { useUser } from '@/contexts/UserContext';
 
 interface VehicleSelectorProps {
   value: number[];
@@ -20,16 +21,10 @@ export default function VehicleSelector({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Get vehicles from context
   const { vehicles } = useSelectors();
+  const user = useUser();
 
-  // Check if there's only one vehicle
   const hasOnlyOneVehicle = vehicles.length === 1;
-
-  // Get the single vehicle name
-  const singleVehicleName = hasOnlyOneVehicle
-    ? vehicles[0].name || `${vehicles[0].make} ${vehicles[0].model}`
-    : '';
 
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
@@ -57,17 +52,23 @@ export default function VehicleSelector({
     }
   };
 
+  const vehicleName = (id: number) => {
+    const v = vehicles.find((v) => v.vehicle_id === id);
+    return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
+  };
+
   const label = () => {
-    // When there's only one vehicle, display its name
-    if (hasOnlyOneVehicle) {
-      return singleVehicleName;
-    }
+    if (value.length === 0) return 'Aucun véhicule';
     if (value.length === vehicles.length) return 'Tous les véhicules';
-    if (value.length === 1) {
-      const v = vehicles.find((v) => v.vehicle_id === value[0]);
-      return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
-    }
-    return `Tous les véhicules`;
+
+    const selectedVehicles = vehicles.filter((v) => value.includes(v.vehicle_id));
+    const allPersonal = selectedVehicles.every((v) => v.owner_id === user.id);
+    const allFamily = selectedVehicles.every((v) => v.owner_id !== user.id);
+
+    if (value.length === 1) return vehicleName(value[0]);
+    if (allFamily) return 'Véhicules de la famille';
+    if (allPersonal) return 'Vos véhicules';
+    return `${value.length} véhicules sélectionnés`;
   };
 
   const handleToggle = () => {

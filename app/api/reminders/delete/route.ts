@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -34,6 +35,7 @@ export async function DELETE(request: Request) {
       );
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: 'Erreur serveur inattendue' }, { status: 500 });

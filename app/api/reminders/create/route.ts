@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Erreur lors de la création du rappel' }, { status: 500 });
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json({ reminder: data }, { status: 201 });
   } catch {
     return NextResponse.json({ error: 'Erreur serveur inattendue' }, { status: 500 });

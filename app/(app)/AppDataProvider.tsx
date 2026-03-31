@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation';
 import { SelectorsProvider } from '@/contexts/SelectorsContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { getCurrentUserInfo } from '@/lib/data/user/getCurrentUserInfo';
+import { getUserPreferences } from '@/lib/data/user/getUserPreferences';
 import { getAllVehiclesMinimal } from '@/lib/data/vehicles';
 
 import type { User } from '@/types/user';
@@ -26,10 +27,11 @@ interface AppDataProviderProps {
  * This is wrapped in Suspense to enable streaming.
  */
 export default async function AppDataProvider({ children }: AppDataProviderProps) {
-  // Fetch user and vehicles in PARALLEL
-  const [user, initialVehicles] = await Promise.all([
+  // Fetch user, vehicles and preferences in PARALLEL
+  const [user, initialVehicles, preferences] = await Promise.all([
     getCurrentUserInfo(),
     getAllVehiclesMinimal(),
+    getUserPreferences(),
   ]);
 
   if (!user) {
@@ -38,7 +40,13 @@ export default async function AppDataProvider({ children }: AppDataProviderProps
 
   return (
     <UserProvider user={user as User}>
-      <SelectorsProvider initialVehicles={initialVehicles}>{children}</SelectorsProvider>
+      <SelectorsProvider
+        initialVehicles={initialVehicles}
+        initialPreferences={preferences}
+        currentUserId={(user as User).id}
+      >
+        {children}
+      </SelectorsProvider>
     </UserProvider>
   );
 }

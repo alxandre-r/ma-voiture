@@ -75,6 +75,7 @@ export default function StatisticsClient({ vehicles }: StatisticsClientProps) {
         annualKmProjection={stats.annualKmProjection}
         monthsWithData={stats.monthsWithData}
         previousPeriodCost={stats.previousPeriodCost}
+        previousYearTotal={stats.previousYearTotal}
         selectedPeriod={selectedPeriod}
         totalKilometers={stats.totalKilometers}
         costPerKm={stats.costPerKm}

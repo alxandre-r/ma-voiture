@@ -6,6 +6,7 @@
  * with proper authentication and ownership verification.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -146,6 +147,7 @@ export async function PATCH(request: Request) {
       fuel_type: vehicle?.fuel_type || null,
     };
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         fill: responseFill,

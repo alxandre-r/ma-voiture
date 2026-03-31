@@ -41,7 +41,7 @@ export const getFamilyVehiclesMinimal = cache(async (familyId?: string) => {
 
   const { data, error } = await supabase
     .from('vehicles_for_display')
-    .select('vehicle_id, make, model, year, odometer')
+    .select('vehicle_id, owner_id, make, model, year, odometer')
     .eq('family_id', familyId)
     .neq('owner_id', user.id)
     .order('created_at', { ascending: false });

@@ -3,6 +3,7 @@
  * @fileoverview API route to add a new vehicle linked to the authenticated user.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -123,6 +124,7 @@ export async function POST(request: Request) {
       }
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json({ message: 'Vehicle created successfully', vehicle: data });
   } catch (err) {
     console.error('Unexpected error in /vehicles/add:', err);

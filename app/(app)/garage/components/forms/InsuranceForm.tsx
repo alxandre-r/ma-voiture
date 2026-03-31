@@ -1,5 +1,8 @@
 'use client';
 
+import { useState } from 'react';
+
+import AttachmentSection from '@/components/common/attachments/AttachmentSection';
 import { FormDate, FormField, FormInput } from '@/components/common/ui/form';
 import Icon from '@/components/common/ui/Icon';
 import Spinner from '@/components/common/ui/Spinner';
@@ -8,7 +11,7 @@ import type { InsuranceContract, InsuranceFormData } from '@/types/insurance';
 
 interface InsuranceFormProps {
   initialContract?: InsuranceContract | null;
-  onSave: (data: InsuranceFormData) => Promise<boolean>;
+  onSave: (data: InsuranceFormData, pendingFiles: File[]) => Promise<boolean>;
   onCancel: () => void;
   saving?: boolean;
   /** Show the end_date field (used when editing a historical contract) */
@@ -44,6 +47,8 @@ export default function InsuranceForm({
     ? new Date(initialContract.end_date).toISOString().split('T')[0]
     : '';
 
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -53,7 +58,7 @@ export default function InsuranceForm({
       start_date: fd.get('start_date') as string,
       end_date: (fd.get('end_date') as string) || '',
     };
-    await onSave(data);
+    await onSave(data, pendingFiles);
   };
 
   return (
@@ -88,6 +93,18 @@ export default function InsuranceForm({
           <FormDate name="end_date" defaultValue={defaultEndDate} />
         </FormField>
       )}
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Pièces jointes
+        </label>
+        <AttachmentSection
+          savedAttachments={initialContract?.attachments}
+          entityType="insurance_contract"
+          entityId={initialContract?.id}
+          onPendingFilesChange={setPendingFiles}
+        />
+      </div>
 
       <div className="flex justify-end gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
         <button

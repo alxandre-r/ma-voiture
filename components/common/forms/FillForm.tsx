@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
+import AttachmentSection from '@/components/common/attachments/AttachmentSection';
 import { FormField, FormInput, FormSelect, FormTextArea } from '@/components/common/ui/form';
 import Icon from '@/components/common/ui/Icon';
 import Spinner from '@/components/common/ui/Spinner';
@@ -15,7 +16,7 @@ interface FillFormProps {
   vehicles: VehicleMinimal[];
   preselectedVehicleId?: number;
   forcedType?: 'fill' | 'charge';
-  onSave: (data: FillFormData, fillId?: number) => Promise<boolean>;
+  onSave: (data: FillFormData, fillId?: number, pendingFiles?: File[]) => Promise<boolean>;
   onCancel: () => void;
   saving?: boolean;
 }
@@ -30,6 +31,7 @@ export default function FillForm({
   saving = false,
 }: FillFormProps) {
   const isEditing = !!initialFill;
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   const { formData, handleChange, allowedTypes, canChangeChargeType, isElectric } = useFillForm(
     vehicles,
@@ -102,7 +104,7 @@ export default function FillForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(formData, initialFill?.id);
+    await onSave(formData, initialFill?.id, pendingFiles);
   };
 
   return (
@@ -240,6 +242,20 @@ export default function FillForm({
             placeholder="Détails supplémentaires..."
           />
         </FormField>
+
+        {/* Pièces jointes */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Icon name="notes" size={16} className="inline mr-2 text-gray-500" />
+            Pièces jointes
+          </label>
+          <AttachmentSection
+            savedAttachments={initialFill?.attachments}
+            entityType="expense"
+            entityId={initialFill?.expense_id}
+            onPendingFilesChange={setPendingFiles}
+          />
+        </div>
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">

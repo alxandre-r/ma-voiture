@@ -17,7 +17,7 @@ const DRAWER_TITLES: Record<DrawerMode, string> = {
 interface InsuranceContractDrawerProps {
   drawer: DrawerState;
   onClose: () => void;
-  onSave: (data: InsuranceFormData) => Promise<boolean>;
+  onSave: (data: InsuranceFormData, pendingFiles: File[]) => Promise<boolean>;
   saving: boolean;
 }
 

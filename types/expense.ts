@@ -1,3 +1,5 @@
+import type { Attachment } from '@/types/attachment';
+
 // Type for the expenses_for_display view
 
 export interface Expense {
@@ -25,6 +27,8 @@ export interface Expense {
   kwh?: number | null;
   price_per_kwh?: number | null;
   charge_type?: 'fill' | 'charge' | null;
+
+  attachments?: Attachment[];
 }
 
 // Form data structure for submitting an expense

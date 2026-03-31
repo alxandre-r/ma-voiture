@@ -2,6 +2,7 @@
 import { useState, useCallback, useRef } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
+import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 export interface MaintenanceFormData {
   vehicle_id: number;
@@ -51,7 +52,10 @@ export function useMaintenanceActions() {
   };
 
   /** --- Add new maintenance --- */
-  const addMaintenance = async (data: MaintenanceFormData): Promise<boolean> => {
+  const addMaintenance = async (
+    data: MaintenanceFormData,
+    pendingFiles?: File[],
+  ): Promise<boolean> => {
     if (!validateMaintenanceData(data)) {
       return false;
     }
@@ -77,6 +81,11 @@ export function useMaintenanceActions() {
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error ?? "Erreur lors de l'ajout de l'entretien");
+      }
+
+      const { expense } = await res.json();
+      if (pendingFiles?.length && expense?.id) {
+        await uploadPendingAttachments(pendingFiles, 'expense', expense.id);
       }
 
       showSuccess('Entretien ajouté avec succès !');

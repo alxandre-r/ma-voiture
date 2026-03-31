@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import InfoTooltip from '@/components/common/ui/InfoTooltip';
 
@@ -146,7 +148,19 @@ export default function HealthScoreCard({ health }: HealthScoreCardProps) {
                 <p className="text-xs text-gray-500 dark:text-gray-400 pl-6">{factor.detail}</p>
                 {factor.recommendation && factor.status !== 'good' && (
                   <p className="text-xs text-gray-400 dark:text-gray-500 italic pl-6 mt-0.5">
-                    → {factor.recommendation}
+                    {factor.label === 'Assurance' ? (
+                      <>
+                        →{' '}
+                        <Link
+                          href="/insurance"
+                          className="underline hover:text-gray-600 dark:hover:text-gray-300"
+                        >
+                          Gérer les assurances
+                        </Link>
+                      </>
+                    ) : (
+                      <>→ {factor.recommendation}</>
+                    )}
                   </p>
                 )}
               </div>

@@ -36,7 +36,7 @@ export const getUserVehiclesMinimal = cache(async () => {
 
   const { data, error } = await supabase
     .from('vehicles_for_display')
-    .select('vehicle_id, make, model, year, odometer')
+    .select('vehicle_id, owner_id, make, model, year, odometer')
     .eq('owner_id', user.id)
     .order('created_at', { ascending: false });
 

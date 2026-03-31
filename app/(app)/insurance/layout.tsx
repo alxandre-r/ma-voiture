@@ -7,9 +7,5 @@ interface InsuranceLayoutProps {
   children: ReactNode;
 }
 export default function InsuranceLayout({ children }: InsuranceLayoutProps) {
-  return (
-    <PrivateLayoutContent title="Assurance" showFilters>
-      {children}
-    </PrivateLayoutContent>
-  );
+  return <PrivateLayoutContent title="Assurance">{children}</PrivateLayoutContent>;
 }

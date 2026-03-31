@@ -36,9 +36,6 @@ export default function InsuranceVehicleCard({
 }: InsuranceVehicleCardProps) {
   const activeContract = getActiveContract(contracts);
   const historicalContracts = getHistoricalContracts(contracts);
-  const vehicleName = [vehicle.make, vehicle.model, vehicle.year ? `· ${vehicle.year}` : '']
-    .filter(Boolean)
-    .join(' ');
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
@@ -47,8 +44,8 @@ export default function InsuranceVehicleCard({
         <div className="flex gap-3 items-center">
           {/* Thumbnail */}
           <div className="relative w-16 h-12 sm:w-20 sm:h-14 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 flex items-center justify-center">
-            {vehicle.image ? (
-              <Image src={vehicle.image} alt={vehicleName} fill className="object-cover" />
+            {vehicle.image && vehicle.name ? (
+              <Image src={vehicle.image} alt={vehicle.name} fill className="object-cover" />
             ) : (
               <Icon name="car" size={24} className="text-gray-400" />
             )}
@@ -58,21 +55,11 @@ export default function InsuranceVehicleCard({
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-1.5">
               <p className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">
-                {vehicleName}
+                {vehicle.name}
               </p>
               {activeContract && <InsuranceStatusBadge contract={activeContract} />}
-              {isFamily && (
-                <span className="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full font-medium">
-                  Lecture seule
-                </span>
-              )}
             </div>
             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-              {vehicle.plate && (
-                <span className="text-[10px] font-mono font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
-                  {vehicle.plate}
-                </span>
-              )}
               {activeContract?.provider && (
                 <span className="text-xs text-gray-400 dark:text-gray-500 truncate">
                   {activeContract.provider}

@@ -12,44 +12,55 @@ export default function PatchnotesSection() {
   const patchnotesData: VersionBlockProps[] = [
     {
       version: 'à venir',
-      date: '',
-      summary: 'Prochaines fonctionnalités et améliorations prévues',
+      date: 'Prochainement',
+      summary:
+        'Fonctionnalité de trajets, exports de données, compte rendu financier prenant compte du financement du véhicule, et plus encore !',
+      type: 'todo',
+    },
+    {
+      version: '1.2.3',
+      date: '31 Mars 2026',
+      summary: 'Pièces jointes, préférences, améliorations visuelles',
       details: (
         <ul className="list-disc list-inside space-y-1">
-          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
-            Améliorations
-          </li>
-          <li>
-            Amélioration de la fonctionnalité d&apos;assurance : possibilité de gérer un historique
-            d&apos;assurances pour chaque véhicule, avec des dates de début et de fin, montant..
-          </li>
-
           <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
             Nouvelles fonctionnalités
           </li>
           <li>
-            Véhicules <strong>favoris</strong>. Permet de marquer un ou plusieurs véhicules comme
-            favoris pour les afficher en priorité dans le
+            Ajout des <strong>pièces jointes</strong> sur toutes les dépenses, les véhicules et les
+            entrées d&apos;entretien.
           </li>
           <li>
-            Ajout de préférences utilisateur pour personnaliser l&apos;affichage du dashboard (choix
-            du mode d&apos;affichage des graphiques et de la temporalité par défaut).
+            Nouveau système de <strong>préférences</strong> : depuis Paramètres → Préférences, il
+            est désormais possible de choisir le filtre appliqué par défaut, et de personnaliser ce
+            qui est partagé avec les membres de la famille (chaque type d&apos;information peut être
+            activé ou désactivé individuellement).
+          </li>
+
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
+            Améliorations visuelles
           </li>
           <li>
-            <strong>Rappels</strong> de maintenance.
+            Refonte de la vue d&apos;ensemble des statistiques : nouveau design des cartes et ajout
+            d&apos;une carte <strong>Coût au km</strong>.
           </li>
+          <li>Améliorations visuelles sur la page Assurance pour une meilleure lisibilité.</li>
+
+          <li className="font-semibold text-gray-900 dark:text-gray-100 list-none mt-3">
+            Correctifs
+          </li>
+          <li>Assurance : l&apos;affichage pouvait être incorrect dans certains cas.</li>
+          <li>Assurance : des mensualités en double pouvaient apparaître.</li>
           <li>
-            Implémenter une calculatrice d&apos;itinéraire pour estimer la consommation et le coût
-            d&apos;un trajet donné. Se basant sur un inpout de l&apos;utilisateur pour le nombre de
-            km.
+            Filtre véhicule : le libellé de la sélection en cours n&apos;était pas toujours correct.
           </li>
         </ul>
       ),
-      type: 'todo',
+      type: 'minor',
     },
     {
       version: '1.2.2',
-      date: '16 Mars 2026',
+      date: '26 Mars 2026',
       summary: 'Ajout des Rappels, améliorations UX, mobile',
       details: (
         <ul className="list-disc list-inside space-y-1">
@@ -75,7 +86,7 @@ export default function PatchnotesSection() {
     },
     {
       version: '1.2.1',
-      date: '16 Mars 2026',
+      date: '18 Mars 2026',
       summary: 'Correctifs mineurs et optimisations visuelles',
       details: (
         <ul className="list-disc list-inside space-y-1">

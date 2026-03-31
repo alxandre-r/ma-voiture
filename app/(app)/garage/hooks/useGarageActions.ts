@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
+import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 import type { Vehicle } from '@/types/vehicle';
 
@@ -12,7 +13,7 @@ export interface UseGarageActionsReturn {
   isSubmitting: boolean;
 
   // Vehicle actions
-  handleSaveVehicle: (vehicleData: Partial<Vehicle>) => Promise<boolean>;
+  handleSaveVehicle: (vehicleData: Partial<Vehicle>, pendingFiles?: File[]) => Promise<boolean>;
   handleDeleteVehicle: (vehicleId: string) => Promise<boolean>;
 
   // View state
@@ -78,7 +79,7 @@ export function useGarageActions(): UseGarageActionsReturn {
 
   /** --- Save vehicle (add or update) --- */
   const handleSaveVehicle = useCallback(
-    async (vehicleData: Partial<Vehicle>): Promise<boolean> => {
+    async (vehicleData: Partial<Vehicle>, pendingFiles?: File[]): Promise<boolean> => {
       setIsSubmitting(true);
       try {
         const isUpdate = !!vehicleData.vehicle_id;
@@ -93,6 +94,10 @@ export function useGarageActions(): UseGarageActionsReturn {
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Erreur lors de l'enregistrement");
+
+        if (!isUpdate && pendingFiles?.length && data.vehicle?.vehicle_id) {
+          await uploadPendingAttachments(pendingFiles, 'vehicle', data.vehicle.vehicle_id);
+        }
 
         showSuccess(isUpdate ? 'Véhicule modifié avec succès !' : 'Véhicule ajouté avec succès !');
 

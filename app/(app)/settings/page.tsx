@@ -1,11 +1,13 @@
 /**
  * @file app/settings/page.tsx
  * @summary Server Component for the Settings page.
- * All settings data is read from UserContext (populated by AppDataProvider).
  */
+
+import { getUserPreferences } from '@/lib/data/user/getUserPreferences';
 
 import SettingsClient from './SettingsClient';
 
-export default function SettingsPage() {
-  return <SettingsClient />;
+export default async function SettingsPage() {
+  const preferences = await getUserPreferences();
+  return <SettingsClient initialPreferences={preferences} />;
 }

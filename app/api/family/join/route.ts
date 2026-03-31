@@ -3,6 +3,7 @@
  * @description API endpoint to join a family using an invitation token.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Erreur lors de l'ajout à la famille" }, { status: 500 });
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         message: 'Vous avez rejoint la famille avec succès',

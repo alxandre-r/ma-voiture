@@ -3,6 +3,7 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+import AttachmentGallery from '@/components/common/attachments/AttachmentGallery';
 import Icon from '@/components/common/ui/Icon';
 
 import type { Expense } from '@/types/expense';
@@ -16,6 +17,8 @@ interface MaintenanceCardProps {
   onEdit: () => void;
   onDeleteClick: () => void;
   deletingId?: number | null;
+  onDeleteAttachment?: (attachmentId: number) => void;
+  deletingAttachmentId?: number | null;
 }
 
 function MaintenanceCard({
@@ -26,6 +29,8 @@ function MaintenanceCard({
   onEdit,
   onDeleteClick,
   deletingId,
+  onDeleteAttachment,
+  deletingAttachmentId,
 }: MaintenanceCardProps) {
   const vehicleName = vehicle
     ? vehicle.name || `${vehicle.make} ${vehicle.model}`
@@ -132,6 +137,17 @@ function MaintenanceCard({
             <p className="text-gray-600 border-t border-gray-200 pt-4 mt-4 dark:text-gray-400 dark:border-gray-700 text-sm whitespace-pre-wrap">
               {expense.notes}
             </p>
+          )}
+
+          {expense.attachments && expense.attachments.length > 0 && (
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+              <AttachmentGallery
+                savedAttachments={expense.attachments}
+                onDeleteSaved={onDeleteAttachment ?? (() => {})}
+                isOwner={userId === expense.owner_id}
+                deletingId={deletingAttachmentId}
+              />
+            </div>
           )}
         </div>
       </div>

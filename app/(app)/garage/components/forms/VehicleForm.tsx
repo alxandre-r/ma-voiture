@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
+import AttachmentSection from '@/components/common/attachments/AttachmentSection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/common/ui/card';
 import { FormField, FormInput, FormSelect } from '@/components/common/ui/form';
 import Icon from '@/components/common/ui/Icon';
@@ -16,7 +17,7 @@ import type { Vehicle } from '@/types/vehicle';
 
 interface VehicleFormProps {
   vehicle?: Vehicle | null;
-  onSave: (vehicle: Partial<Vehicle>) => void;
+  onSave: (vehicle: Partial<Vehicle>, pendingFiles?: File[]) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
@@ -30,6 +31,7 @@ export default function VehicleForm({
   const { showSuccess, showError } = useNotifications();
   const [loading, setLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
     // Basic info
@@ -48,9 +50,6 @@ export default function VehicleForm({
     // Image
     image: '',
     color: '#f97316',
-    // Dates - insurance
-    insurance_start_date: '',
-    insurance_monthly_cost: undefined as number | undefined,
     // Other dates
     tech_control_expiry: '',
     purchase_date: '',
@@ -77,8 +76,6 @@ export default function VehicleForm({
         odometer: vehicle.odometer || 0,
         image: vehicle.image || '',
         color: vehicle.color || '#f97316',
-        insurance_start_date: vehicle.insurance_start_date || '',
-        insurance_monthly_cost: vehicle.insurance_monthly_cost || undefined,
         tech_control_expiry: vehicle.tech_control_expiry || '',
         purchase_date: vehicle.purchase_date || '',
         financing_mode: vehicle.financing_mode || 'owned',
@@ -145,7 +142,7 @@ export default function VehicleForm({
         ...formData,
         vehicle_id: vehicle?.vehicle_id,
       };
-      onSave(vehicleData);
+      onSave(vehicleData, pendingFiles);
     } catch (err) {
       showError(err instanceof Error ? err.message : 'Erreur inconnue');
     } finally {
@@ -395,13 +392,8 @@ export default function VehicleForm({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <FormField label="Type de carburant" required>
-                  <FormSelect
-                    name="fuel_type"
-                    value={formData.fuel_type}
-                    onChange={handleChange}
-                    required
-                  >
+                <FormField label="Type de carburant">
+                  <FormSelect name="fuel_type" value={formData.fuel_type} onChange={handleChange}>
                     <option value="Essence">Essence</option>
                     <option value="Diesel">Diesel</option>
                     <option value="Hybride non rechargeable">Hybride non rechargeable</option>
@@ -409,13 +401,12 @@ export default function VehicleForm({
                     <option value="Électrique">Électrique</option>
                   </FormSelect>
                 </FormField>
-                <FormField label="Transmission" required>
+                <FormField label="Transmission">
                   <FormSelect
                     name="transmission"
                     value={formData.transmission}
                     onChange={handleChange}
                     disabled={isElectricOrHybrid}
-                    required
                   >
                     <option value="Automatique">Automatique</option>
                     {!isElectricOrHybrid && <option value="Manuelle">Manuelle</option>}
@@ -472,39 +463,6 @@ export default function VehicleForm({
             </CardContent>
           </Card>
 
-          {/* Assurance */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Icon name="secure" size={18} className="text-gray-500" /> Assurance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField label="Début de validité" required>
-                  <FormInput
-                    type="date"
-                    name="insurance_start_date"
-                    value={formData.insurance_start_date}
-                    onChange={handleChange}
-                    required
-                  />
-                </FormField>
-                <FormField label="Coût mensuel (€)">
-                  <FormInput
-                    type="number"
-                    name="insurance_monthly_cost"
-                    value={formData.insurance_monthly_cost || ''}
-                    onChange={handleChange}
-                    placeholder="Ex: 50"
-                    min={0}
-                    step="0.01"
-                  />
-                </FormField>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Contrôle Technique */}
           <Card>
             <CardHeader className="pb-3">
@@ -513,13 +471,12 @@ export default function VehicleForm({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField label="Date d'expiration" required>
+              <FormField label="Date d'expiration">
                 <FormInput
                   type="date"
                   name="tech_control_expiry"
                   value={formData.tech_control_expiry}
                   onChange={handleChange}
-                  required
                 />
               </FormField>
             </CardContent>
@@ -534,29 +491,27 @@ export default function VehicleForm({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <FormField label="Mode de financement" required>
+                <FormField label="Mode de financement">
                   <FormSelect
                     name="financing_mode"
                     value={formData.financing_mode}
                     onChange={handleChange}
-                    required
                   >
                     <option value="owned">Propriétaire</option>
                     <option value="lld">LLD</option>
                     <option value="loa">LOA</option>
                   </FormSelect>
                 </FormField>
-                <FormField label="Date d'achat" required>
+                <FormField label="Date d'achat">
                   <FormInput
                     type="date"
                     name="purchase_date"
                     value={formData.purchase_date}
                     onChange={handleChange}
-                    required
                   />
                 </FormField>
               </div>
-              <FormField label="Prix d'achat (€)" required>
+              <FormField label="Prix d'achat (€)">
                 <FormInput
                   type="number"
                   name="purchase_price"
@@ -565,12 +520,28 @@ export default function VehicleForm({
                   placeholder="Ex: 15000"
                   min={0}
                   step="0.01"
-                  required
                 />
               </FormField>
             </CardContent>
           </Card>
         </div>
+
+        {/* Documents */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Icon name="notes" size={18} className="text-gray-500" /> Documents du véhicule
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AttachmentSection
+              savedAttachments={vehicle?.attachments}
+              entityType="vehicle"
+              entityId={vehicle?.vehicle_id}
+              onPendingFilesChange={setPendingFiles}
+            />
+          </CardContent>
+        </Card>
       </form>
 
       {/* Save button for mobile view */}

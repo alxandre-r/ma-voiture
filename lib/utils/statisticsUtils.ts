@@ -80,6 +80,7 @@ export interface StatisticsData {
   avgCostPerMonth: number;
   monthsWithData: number;
   previousPeriodCost: number;
+  previousYearTotal: number;
   trendPercentage: number;
   totalKilometers: number;
   totalLiters: number;
@@ -182,14 +183,19 @@ export function computeStatistics(
   const totalCost = energyCost + insuranceCost + maintenanceCost + otherCost;
 
   const vehicleStats = computeVehicleStats(filteredExpenses, vehicles, totalCost);
-  const { annualProjection, annualKmProjection, previousPeriodCost, trendPercentage } =
-    computeProjectionsAndTrends(
-      allExpenses,
-      selectedVehicleIds,
-      selectedPeriod,
-      totalCost,
-      monthsNum,
-    );
+  const {
+    annualProjection,
+    annualKmProjection,
+    previousPeriodCost,
+    previousYearTotal,
+    trendPercentage,
+  } = computeProjectionsAndTrends(
+    allExpenses,
+    selectedVehicleIds,
+    selectedPeriod,
+    totalCost,
+    monthsNum,
+  );
   const { totalKilometers, totalLiters, avgConsumption, electricShare, hasElectricVehicle } =
     computeDistanceEnergy(filteredExpenses, vehicles, selectedVehicleIds);
 
@@ -216,6 +222,7 @@ export function computeStatistics(
     avgCostPerMonth: totalCost / monthsNum,
     monthsWithData: monthsNum,
     previousPeriodCost,
+    previousYearTotal,
     trendPercentage,
     totalKilometers,
     totalLiters,
@@ -257,6 +264,7 @@ function emptyStats(monthsNum: number, odometerSeries: OdometerSeries[]): Statis
     avgCostPerMonth: 0,
     monthsWithData: monthsNum,
     previousPeriodCost: 0,
+    previousYearTotal: 0,
     trendPercentage: 0,
     totalKilometers: 0,
     totalLiters: 0,
@@ -442,6 +450,7 @@ function computeProjectionsAndTrends(
   annualProjection: number;
   annualKmProjection: number;
   previousPeriodCost: number;
+  previousYearTotal: number;
   trendPercentage: number;
 } {
   const now = new Date();
@@ -455,6 +464,14 @@ function computeProjectionsAndTrends(
     )
     .reduce((s, e) => s + (e.amount ?? 0), 0);
   const annualProjection = (currentYearCost / (currentMonth + 1)) * 12;
+
+  const previousYearTotal = allExpenses
+    .filter(
+      (e) =>
+        new Date(e.date).getFullYear() === currentYear - 1 &&
+        selectedVehicleIds.includes(e.vehicle_id),
+    )
+    .reduce((s, e) => s + (e.amount ?? 0), 0);
 
   let previousPeriodCost = 0;
   if (selectedPeriod === 'month') {
@@ -502,7 +519,13 @@ function computeProjectionsAndTrends(
   const totalKmYTD = Array.from(vehicleOdometers.values()).reduce((s, d) => s + (d.max - d.min), 0);
   const annualKmProjection = totalKmYTD > 0 ? (totalKmYTD / (currentMonth + 1)) * 12 : 0;
 
-  return { annualProjection, annualKmProjection, previousPeriodCost, trendPercentage };
+  return {
+    annualProjection,
+    annualKmProjection,
+    previousPeriodCost,
+    previousYearTotal,
+    trendPercentage,
+  };
 }
 
 function computeDistanceEnergy(

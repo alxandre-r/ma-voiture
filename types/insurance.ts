@@ -1,3 +1,5 @@
+import type { Attachment } from '@/types/attachment';
+
 export interface InsuranceContract {
   id: number;
   vehicle_id: number;
@@ -6,6 +8,7 @@ export interface InsuranceContract {
   start_date: string;
   end_date: string | null;
   provider: string | null;
+  attachments?: Attachment[];
 }
 
 export interface InsuranceFormData {

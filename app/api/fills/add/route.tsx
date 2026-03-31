@@ -6,6 +6,7 @@
  * with proper authentication and validation.
  */
 
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -124,6 +125,7 @@ export async function POST(request: Request) {
       notes: body.notes,
     };
 
+    revalidatePath('/', 'layout');
     return NextResponse.json(
       {
         fill: responseFill,

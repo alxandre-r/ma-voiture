@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import ReminderStatusBadge from '@/app/(app)/reminders/components/ReminderStatusBadge';
+import AttachmentGallery from '@/components/common/attachments/AttachmentGallery';
 import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import Icon from '@/components/common/ui/Icon';
 import { formatReminderDue } from '@/lib/utils/reminderUtils';
@@ -17,6 +18,8 @@ interface ReminderCardProps {
   onDelete: (id: number) => void;
   isCompleting?: boolean;
   isDeleting?: boolean;
+  onDeleteAttachment?: (attachmentId: number) => void;
+  deletingAttachmentId?: number | null;
 }
 
 const TYPE_LABELS: Record<ReminderType, string> = {
@@ -34,6 +37,8 @@ export default function ReminderCard({
   onDelete,
   isCompleting = false,
   isDeleting = false,
+  onDeleteAttachment,
+  deletingAttachmentId,
 }: ReminderCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -174,6 +179,18 @@ export default function ReminderCard({
           <p className="text-gray-600 border-t border-gray-200 pt-3 mt-3 dark:text-gray-400 dark:border-gray-700 text-sm whitespace-pre-wrap">
             {reminder.description}
           </p>
+        )}
+
+        {/* Attachments */}
+        {reminder.attachments && reminder.attachments.length > 0 && (
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+            <AttachmentGallery
+              savedAttachments={reminder.attachments}
+              onDeleteSaved={onDeleteAttachment ?? (() => {})}
+              isOwner={true}
+              deletingId={deletingAttachmentId}
+            />
+          </div>
         )}
 
         {/* Mark as done — prominent button for active reminders */}

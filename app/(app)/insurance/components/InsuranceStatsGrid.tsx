@@ -56,17 +56,17 @@ export default function InsuranceStatsGrid({
 }: InsuranceStatsGridProps) {
   const nextPaymentValue = nextPaymentEntry ? (
     <>
-      <p>
+      <span>
         {format(nextPaymentEntry.date, 'dd MMM', { locale: fr })}
         <span className="hidden sm:inline">
           {' '}
           {format(nextPaymentEntry.date, 'yyyy', { locale: fr })}
         </span>
-      </p>
+      </span>
       {nextPaymentVehicle && (
-        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+        <span className="block text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
           {nextPaymentVehicle.make} {nextPaymentVehicle.model}
-        </p>
+        </span>
       )}
     </>
   ) : null;

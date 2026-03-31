@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import AttachmentSection from '@/components/common/attachments/AttachmentSection';
 import { Card, CardContent, CardHeader, CardTitle, CardRow } from '@/components/common/ui/card';
 import Icon from '@/components/common/ui/Icon';
 import InfoTooltip from '@/components/common/ui/InfoTooltip';
@@ -20,6 +21,7 @@ import InsuranceSection from './InsuranceSection';
 
 import type { Expense } from '@/types/expense';
 import type { Reminder } from '@/types/reminder';
+import type { UserPreferences } from '@/types/userPreferences';
 import type { Vehicle } from '@/types/vehicle';
 
 interface VehicleOwner {
@@ -37,6 +39,7 @@ interface VehicleDetailProps {
   expenses?: Expense[];
   reminders?: Reminder[];
   hasActiveInsurance?: boolean;
+  ownerPreferences?: UserPreferences | null;
 }
 
 export default function VehicleDetail({
@@ -48,6 +51,7 @@ export default function VehicleDetail({
   expenses,
   reminders,
   hasActiveInsurance,
+  ownerPreferences,
 }: VehicleDetailProps) {
   const { showSuccess, showError } = useNotifications();
   const router = useRouter();
@@ -101,6 +105,12 @@ export default function VehicleDetail({
   const vehicleImage = vehicle.image;
   const vehicleName = vehicle.name || (vehicle.make ? `${vehicle.make} ${vehicle.model}` : '');
   const health = computeHealthScore(vehicle, { expenses, reminders, hasActiveInsurance });
+
+  // Visibility — owner's preferences control what family members can see
+  const showConsumption = !isFamilyVehicle || (ownerPreferences?.show_consumption ?? true);
+  const showInsurance = !isFamilyVehicle || (ownerPreferences?.show_insurance ?? true);
+  const showVehicleDetails = !isFamilyVehicle || (ownerPreferences?.show_vehicle_details ?? true);
+  const showFinancials = !isFamilyVehicle || (ownerPreferences?.show_financials ?? true);
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -194,107 +204,134 @@ export default function VehicleDetail({
         </div>
 
         {/* General Information Card */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Icon name="settings" size={18} /> Informations Générales
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <CardRow label="Marque" value={vehicle.make || '—'} />
-            <CardRow label="Modèle" value={vehicle.model || '—'} />
-            <CardRow label="Année" value={vehicle.year || '—'} />
-            <CardRow label="VIN" value={vehicle.vin || '—'} className="font-mono" />
-            <CardRow label="Propriétaire" value={vehicle.owner_name || '—'} />
-          </CardContent>
-        </Card>
+        {showVehicleDetails && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Icon name="settings" size={18} /> Informations Générales
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <CardRow label="Marque" value={vehicle.make || '—'} />
+              <CardRow label="Modèle" value={vehicle.model || '—'} />
+              <CardRow label="Année" value={vehicle.year || '—'} />
+              <CardRow label="VIN" value={vehicle.vin || '—'} className="font-mono" />
+              <CardRow label="Propriétaire" value={vehicle.owner_name || '—'} />
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Info Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <HealthScoreCard health={health} />
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Icon name="tool" size={18} className="text-gray-500" /> Technique & Performances
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <CardRow label="Carburant" value={vehicle.fuel_type || '—'} />
-            <CardRow label="Transmission" value={vehicle.transmission || '—'} />
-            <CardRow
-              label="Kilométrage"
-              value={vehicle.odometer?.toLocaleString() + ' km' || '—'}
-            />
-            <CardRow
-              label={
-                <span className="flex items-center gap-1">
-                  Consommation
-                  <InfoTooltip
-                    title="Consommation calculée"
-                    details={[
-                      'Calculée depuis vos pleins enregistrés.',
-                      'Formule : (litres totaux / km parcourus) × 100',
-                      'Plus vous enregistrez de pleins, plus la valeur est précise.',
-                    ]}
-                  />
-                </span>
-              }
-              value={
-                vehicle.calculated_consumption
-                  ? `${vehicle.calculated_consumption} L/100km`
-                  : '— (calculée depuis les pleins)'
-              }
-            />
-            {vehicle.co2_emission != null && (
+        {showConsumption && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Icon name="tool" size={18} className="text-gray-500" /> Technique & Performances
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <CardRow label="Carburant" value={vehicle.fuel_type || '—'} />
+              <CardRow label="Transmission" value={vehicle.transmission || '—'} />
+              <CardRow
+                label="Kilométrage"
+                value={vehicle.odometer?.toLocaleString() + ' km' || '—'}
+              />
               <CardRow
                 label={
                   <span className="flex items-center gap-1">
-                    CO₂ homologué
+                    Consommation
                     <InfoTooltip
-                      title="Émissions CO₂ officielles"
+                      title="Consommation calculée"
                       details={[
-                        'Valeur issue de la fiche technique constructeur.',
-                        'Peut différer des émissions réelles selon le style de conduite.',
+                        'Calculée depuis vos pleins enregistrés.',
+                        'Formule : (litres totaux / km parcourus) × 100',
+                        'Plus vous enregistrez de pleins, plus la valeur est précise.',
                       ]}
                     />
                   </span>
                 }
-                value={`${vehicle.co2_emission} g/km`}
+                value={
+                  vehicle.calculated_consumption
+                    ? `${vehicle.calculated_consumption} L/100km`
+                    : '— (calculée depuis les pleins)'
+                }
               />
-            )}
-          </CardContent>
-        </Card>
+              {vehicle.co2_emission != null && (
+                <CardRow
+                  label={
+                    <span className="flex items-center gap-1">
+                      CO₂ homologué
+                      <InfoTooltip
+                        title="Émissions CO₂ officielles"
+                        details={[
+                          'Valeur issue de la fiche technique constructeur.',
+                          'Peut différer des émissions réelles selon le style de conduite.',
+                        ]}
+                      />
+                    </span>
+                  }
+                  value={`${vehicle.co2_emission} g/km`}
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
 
-        <InsuranceSection vehicleId={vehicle.vehicle_id} isFamilyVehicle={isFamilyVehicle} />
+        {showInsurance && (
+          <InsuranceSection vehicleId={vehicle.vehicle_id} isFamilyVehicle={isFamilyVehicle} />
+        )}
 
+        {showFinancials && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Icon name="euro" size={18} className="text-gray-500" /> Achat & Finance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <CardRow
+                label="Mode de financement"
+                value={getFinancingModeLabel(vehicle.financing_mode)}
+              />
+              <CardRow label="Date d'achat / contrat" value={formatDate(vehicle.purchase_date)} />
+              <CardRow
+                label={
+                  getFinancingModeLabel(vehicle.financing_mode) === 'Propriétaire'
+                    ? "Prix d'achat"
+                    : 'Loyer mensuel'
+                }
+                value={
+                  vehicle.purchase_price
+                    ? `${vehicle.purchase_price.toLocaleString()} €`
+                    : 'Non renseigné'
+                }
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Documents du véhicule */}
+      {(vehicle.attachments?.length ?? 0) > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Icon name="euro" size={18} className="text-gray-500" /> Achat & Finance
+              <Icon name="notes" size={18} className="text-gray-500" /> Documents
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <CardRow
-              label="Mode de financement"
-              value={getFinancingModeLabel(vehicle.financing_mode)}
-            />
-            <CardRow label="Date d'achat / contrat" value={formatDate(vehicle.purchase_date)} />
-            <CardRow
-              label={
-                getFinancingModeLabel(vehicle.financing_mode) === 'Propriétaire'
-                  ? "Prix d'achat"
-                  : 'Loyer mensuel'
-              }
-              value={
-                vehicle.purchase_price
-                  ? `${vehicle.purchase_price.toLocaleString()} €`
-                  : 'Non renseigné'
-              }
+          <CardContent>
+            <AttachmentSection
+              savedAttachments={vehicle.attachments}
+              entityType="vehicle"
+              entityId={vehicle.vehicle_id}
+              isOwner={!isFamilyVehicle}
             />
           </CardContent>
         </Card>
-      </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmationModal

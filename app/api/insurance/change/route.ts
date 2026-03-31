@@ -1,4 +1,5 @@
 import { addMonths, parseISO, subDays } from 'date-fns';
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -109,6 +110,7 @@ export async function POST(request: Request) {
       await supabase.from('expenses').insert(expensesToInsert);
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json({ contract: newContract }, { status: 201 });
   } catch (err) {
     console.error('Unexpected error:', err);

@@ -15,8 +15,8 @@ export function getActiveContract(contracts: InsuranceContract[]): InsuranceCont
 }
 
 export function getHistoricalContracts(contracts: InsuranceContract[]): InsuranceContract[] {
-  const today = getTodayMidnight();
-  return contracts.filter((c) => c.end_date && parseISO(c.end_date) < today);
+  const active = getActiveContract(contracts);
+  return contracts.filter((c) => c.id !== active?.id);
 }
 
 /** Returns the number of days until a contract's end_date. Negative = already expired. */

@@ -1,4 +1,5 @@
 import { addMonths } from 'date-fns';
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -102,6 +103,7 @@ export async function PATCH(request: Request) {
       });
     }
 
+    revalidatePath('/', 'layout');
     return NextResponse.json({ reminder: updated });
   } catch {
     return NextResponse.json({ error: 'Erreur serveur inattendue' }, { status: 500 });

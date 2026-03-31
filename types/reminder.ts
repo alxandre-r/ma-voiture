@@ -1,3 +1,5 @@
+import type { Attachment } from '@/types/attachment';
+
 export type ReminderType = 'maintenance' | 'insurance' | 'inspection' | 'custom';
 
 export type ReminderStatus = 'overdue' | 'due-soon' | 'upcoming' | 'none';
@@ -21,6 +23,7 @@ export interface Reminder {
   maintenance_type_id: string | null;
   estimated_due_date: string | null;
   created_at: string;
+  attachments?: Attachment[];
 }
 
 export interface ReminderWithStatus extends Reminder {
