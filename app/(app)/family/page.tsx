@@ -31,7 +31,6 @@ export default async function FamilyPage() {
             familyId={family.id}
             isOwner={family.is_owner}
             currentUserId={user.id}
-            currentUserRole={family.role}
           />
         ))}
       <FamilySharedInfo />

@@ -18,14 +18,12 @@ interface FamilyCardProps {
   familyId: string;
   isOwner: boolean;
   currentUserId: string;
-  currentUserRole: 'owner' | 'member';
 }
 
 export default async function FamilyCard({
   familyId,
   isOwner,
   currentUserId,
-  currentUserRole,
 }: FamilyCardProps) {
   // Fetch family info and member count in parallel
   // getFamilyMembers uses React cache() — safe to call here and again in FamilyCardMembers
@@ -55,7 +53,6 @@ export default async function FamilyCard({
               <FamilyCardMembers
                 familyId={familyId}
                 currentUserId={currentUserId}
-                currentUserRole={currentUserRole}
               />
             </Suspense>
           </FamilyErrorBoundary>
