@@ -84,7 +84,6 @@ export default function LandingPage() {
             border border-amber-200 dark:border-amber-700
             text-amber-800 dark:text-amber-300 text-sm"
           >
-            <span className="text-base shrink-0">⚠️</span>
             <span>{reasonMessage}</span>
           </div>
         </motion.div>

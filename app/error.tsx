@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 export default function GlobalError({
   error,
   reset,
@@ -7,18 +9,34 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const router = useRouter();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-4 text-center">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-        Une erreur est survenue
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-6 text-center bg-gray-50 dark:bg-gray-900">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
+        Oops! Une erreur est survenue
       </h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">{error.message}</p>
-      <button
-        onClick={reset}
-        className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg text-sm font-medium transition-colors"
-      >
-        Réessayer
-      </button>
+      <p className="text-gray-500 dark:text-gray-400 max-w-md">
+        {error.message ||
+          "Quelque chose s'est mal passé. Veuillez réessayer ou revenir à la page de connexion."}
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <button
+          onClick={reset}
+          className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors shadow-md"
+        >
+          Réessayer
+        </button>
+        <button
+          onClick={() => router.push('/')}
+          className="px-5 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-lg font-medium text-sm transition-colors shadow-md"
+        >
+          Aller à la connexion
+        </button>
+      </div>
+      {error.digest && (
+        <p className="text-xs text-gray-400 mt-2 select-text">Error digest: {error.digest}</p>
+      )}
     </div>
   );
 }
