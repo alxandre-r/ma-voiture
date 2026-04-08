@@ -20,11 +20,7 @@ interface FamilyCardProps {
   currentUserId: string;
 }
 
-export default async function FamilyCard({
-  familyId,
-  isOwner,
-  currentUserId,
-}: FamilyCardProps) {
+export default async function FamilyCard({ familyId, isOwner, currentUserId }: FamilyCardProps) {
   // Fetch family info and member count in parallel
   // getFamilyMembers uses React cache() — safe to call here and again in FamilyCardMembers
   const [family, members] = await Promise.all([
@@ -50,10 +46,7 @@ export default async function FamilyCard({
           </h4>
           <FamilyErrorBoundary>
             <Suspense fallback={<FamilyCardMembersSkeleton />}>
-              <FamilyCardMembers
-                familyId={familyId}
-                currentUserId={currentUserId}
-              />
+              <FamilyCardMembers familyId={familyId} currentUserId={currentUserId} />
             </Suspense>
           </FamilyErrorBoundary>
         </div>
