@@ -15,7 +15,11 @@ import WelcomePage from './components/WelcomePage';
 import type { User } from '@/types/user';
 
 export default async function FamilyPage() {
-  const user = (await getCurrentUserInfo()) as User;
+  const user = (await getCurrentUserInfo()) as User | null;
+
+  if (!user) {
+    return null;
+  }
 
   if (!user.has_family || user.families.length === 0) {
     return <WelcomePage />;
