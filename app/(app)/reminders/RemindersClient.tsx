@@ -13,7 +13,7 @@ import Icon from '@/components/common/ui/Icon';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useReminderActions } from '@/hooks/reminders/useReminderActions';
-import { getPeriodCutoff } from '@/lib/utils/filterUtils';
+import { getEffectivePeriodRange } from '@/lib/utils/filterUtils';
 import { enrichReminder, sortReminders } from '@/lib/utils/reminderUtils';
 
 import type { Expense } from '@/types/expense';
@@ -76,9 +76,9 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
           )
         : enrichedReminders;
 
-    const cutoff = getPeriodCutoff(selectedPeriod);
-    if (cutoff) {
-      result = result.filter((r) => !r.due_date || new Date(r.due_date) >= cutoff);
+    const { start } = getEffectivePeriodRange(selectedPeriod);
+    if (start) {
+      result = result.filter((r) => !r.due_date || new Date(r.due_date) >= start);
     }
 
     return result;
@@ -100,7 +100,11 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
   );
 
   const vehiclesMinimal: VehicleMinimal[] = vehicles
-    .filter((v) => v.owner_id === user?.id && (v.status === 'active' || v.status == null))
+    .filter(
+      (v) =>
+        (v.owner_id === user?.id || v.permission_level === 'write') &&
+        (v.status === 'active' || v.status == null),
+    )
     .map((v) => ({
       vehicle_id: v.vehicle_id,
       name: v.name ?? `${v.make} ${v.model}`,
@@ -109,6 +113,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
       fuel_type: v.fuel_type ?? null,
       status: v.status ?? 'active',
       owner_id: v.owner_id,
+      permission_level: v.permission_level ?? null,
     }));
 
   const handleSave = async (data: ReminderFormData, id?: number): Promise<boolean> => {
@@ -180,6 +185,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            currentUserId={user?.id}
             onDeleteAttachment={handleDeleteAttachment}
             deletingAttachmentId={deletingAttachmentId}
           />
@@ -191,6 +197,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            currentUserId={user?.id}
             onDeleteAttachment={handleDeleteAttachment}
             deletingAttachmentId={deletingAttachmentId}
           />
@@ -220,6 +227,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            currentUserId={user?.id}
             onDeleteAttachment={handleDeleteAttachment}
             deletingAttachmentId={deletingAttachmentId}
           />
@@ -231,6 +239,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
             onDelete={deleteReminder}
             completingId={completingId}
             deletingId={deletingId}
+            currentUserId={user?.id}
             onDeleteAttachment={handleDeleteAttachment}
             deletingAttachmentId={deletingAttachmentId}
           />

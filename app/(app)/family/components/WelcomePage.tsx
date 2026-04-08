@@ -5,7 +5,7 @@ import { JoinFamilyForm } from './forms/JoinFamilyForm';
 
 export default function WelcomePage() {
   return (
-    <div className="min-h-screen md:py-12 py-2">
+    <div className="min-h-screen md:py-12 py-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center md:mb-16 mb-8">

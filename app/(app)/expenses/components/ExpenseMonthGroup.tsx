@@ -22,6 +22,7 @@ interface ExpenseMonthGroupProps {
   onEdit?: (e: Expense) => void;
   onDelete?: (id: number) => void;
   currentUserId?: string | null;
+  writableVehicleIds?: Set<number>;
 }
 
 export default function ExpenseMonthGroup({
@@ -31,6 +32,7 @@ export default function ExpenseMonthGroup({
   onEdit,
   onDelete,
   currentUserId,
+  writableVehicleIds,
 }: ExpenseMonthGroupProps) {
   return (
     <Card key={group.sortKey}>
@@ -52,6 +54,7 @@ export default function ExpenseMonthGroup({
             onEdit={onEdit}
             onDelete={onDelete}
             currentUserId={currentUserId}
+            writableVehicleIds={writableVehicleIds}
           />
         ))}
       </CardContent>

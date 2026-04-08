@@ -2,12 +2,13 @@
 import { useState } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
+import { apiCall } from '@/lib/api/client';
 import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 import type { Fill, FillFormData } from '@/types/fill';
 
 export function useFillActions() {
-  const { showSuccess, showError } = useNotifications();
+  const { showSuccess, showError, showWarning } = useNotifications();
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<FillFormData | null>(null);
@@ -169,16 +170,10 @@ export function useFillActions() {
         throw new Error('Tous les champs numériques doivent être remplis correctement.');
       }
 
-      const res = await fetch('/api/fills/update', {
+      await apiCall('/api/fills/update', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: fillId, ...payload }),
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error ?? 'Erreur lors de la modification du plein');
-      }
       showSuccess('Plein modifié avec succès !');
       cancelEdit();
       triggerRefresh();
@@ -207,31 +202,32 @@ export function useFillActions() {
         odometer: fillData.odometer ? parseInt(fillData.odometer.toString(), 10) : null,
         // For electric charges, liters must be 0 (not null due to NOT NULL constraint)
         // For fuel fills, use the actual value or null
-        liters: isCharge ? 0 : fillData.liters ? fillData.liters : null,
-        amount: fillData.amount ? fillData.amount : null,
+        liters: isCharge ? 0 : (fillData.liters ?? null),
+        amount: fillData.amount ?? null,
         // For electric charges, price_per_liter must be 0 (not null due to NOT NULL constraint)
-        price_per_liter: isCharge ? 0 : fillData.price_per_liter ? fillData.price_per_liter : null,
+        price_per_liter: isCharge ? 0 : (fillData.price_per_liter ?? null),
         notes: fillData.notes || null,
         // Electric vehicle fields
         charge_type: fillData.charge_type || 'fill',
-        kwh: isCharge ? fillData.kwh || null : null,
-        price_per_kwh: isCharge ? fillData.price_per_kwh || null : null,
+        kwh: isCharge ? (fillData.kwh ?? null) : null,
+        price_per_kwh: isCharge ? (fillData.price_per_kwh ?? null) : null,
         created_at: new Date().toISOString(),
       };
 
-      const res = await fetch('/api/fills/add', {
+      const data = await apiCall<{ fill?: { expense_id: number } }>('/api/fills/add', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Erreur lors de l'ajout du plein");
-      }
-
       if (pendingFiles?.length && data.fill?.expense_id) {
-        await uploadPendingAttachments(pendingFiles, 'expense', data.fill.expense_id);
+        const { failedCount } = await uploadPendingAttachments(
+          pendingFiles,
+          'expense',
+          data.fill.expense_id,
+        );
+        if (failedCount > 0) {
+          showWarning(`${failedCount} pièce(s) jointe(s) n'ont pas pu être téléchargées`);
+        }
       }
 
       showSuccess(
@@ -299,15 +295,15 @@ export function useFillActions() {
         date: fillData.date,
         odometer: fillData.odometer ? parseInt(fillData.odometer.toString(), 10) : null,
         // For electric charges, liters must be 0 (not null due to NOT NULL constraint)
-        liters: isCharge ? 0 : fillData.liters ? fillData.liters : null,
-        amount: fillData.amount ? fillData.amount : null,
+        liters: isCharge ? 0 : (fillData.liters ?? null),
+        amount: fillData.amount ?? null,
         // For electric charges, price_per_liter must be 0 (not null due to NOT NULL constraint)
-        price_per_liter: isCharge ? 0 : fillData.price_per_liter ? fillData.price_per_liter : null,
+        price_per_liter: isCharge ? 0 : (fillData.price_per_liter ?? null),
         notes: fillData.notes || null,
         // Electric vehicle fields
         charge_type: fillData.charge_type || 'fill',
-        kwh: isCharge ? fillData.kwh || null : null,
-        price_per_kwh: isCharge ? fillData.price_per_kwh || null : null,
+        kwh: isCharge ? (fillData.kwh ?? null) : null,
+        price_per_kwh: isCharge ? (fillData.price_per_kwh ?? null) : null,
       };
 
       const res = await fetch('/api/fills/update', {

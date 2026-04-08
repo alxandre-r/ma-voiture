@@ -23,6 +23,25 @@ export async function POST(request: Request) {
     if (!body.type) {
       return NextResponse.json({ error: 'Le type est requis' }, { status: 400 });
     }
+
+    // Verify vehicle access when a vehicle is specified
+    if (body.vehicle_id) {
+      const { data: vehicle } = await supabase
+        .from('vehicles_for_display')
+        .select('vehicle_id, owner_id, permission_level')
+        .eq('vehicle_id', body.vehicle_id)
+        .maybeSingle();
+
+      const canWrite =
+        vehicle && (vehicle.owner_id === user.id || vehicle.permission_level === 'write');
+      if (!canWrite) {
+        return NextResponse.json(
+          { error: "Vous n'avez pas les droits pour ajouter un rappel à ce véhicule" },
+          { status: 403 },
+        );
+      }
+    }
+
     const { data, error } = await supabase
       .from('reminders')
       .insert({

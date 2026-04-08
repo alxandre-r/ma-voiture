@@ -1,35 +1,54 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+
+import BellIcon from '@/public/icons/bell.svg';
+import ChartIcon from '@/public/icons/chart.svg';
+import DashboardIcon from '@/public/icons/dashboard.svg';
+import EuroIcon from '@/public/icons/euro.svg';
+import FamilyIcon from '@/public/icons/family.svg';
+import GarageIcon from '@/public/icons/garage.svg';
+import SecureIcon from '@/public/icons/secure.svg';
+import SettingsIcon from '@/public/icons/settings.svg';
+import ToolIcon from '@/public/icons/tool.svg';
+
+import type { FC, SVGProps } from 'react';
 
 // ----- Types -----
 type MenuItem = {
   name: string;
   path: string;
-  icon: string;
+  icon: FC<SVGProps<SVGSVGElement>>;
 };
 
 // ----- Configuration -----
+// Separators are inserted after these indices (0-based)
+const SEPARATOR_AFTER = new Set([1, 5, 6]);
+
 const MENU_ITEMS: MenuItem[] = [
-  { name: 'Tableau de bord', path: '/dashboard', icon: '/icons/dashboard.svg' },
-  { name: 'Statistiques', path: '/statistics', icon: '/icons/chart.svg' },
-  { name: 'Dépenses', path: '/expenses', icon: '/icons/euro.svg' },
-  { name: 'Maintenance', path: '/maintenance', icon: '/icons/tool.svg' },
-  { name: 'Rappels', path: '/reminders', icon: '/icons/bell.svg' },
-  { name: 'Assurance', path: '/insurance', icon: '/icons/secure.svg' },
-  { name: 'Garage', path: '/garage', icon: '/icons/garage.svg' },
-  { name: 'Famille', path: '/family', icon: '/icons/family.svg' },
+  { name: 'Tableau de bord', path: '/dashboard', icon: DashboardIcon },
+  { name: 'Statistiques', path: '/statistics', icon: ChartIcon },
+  { name: 'Dépenses', path: '/expenses', icon: EuroIcon },
+  { name: 'Maintenance', path: '/maintenance', icon: ToolIcon },
+  { name: 'Rappels', path: '/reminders', icon: BellIcon },
+  { name: 'Assurance', path: '/insurance', icon: SecureIcon },
+  { name: 'Véhicules', path: '/garage', icon: GarageIcon },
+  { name: 'Famille', path: '/family', icon: FamilyIcon },
 ];
 
 const BOTTOM_ITEM: MenuItem = {
   name: 'Paramètres',
   path: '/settings',
-  icon: '/icons/settings.svg',
+  icon: SettingsIcon,
 };
+
+// ----- Separator component -----
+function Separator() {
+  return <div className="my-1 mt-3 border-t border-gray-700/50" />;
+}
 
 // ----- SidebarItem component -----
 function SidebarItem({
@@ -41,22 +60,18 @@ function SidebarItem({
   active?: boolean;
   onClick?: () => void;
 }) {
+  const Icon = item.icon;
   return (
     <Link
       href={item.path}
       prefetch={true}
       onClick={onClick}
-      className={`group flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 focus:outline-none relative z-10
-         ${active ? 'text-white' : 'hover:bg-gray-800 hover:scale-103 text-gray-200'}`}
+      className={`group flex items-center gap-3 px-3 py-3 rounded-lg
+        text-gray-400 focus:outline-none relative z-10
+         ${active ? 'text-white' : 'hover:bg-gray-800 hover:text-white'}`}
       aria-current={active ? 'page' : undefined}
     >
-      <Image
-        src={item.icon}
-        width={22}
-        height={22}
-        alt={item.name}
-        className="invert transition-transform duration-200 ease-in-out"
-      />
+      <Icon className="w-[22px] h-[22px] shrink-0" />
       <span className="truncate">{item.name}</span>
     </Link>
   );
@@ -101,13 +116,15 @@ export default function Sidebar() {
         )}
 
         {MENU_ITEMS.map((item, index) => (
-          <div
-            key={item.path}
-            ref={(el) => {
-              if (el) refs.current[index] = el;
-            }}
-          >
-            <SidebarItem item={item} active={activeIndex === index} />
+          <div key={item.path}>
+            <div
+              ref={(el) => {
+                if (el) refs.current[index] = el;
+              }}
+            >
+              <SidebarItem item={item} active={activeIndex === index} />
+            </div>
+            {SEPARATOR_AFTER.has(index) && <Separator />}
           </div>
         ))}
 
@@ -208,13 +225,15 @@ export function MobileSidebarDrawer({ isOpen, onClose }: { isOpen: boolean; onCl
               )}
 
               {MENU_ITEMS.map((item, index) => (
-                <div
-                  key={item.path}
-                  ref={(el) => {
-                    if (el) refs.current[index] = el;
-                  }}
-                >
-                  <SidebarItem item={item} active={activeIndex === index} onClick={onClose} />
+                <div key={item.path}>
+                  <div
+                    ref={(el) => {
+                      if (el) refs.current[index] = el;
+                    }}
+                  >
+                    <SidebarItem item={item} active={activeIndex === index} onClick={onClose} />
+                  </div>
+                  {SEPARATOR_AFTER.has(index) && <Separator />}
                 </div>
               ))}
 

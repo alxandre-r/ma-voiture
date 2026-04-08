@@ -67,7 +67,7 @@ export default function StatisticsClient({ vehicles }: StatisticsClientProps) {
   });
 
   return (
-    <div className="space-y-4 px-2 sm:px-0">
+    <div className="space-y-4 px-2 sm:px-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <StatisticsOverview
         totalCost={stats.totalCost}
         fillsCount={stats.totalExpenses}

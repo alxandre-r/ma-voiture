@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from '@/components/common/ui/card';
 
 export default function Loading() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       <div className="flex items-center gap-3">
         <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
         <div className="h-8 w-36 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />

@@ -11,12 +11,14 @@ import type { FamilyMemberDisplay } from '@/types/family';
 import type { Vehicle } from '@/types/vehicle';
 
 interface FamilyVehiclesListProps {
+  familyName: string;
   vehicles: Vehicle[];
   familyMembers: FamilyMemberDisplay[];
   onVehicleClick: (vehicle: Vehicle) => void;
 }
 
 export function FamilyVehiclesList({
+  familyName,
   vehicles,
   familyMembers,
   onVehicleClick,
@@ -39,7 +41,7 @@ export function FamilyVehiclesList({
         <div className="flex items-center gap-2">
           <Icon name="family" size={24} className="text-gray-400" />
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase tracking-tight">
-            Véhicules de la Famille
+            Véhicules de {familyName}
           </h3>
         </div>
         <span className="text-xs font-semibold text-gray-400 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">

@@ -1,8 +1,6 @@
 /**
  * @file app/api/family/check/route.ts
- * @description API endpoint to check if user has a family.
- *
- * This endpoint checks if the authenticated user is already part of a family.
+ * @description API endpoint to check if user has families (multi-famille).
  */
 
 import { NextResponse } from 'next/server';
@@ -13,7 +11,6 @@ export async function GET() {
   try {
     const supabase = await createSupabaseServerClient();
 
-    // Get authenticated user
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -25,15 +22,13 @@ export async function GET() {
       );
     }
 
-    // Check if user is part of a family
-    const { data: familyMember, error } = await supabase
+    // Récupère toutes les familles de l'utilisateur
+    const { data: memberships, error } = await supabase
       .from('family_members')
       .select('family_id, role')
-      .eq('user_id', user.id)
-      .single();
+      .eq('user_id', user.id);
 
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 = no rows found
+    if (error) {
       console.error('Erreur Supabase lors de la vérification de la famille:', error);
       return NextResponse.json(
         { error: 'Erreur lors de la vérification de la famille' },
@@ -41,40 +36,34 @@ export async function GET() {
       );
     }
 
-    if (familyMember) {
-      // Get family details
-      const { data: family, error: familyError } = await supabase
-        .from('families')
-        .select('*')
-        .eq('id', familyMember.family_id)
-        .single();
+    if (!memberships || memberships.length === 0) {
+      return NextResponse.json({ hasFamily: false, families: [] }, { status: 200 });
+    }
 
-      if (familyError) {
-        console.error('Erreur Supabase lors de la récupération de la famille:', familyError);
-        return NextResponse.json(
-          { error: 'Erreur lors de la récupération de la famille' },
-          { status: 500 },
-        );
-      }
+    // Récupère les détails de chaque famille
+    const familyIds = memberships.map((m) => m.family_id);
+    const { data: families, error: familiesError } = await supabase
+      .from('families')
+      .select('*')
+      .in('id', familyIds);
 
+    if (familiesError) {
+      console.error('Erreur Supabase lors de la récupération des familles:', familiesError);
       return NextResponse.json(
-        {
-          hasFamily: true,
-          family: {
-            ...family,
-            userRole: familyMember.role,
-          },
-        },
-        { status: 200 },
+        { error: 'Erreur lors de la récupération des familles' },
+        { status: 500 },
       );
     }
 
-    return NextResponse.json(
-      {
-        hasFamily: false,
-      },
-      { status: 200 },
-    );
+    const familiesWithRole = (families ?? []).map((family) => {
+      const membership = memberships.find((m) => m.family_id === family.id);
+      return {
+        ...family,
+        userRole: membership?.role ?? 'member',
+      };
+    });
+
+    return NextResponse.json({ hasFamily: true, families: familiesWithRole }, { status: 200 });
   } catch (error) {
     console.error('Erreur serveur lors de la vérification de la famille:', error);
     return NextResponse.json(

@@ -9,6 +9,7 @@ import type { Vehicle } from '@/types/vehicle';
 interface UpcomingRemindersProps {
   reminders: ReminderWithStatus[];
   vehicles: Vehicle[];
+  currentUserId?: string;
   onComplete: (id: number, completed: boolean) => void;
   onEdit: (reminder: ReminderWithStatus) => void;
   onDelete: (id: number) => void;
@@ -49,6 +50,7 @@ function groupByVehicle(
 export default function UpcomingReminders({
   reminders,
   vehicles,
+  currentUserId,
   onComplete,
   onEdit,
   onDelete,
@@ -80,6 +82,7 @@ export default function UpcomingReminders({
                   key={reminder.id}
                   reminder={reminder}
                   vehicleName={vehicle?.name ?? undefined}
+                  currentUserId={currentUserId}
                   onComplete={onComplete}
                   onEdit={onEdit}
                   onDelete={onDelete}
@@ -121,6 +124,7 @@ export default function UpcomingReminders({
                     key={reminder.id}
                     reminder={reminder}
                     vehicleName={vehicle?.name ?? undefined}
+                    currentUserId={currentUserId}
                     onComplete={onComplete}
                     onEdit={onEdit}
                     onDelete={onDelete}

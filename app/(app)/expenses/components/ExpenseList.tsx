@@ -16,6 +16,7 @@ import ExpenseStats from './ExpenseStats';
 
 import type { Expense } from '@/types/expense';
 import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
+import type { ReactNode } from 'react';
 
 interface ExpenseListProps {
   expenses?: Expense[];
@@ -23,6 +24,7 @@ interface ExpenseListProps {
   onEditExpense?: (expense: Expense) => void;
   onDeleteExpense?: (expenseId: number) => void;
   currentUserId?: string | null;
+  headerAction?: ReactNode;
 }
 
 export default function ExpenseList({
@@ -31,10 +33,23 @@ export default function ExpenseList({
   onEditExpense,
   onDeleteExpense,
   currentUserId,
+  headerAction,
 }: ExpenseListProps) {
   const router = useRouter();
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [detailExpense, setDetailExpense] = useState<Expense | null>(null);
+
+  const writableVehicleIds = useMemo(
+    () =>
+      new Set(
+        (vehicles ?? [])
+          .filter(
+            (v) => v.owner_id === currentUserId || (v as Vehicle).permission_level === 'write',
+          )
+          .map((v) => v.vehicle_id),
+      ),
+    [vehicles, currentUserId],
+  );
 
   const closeDetail = () => {
     setDetailExpense(null);
@@ -78,9 +93,8 @@ export default function ExpenseList({
 
   const stats = useMemo(() => {
     const total = filteredExpenses.reduce((s, e) => s + (e.amount ?? 0), 0);
-    const count = filteredExpenses.length;
     const avgPerMonth = monthGroups.length > 0 ? total / monthGroups.length : 0;
-    return { total, count, avgPerMonth };
+    return { total, avgPerMonth };
   }, [filteredExpenses, monthGroups.length]);
 
   const categoryCounts = useMemo(() => {
@@ -125,10 +139,15 @@ export default function ExpenseList({
           />
         </div>
 
-        {/* Stats */}
-        {filteredExpenses.length > 0 && (
-          <ExpenseStats total={stats.total} count={stats.count} avgPerMonth={stats.avgPerMonth} />
-        )}
+        {/* Stats + action button on same row (desktop) */}
+        <div className="sm:grid sm:grid-cols-2 gap-4">
+          {filteredExpenses.length > 0 && (
+            <div className="flex-1 min-w-0">
+              <ExpenseStats total={stats.total} avgPerMonth={stats.avgPerMonth} />
+            </div>
+          )}
+          <div className="justify-end items-end hidden sm:flex">{headerAction}</div>
+        </div>
 
         {/* Monthly groups */}
         {monthGroups.length === 0 ? (
@@ -148,6 +167,7 @@ export default function ExpenseList({
               onEdit={onEditExpense}
               onDelete={onDeleteExpense}
               currentUserId={currentUserId}
+              writableVehicleIds={writableVehicleIds}
             />
           ))
         )}
@@ -159,6 +179,7 @@ export default function ExpenseList({
           expense={detailExpense}
           vehicles={vehicles}
           currentUserId={currentUserId}
+          writableVehicleIds={writableVehicleIds}
           onClose={closeDetail}
           onEdit={onEditExpense}
           onDelete={onDeleteExpense}

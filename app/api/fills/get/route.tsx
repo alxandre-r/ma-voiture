@@ -30,10 +30,11 @@ export async function GET(request: Request) {
       : [];
 
     let query = supabase
-      .from('fills_for_display')
+      .from('expenses_for_display')
       .select(
-        'id, vehicle_id, vehicle_name, owner_id, owner_name, family_id, date, odometer, liters, amount, price_per_liter, notes, created_at, charge_type, kwh, price_per_kwh, fuel_type',
+        'id, vehicle_id, vehicle_name, owner_id, owner_name, date, odometer, liters, amount, price_per_liter, notes, created_at, charge_type, kwh, price_per_kwh',
       )
+      .in('type', ['fuel', 'electric_charge'])
       .order('date', { ascending: false });
 
     if (vehicleIds.length > 0) {
@@ -58,7 +59,6 @@ export async function GET(request: Request) {
       vehicle_name: fill.vehicle_name,
       owner_id: fill.owner_id,
       owner_name: fill.owner_name,
-      family_id: fill.family_id,
       date: fill.date,
       odometer: fill.odometer,
       liters: fill.liters,
@@ -70,7 +70,6 @@ export async function GET(request: Request) {
       charge_type: fill.charge_type,
       kwh: fill.kwh,
       price_per_kwh: fill.price_per_kwh,
-      fuel_type: fill.fuel_type,
     }));
 
     return NextResponse.json(

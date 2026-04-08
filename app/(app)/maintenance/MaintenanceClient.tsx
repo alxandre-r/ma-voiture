@@ -94,11 +94,21 @@ function MaintenanceContent({
    * Only active vehicles owned by the current user,
    * plus the vehicle of the expense being edited.
    */
+  const writableVehicleIds = useMemo(
+    () =>
+      new Set(
+        initialVehicles
+          .filter((v) => v.owner_id === user.id || v.permission_level === 'write')
+          .map((v) => v.vehicle_id),
+      ),
+    [initialVehicles, user.id],
+  );
+
   const vehicles = useMemo(() => {
     const activeVehicles = initialVehicles.filter((v) => {
       const isActive = v.status === 'active' || v.status == null;
-      const isOwner = v.owner_id === user.id;
-      return isActive && isOwner;
+      const canWrite = v.owner_id === user.id || v.permission_level === 'write';
+      return isActive && canWrite;
     });
 
     if (!editingExpense) return activeVehicles;
@@ -202,21 +212,11 @@ function MaintenanceContent({
 
   return (
     <div className="space-y-6">
-      {/* Desktop button */}
-      <div className="hidden sm:flex justify-end">
-        <button
-          onClick={handleAddClick}
-          className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
-        >
-          <Icon name="add" size={18} className="invert dark:invert-0" />
-          Ajouter une intervention
-        </button>
-      </div>
-
       <MaintenanceTimeline
-        userId={user.id}
         vehicles={initialVehicles}
         expenses={filteredExpenses}
+        writableVehicleIds={writableVehicleIds}
+        onAdd={handleAddClick}
         onEditExpense={handleEditExpense}
         onDeleteExpense={handleDeleteExpense}
         deletingId={deletingId}

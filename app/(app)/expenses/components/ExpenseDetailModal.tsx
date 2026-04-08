@@ -29,6 +29,7 @@ interface ExpenseDetailModalProps {
   expense: Expense;
   vehicles: (Vehicle | VehicleMinimal)[];
   currentUserId?: string | null;
+  writableVehicleIds?: Set<number>;
   onClose: () => void;
   onEdit?: (e: Expense) => void;
   onDelete?: (id: number) => void;
@@ -38,14 +39,16 @@ export default function ExpenseDetailModal({
   expense,
   vehicles,
   currentUserId,
+  writableVehicleIds,
   onClose,
   onEdit,
   onDelete,
 }: ExpenseDetailModalProps) {
   const router = useRouter();
   const isOwner = !!(currentUserId && expense.owner_id === currentUserId);
-  const canEdit = isOwner && expense.type !== 'insurance' && !!onEdit;
-  const canDelete = isOwner && expense.type !== 'insurance' && !!onDelete;
+  const hasVehicleWrite = !!(expense.vehicle_id && writableVehicleIds?.has(expense.vehicle_id));
+  const canEdit = (isOwner || hasVehicleWrite) && expense.type !== 'insurance' && !!onEdit;
+  const canDelete = (isOwner || hasVehicleWrite) && expense.type !== 'insurance' && !!onDelete;
   const hasAttachments = !!expense.attachments?.length;
   const showAttachments = isOwner || hasAttachments;
 
@@ -94,6 +97,10 @@ export default function ExpenseDetailModal({
             )}
             {expense.garage && <DetailRow label="Garage" value={expense.garage} />}
           </>
+        )}
+
+        {expense.type === 'other' && expense.label && (
+          <DetailRow label="Libellé" value={expense.label} />
         )}
 
         {expense.odometer != null && (

@@ -10,11 +10,8 @@ export function useInsuranceContracts(ownedVehicleIds: number[], allVehicles: Ve
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const ownedSet = new Set(ownedVehicleIds);
-    const ownedVehicles = allVehicles.filter((v) => ownedSet.has(v.vehicle_id));
-
     Promise.all(
-      ownedVehicles.map((v) =>
+      allVehicles.map((v) =>
         fetch(`/api/insurance/get?vehicle_id=${v.vehicle_id}`)
           .then((r) => r.json())
           .then((d) => ({

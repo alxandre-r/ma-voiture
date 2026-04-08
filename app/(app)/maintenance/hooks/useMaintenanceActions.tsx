@@ -2,6 +2,7 @@
 import { useState, useCallback, useRef } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
+import { apiCall } from '@/lib/api/client';
 import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 export interface MaintenanceFormData {
@@ -15,7 +16,7 @@ export interface MaintenanceFormData {
 }
 
 export function useMaintenanceActions() {
-  const { showSuccess, showError } = useNotifications();
+  const { showSuccess, showError, showWarning } = useNotifications();
 
   const [saving, setSaving] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -72,20 +73,15 @@ export function useMaintenanceActions() {
         garage: data.garage || null,
       };
 
-      const res = await fetch('/api/maintenance/add', {
+      const { expense } = await apiCall<{ expense: { id: number } }>('/api/maintenance/add', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error ?? "Erreur lors de l'ajout de l'entretien");
-      }
-
-      const { expense } = await res.json();
       if (pendingFiles?.length && expense?.id) {
-        await uploadPendingAttachments(pendingFiles, 'expense', expense.id);
+        const { failedCount } = await uploadPendingAttachments(pendingFiles, 'expense', expense.id);
+        if (failedCount > 0) {
+          showWarning(`${failedCount} pièce(s) jointe(s) n'ont pas pu être téléchargées`);
+        }
       }
 
       showSuccess('Entretien ajouté avec succès !');
@@ -124,16 +120,10 @@ export function useMaintenanceActions() {
         garage: data.garage || null,
       };
 
-      const res = await fetch('/api/expenses/update', {
+      await apiCall('/api/expenses/update', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error ?? "Erreur lors de la modification de l'entretien");
-      }
 
       showSuccess('Entretien modifié avec succès !');
       triggerRefresh();
@@ -150,16 +140,10 @@ export function useMaintenanceActions() {
   const deleteMaintenance = async (expenseId: number): Promise<boolean> => {
     setDeletingId(expenseId);
     try {
-      const res = await fetch('/api/maintenance/delete', {
+      await apiCall('/api/maintenance/delete', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ expenseId }),
       });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error ?? "Erreur lors de la suppression de l'entretien");
-      }
 
       showSuccess('Entretien supprimé avec succès !');
       triggerRefresh();

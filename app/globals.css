@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "tailwindcss-animate";
 
 @custom-variant dark (&:where(.dark &));
 
@@ -15,6 +16,8 @@
 
 /* Custom color variables for themes */
 @theme {
+  --font-sans: var(--font-harmony), sans-serif;
+
   /* First color : indigo */
   --color-custom-1: #7e47ff; /* indigo-600 */
   --color-custom-1-hover: #6b3edc; /* indigo-700 */

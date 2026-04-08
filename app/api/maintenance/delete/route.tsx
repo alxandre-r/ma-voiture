@@ -35,7 +35,7 @@ export async function DELETE(request: Request) {
     // Verify expense ownership before deletion
     const { data: expense, error: expenseError } = await supabase
       .from('expenses')
-      .select('id, owner_id, type')
+      .select('id, owner_id, vehicle_id, type')
       .eq('id', expenseId)
       .eq('type', 'maintenance')
       .single();
@@ -45,18 +45,21 @@ export async function DELETE(request: Request) {
     }
 
     if (expense.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: "Vous n'êtes pas autorisé à supprimer cet entretien" },
-        { status: 403 },
-      );
+      const { data: vehicle } = await supabase
+        .from('vehicles_for_display')
+        .select('permission_level')
+        .eq('vehicle_id', expense.vehicle_id)
+        .maybeSingle();
+      if (vehicle?.permission_level !== 'write') {
+        return NextResponse.json(
+          { error: "Vous n'êtes pas autorisé à supprimer cet entretien" },
+          { status: 403 },
+        );
+      }
     }
 
     // Delete the expense (cascade will handle maintenance_expenses deletion)
-    const { error: deleteError } = await supabase
-      .from('expenses')
-      .delete()
-      .eq('id', expenseId)
-      .eq('owner_id', user.id);
+    const { error: deleteError } = await supabase.from('expenses').delete().eq('id', expenseId);
 
     if (deleteError) {
       console.error('Error deleting maintenance expense:', deleteError);

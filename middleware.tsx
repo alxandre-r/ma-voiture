@@ -12,49 +12,42 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import type { NextRequest } from 'next/server';
 
+// Public paths that don't require authentication
+const PUBLIC_PATHS = ['/', '/auth', '/api/', '/_next', '/icons/', '/images/', '/favicon'];
+
+function isPublicPath(pathname: string) {
+  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p));
+}
+
 export async function middleware(req: NextRequest) {
-  const isProtectedRoute = req.nextUrl.pathname.startsWith('/(app)');
+  const { pathname } = req.nextUrl;
 
-  // For protected routes, we need to verify the session
-  if (isProtectedRoute) {
-    const supabase = await createSupabaseServerClient();
-    const token = req.cookies.get('sb-access-token')?.value;
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      if (req.nextUrl.pathname.startsWith('/(app)/family/join')) {
-        return NextResponse.redirect(
-          new URL(
-            '/?redirect=' + encodeURIComponent(req.nextUrl.pathname + req.nextUrl.search),
-            req.url,
-          ),
-        );
-      }
-      // Redirect to home page (login page) for protected routes when not authenticated
-      return NextResponse.redirect(new URL('/', req.url));
+  // Skip public paths and static assets
+  if (isPublicPath(pathname)) {
+    const response = NextResponse.next();
+    if (pathname.startsWith('/_next/static/')) {
+      response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else if (pathname.startsWith('/icons/') || pathname.startsWith('/images/')) {
+      response.headers.set('Cache-Control', 'public, max-age=86400');
     }
+    return response;
+  }
 
-    if (token) {
-      req.headers.set('x-user-token', token);
+  // All other paths are protected — verify session
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    // Family join links: preserve the invite URL after login
+    if (pathname.startsWith('/family/join')) {
+      return NextResponse.redirect(
+        new URL('/?redirect=' + encodeURIComponent(pathname + req.nextUrl.search), req.url),
+      );
     }
+    return NextResponse.redirect(new URL('/?reason=session_expired', req.url));
   }
 
-  // Add caching headers for static assets and public routes
-  const response = NextResponse.next();
-
-  // Cache static assets for 1 year
-  if (req.nextUrl.pathname.startsWith('/_next/static/')) {
-    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-  }
-  // Cache public assets
-  else if (
-    req.nextUrl.pathname.startsWith('/icons/') ||
-    req.nextUrl.pathname.startsWith('/images/')
-  ) {
-    response.headers.set('Cache-Control', 'public, max-age=86400');
-  }
-
-  return response;
+  return NextResponse.next();
 }

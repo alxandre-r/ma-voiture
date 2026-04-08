@@ -182,7 +182,9 @@ export default function AccountSection({ user }: { user: User }) {
 
       {/* META */}
       <div className="text-sm text-gray-500 space-y-1">
-        {localUser.has_family && <p>Membre de la famille {localUser.family_name}</p>}
+        {localUser.has_family && (
+          <p>Membre de : {localUser.families.map((f) => f.name).join(', ')}</p>
+        )}
         <p>Compte créé le {new Date(localUser.created_at).toLocaleDateString()}</p>
       </div>
 

@@ -11,11 +11,17 @@ import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   // @ts-expect-error: Next.js injecte ce paramètre, typage non supporté
   context,
 ) {
   const userId = context.params.userId as string;
+  const { searchParams } = new URL(request.url);
+  const familyId = searchParams.get('familyId');
+
+  if (!familyId) {
+    return NextResponse.json({ error: 'familyId est requis' }, { status: 400 });
+  }
 
   const supabase = await createSupabaseServerClient();
 
@@ -27,11 +33,13 @@ export async function DELETE(
     return NextResponse.json({ error: 'Non autorisé - utilisateur non connecté' }, { status: 401 });
   }
 
+  // Vérifier que l'utilisateur courant est propriétaire de CETTE famille
   const { data: familyMember, error: memberError } = await supabase
     .from('family_members')
     .select('family_id, role')
     .eq('user_id', user.id)
-    .single();
+    .eq('family_id', familyId)
+    .maybeSingle();
 
   if (memberError || !familyMember || familyMember.role !== 'owner') {
     return NextResponse.json(
@@ -50,7 +58,7 @@ export async function DELETE(
   const { error } = await supabase
     .from('family_members')
     .delete()
-    .eq('family_id', familyMember.family_id)
+    .eq('family_id', familyId)
     .eq('user_id', userId);
 
   if (error) {

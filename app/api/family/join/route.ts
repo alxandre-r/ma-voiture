@@ -3,10 +3,17 @@
  * @description API endpoint to join a family using an invitation token.
  */
 
+import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+
+// Admin client (no session → service role → bypasses RLS) — used for token lookup only
+const adminSupabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
 
 export async function POST(request: Request) {
   try {
@@ -31,21 +38,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Le token d'invitation est requis" }, { status: 400 });
     }
 
-    // Check if user already has a family
-    const { data: existingFamilyMember } = await supabase
-      .from('family_members')
-      .select('family_id')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (existingFamilyMember) {
-      return NextResponse.json({ error: "Vous faites déjà partie d'une famille" }, { status: 400 });
-    }
-
-    // Find family with matching invite token
-    const { data: family, error: familyError } = await supabase
+    // Find family with matching invite token — use admin client to bypass RLS
+    // (regular user can't SELECT families they haven't joined yet)
+    const { data: family, error: familyError } = await adminSupabase
       .from('families')
-      .select('*')
+      .select('id, name, owner_id, invite_token')
       .eq('invite_token', token)
       .maybeSingle();
 
@@ -61,6 +58,21 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Token d'invitation invalide ou famille introuvable" },
         { status: 404 },
+      );
+    }
+
+    // Check if user is already a member of this specific family
+    const { data: existingFamilyMember } = await supabase
+      .from('family_members')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('family_id', family.id)
+      .maybeSingle();
+
+    if (existingFamilyMember) {
+      return NextResponse.json(
+        { error: 'Vous êtes déjà membre de cette famille' },
+        { status: 400 },
       );
     }
 

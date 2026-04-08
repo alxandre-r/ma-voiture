@@ -4,10 +4,10 @@ export async function uploadPendingAttachments(
   files: File[],
   entityType: AttachmentEntityType,
   entityId: number,
-): Promise<void> {
-  if (!files.length) return;
+): Promise<{ failedCount: number }> {
+  if (!files.length) return { failedCount: 0 };
 
-  await Promise.allSettled(
+  const results = await Promise.allSettled(
     files.map(async (file) => {
       const formData = new FormData();
       formData.append('file', file);
@@ -22,7 +22,11 @@ export async function uploadPendingAttachments(
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         console.error('Failed to upload attachment:', body?.error ?? 'Unknown error');
+        throw new Error(body?.error ?? 'Upload failed');
       }
     }),
   );
+
+  const failedCount = results.filter((r) => r.status === 'rejected').length;
+  return { failedCount };
 }

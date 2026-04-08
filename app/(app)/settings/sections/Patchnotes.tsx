@@ -18,6 +18,57 @@ export default function PatchnotesSection() {
       type: 'todo',
     },
     {
+      version: '1.2.4',
+      date: '08 Avril 2026',
+      summary:
+        "Ajout des dépenses 'Autre', possibilité de rejoindre plusieurs familles et gestion des droits",
+      details: (
+        <ul className="list-disc list-inside space-y-1">
+          <li>
+            Ajout de la fonctionnalité de <strong>Gestion des droits</strong> pour chaque membres
+            d&apos;une famille sur ces véhicules partagés : l&apos;utilisateur peut choisir pour
+            chaque membre de la famille s&apos;il a accès en lecture ou en écriture sur les
+            véhicules partagés. Les membres avec accès en lecture peuvent voir les données des
+            véhicules partagés mais ne peuvent pas les modifier, tandis que les membres avec accès
+            en écriture ont la possibilité de modifier les données des véhicules partagés.
+          </li>
+          <li>
+            Ajout de la possibilité de rejoindre plusieurs familles. Un utilisateur peut désormais
+            être membre de plusieurs familles, ce qui lui permet d&apos;avoir accès aux véhicules
+            partagés de chacune de ces familles.
+          </li>
+          <li>
+            Ajout d&apos;un nouveau type de dépense : <strong>Autre</strong>. Ce type de dépense
+            permet de catégoriser les dépenses qui ne sont pas des pleins, des entretiens ou des
+            assurances, comme par exemple les accessoires, les amendes, le lavage, les parkings,
+            péages, etc.
+          </li>
+          <li>
+            Amélioration des <strong>filtres</strong> pour permettre de filtrer les données selon la
+            famille sélectionnée et la période personnalisée au jour près choisie.
+          </li>
+          <li>Meilleure intégration des boutons d&apos;ajout dans les différentes pages.</li>
+          <li>
+            Redesign des cards de statistiques des pages dashboard, statistiques, dépenses et
+            assurance pour une meilleure lisibilité, une meilleure hiérarchie visuelle des
+            informations et une cohérence entre les différentes pages.
+          </li>
+          <li>
+            Adoption d&apos;une nouvelle font pour l&apos;ensemble de l&apos;application pour une
+            meilleure lisibilité et une apparence plus moderne.
+            <br />
+            Font utilisée : <strong>HarmonyOS Sans</strong>.
+          </li>
+          <li>Amélioration visuelle de la sidebar.</li>
+          <li>
+            Correction d&apos;un bug qui empêchait l&apos;affichage des animations d&apos;entrée des
+            éléments dans certaines pages.
+          </li>
+        </ul>
+      ),
+      type: 'minor',
+    },
+    {
       version: '1.2.3',
       date: '31 Mars 2026',
       summary: 'Pièces jointes, préférences, améliorations visuelles',

@@ -36,28 +36,33 @@ export function GarageVehiclesList({
         </span>
       </div>
 
-      {vehicles.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {vehicles.map((vehicle) => (
-            <VehicleCard
-              key={vehicle.vehicle_id}
-              vehicle={vehicle}
-              onClick={onVehicleClick}
-              hasActiveInsurance={activeInsuranceVehicleIds?.includes(vehicle.vehicle_id)}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {vehicles.map((vehicle) => (
+          <VehicleCard
+            key={vehicle.vehicle_id}
+            vehicle={vehicle}
+            onClick={onVehicleClick}
+            hasActiveInsurance={activeInsuranceVehicleIds?.includes(vehicle.vehicle_id)}
+          />
+        ))}
+
+        {/* Add vehicle card */}
+        <button
+          onClick={onAddVehicle}
+          className="group flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-custom-2/50 hover:border-custom-2 hover:bg-custom-2/5 transition-colors cursor-pointer min-h-[140px]"
+        >
+          <div className="w-12 h-12 rounded-full border-2 border-dashed border-custom-2/50 group-hover:border-custom-2 flex items-center justify-center transition-colors mb-3">
+            <Icon
+              name="add"
+              size={24}
+              className="text-custom-2 opacity-60 group-hover:opacity-100 transition-opacity"
             />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          <p>Aucun véhicule personnel</p>
-          <button
-            onClick={onAddVehicle}
-            className="mt-4 text-custom-2 hover:text-custom-2-hover font-medium"
-          >
-            + Ajouter un véhicule
-          </button>
-        </div>
-      )}
+          </div>
+          <span className="text-sm font-medium text-custom-2 opacity-60 group-hover:opacity-100 transition-opacity">
+            Ajouter un véhicule
+          </span>
+        </button>
+      </div>
     </section>
   );
 }

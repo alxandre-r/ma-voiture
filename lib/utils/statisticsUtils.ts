@@ -5,10 +5,11 @@
  */
 
 import { EXPENSE_CATEGORIES } from '@/app/(app)/expenses/components/expenseCategories';
-import { filterByVehiclesAndPeriod } from '@/lib/utils/filterUtils';
+import { filterByVehiclesAndPeriod, getEffectivePeriodRange } from '@/lib/utils/filterUtils';
 import { getCategoryName } from '@/types/expense';
 
 import type { Expense } from '@/types/expense';
+import type { PeriodSelection } from '@/types/period';
 import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 // ---------------------------------------------------------------------------
@@ -115,7 +116,7 @@ export interface StatisticsData {
 export function filterExpenses(
   expenses: Expense[],
   selectedVehicleIds: number[],
-  selectedPeriod: string,
+  selectedPeriod: PeriodSelection,
 ): Expense[] {
   return filterByVehiclesAndPeriod(expenses, selectedVehicleIds, selectedPeriod);
 }
@@ -125,7 +126,11 @@ export function filterExpenses(
 // ---------------------------------------------------------------------------
 
 /** Returns display + sort keys for each month in the selected period. */
-export function buildMonthKeys(selectedPeriod: string, now: Date, monthsNum: number): MonthKey[] {
+export function buildMonthKeys(
+  selectedPeriod: PeriodSelection,
+  now: Date,
+  monthsNum: number,
+): MonthKey[] {
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
   const fmt = (d: Date) => d.toLocaleDateString('fr-FR', { year: '2-digit', month: 'short' });
@@ -135,6 +140,23 @@ export function buildMonthKeys(selectedPeriod: string, now: Date, monthsNum: num
       const d = new Date(currentYear, i, 1);
       return { sortKey: `${d.getFullYear()}-${String(i).padStart(2, '0')}`, displayKey: fmt(d) };
     });
+  }
+
+  // Custom date range: iterate month by month from start to end
+  if (typeof selectedPeriod === 'object' && selectedPeriod.preset === 'custom') {
+    const start = new Date(selectedPeriod.start);
+    const end = new Date(selectedPeriod.end);
+    const keys: MonthKey[] = [];
+    let current = new Date(start.getFullYear(), start.getMonth(), 1);
+    const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+    while (current <= endMonth) {
+      keys.push({
+        sortKey: `${current.getFullYear()}-${String(current.getMonth()).padStart(2, '0')}`,
+        displayKey: fmt(current),
+      });
+      current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+    }
+    return keys;
   }
 
   const count = selectedPeriod === 'month' ? 1 : monthsNum;
@@ -158,14 +180,14 @@ export function buildMonthKeys(selectedPeriod: string, now: Date, monthsNum: num
  * @param allExpenses      - All expenses (unfiltered by period) for trend/projection logic
  * @param vehicles         - Full vehicle list for enrichment
  * @param selectedVehicleIds - Active vehicle filter
- * @param selectedPeriod   - Active period filter ('month' | 'year' | 'all' | ...)
+ * @param selectedPeriod   - Active period filter
  */
 export function computeStatistics(
   filteredExpenses: Expense[],
   allExpenses: Expense[],
   vehicles: (Vehicle | VehicleMinimal)[],
   selectedVehicleIds: number[],
-  selectedPeriod: string,
+  selectedPeriod: PeriodSelection,
 ): StatisticsData {
   const now = new Date();
   const monthsNum = computeMonthsNum(selectedPeriod, now, allExpenses, selectedVehicleIds);
@@ -288,12 +310,16 @@ function emptyStats(monthsNum: number, odometerSeries: OdometerSeries[]): Statis
 }
 
 function computeMonthsNum(
-  selectedPeriod: string,
+  selectedPeriod: PeriodSelection,
   now: Date,
   allExpenses: Expense[],
   selectedVehicleIds: number[],
 ): number {
   if (selectedPeriod === 'year') return now.getMonth() + 1;
+  if (selectedPeriod === 'month') return 1;
+  if (selectedPeriod === '3months') return 3;
+  if (selectedPeriod === '6months') return 6;
+  if (selectedPeriod === '12months') return 12;
 
   if (selectedPeriod === 'all') {
     const relevant = allExpenses.filter((e) => selectedVehicleIds.includes(e.vehicle_id));
@@ -302,6 +328,15 @@ function computeMonthsNum(
     const min = new Date(Math.min(...times));
     const max = new Date(Math.max(...times));
     return (max.getFullYear() - min.getFullYear()) * 12 + (max.getMonth() - min.getMonth()) + 1;
+  }
+
+  // Custom date range
+  if (typeof selectedPeriod === 'object' && selectedPeriod.preset === 'custom') {
+    const start = new Date(selectedPeriod.start);
+    const end = new Date(selectedPeriod.end);
+    const months =
+      (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+    return Math.max(1, months);
   }
 
   return 12;
@@ -443,9 +478,9 @@ function computeVehicleStats(
 function computeProjectionsAndTrends(
   allExpenses: Expense[],
   selectedVehicleIds: number[],
-  selectedPeriod: string,
+  selectedPeriod: PeriodSelection,
   totalCost: number,
-  _monthsNum: number,
+  monthsNum: number,
 ): {
   annualProjection: number;
   annualKmProjection: number;
@@ -457,14 +492,23 @@ function computeProjectionsAndTrends(
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  const currentYearCost = allExpenses
-    .filter(
-      (e) =>
-        new Date(e.date).getFullYear() === currentYear && selectedVehicleIds.includes(e.vehicle_id),
-    )
-    .reduce((s, e) => s + (e.amount ?? 0), 0);
-  const annualProjection = (currentYearCost / (currentMonth + 1)) * 12;
+  // Annual projection
+  let annualProjection: number;
+  if (selectedPeriod === 'year') {
+    // YTD extrapolation: more accurate for current year view
+    const currentYearCost = allExpenses
+      .filter(
+        (e) =>
+          new Date(e.date).getFullYear() === currentYear &&
+          selectedVehicleIds.includes(e.vehicle_id),
+      )
+      .reduce((s, e) => s + (e.amount ?? 0), 0);
+    annualProjection = monthsNum > 0 ? (currentYearCost / monthsNum) * 12 : 0;
+  } else {
+    annualProjection = monthsNum > 0 ? (totalCost / monthsNum) * 12 : 0;
+  }
 
+  // Previous year total (always computed for reference)
   const previousYearTotal = allExpenses
     .filter(
       (e) =>
@@ -473,6 +517,7 @@ function computeProjectionsAndTrends(
     )
     .reduce((s, e) => s + (e.amount ?? 0), 0);
 
+  // Previous comparable period cost
   let previousPeriodCost = 0;
   if (selectedPeriod === 'month') {
     const pm = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -486,12 +531,37 @@ function computeProjectionsAndTrends(
       })
       .reduce((s, e) => s + (e.amount ?? 0), 0);
   } else if (selectedPeriod === 'year') {
+    previousPeriodCost = previousYearTotal;
+  } else if (
+    selectedPeriod === '3months' ||
+    selectedPeriod === '6months' ||
+    selectedPeriod === '12months'
+  ) {
+    // Mirror the rolling window backwards by the same duration
+    const { start } = getEffectivePeriodRange(selectedPeriod);
+    if (start) {
+      const duration = now.getTime() - start.getTime();
+      const prevEnd = new Date(start.getTime() - 1);
+      const prevStart = new Date(now.getTime() - duration * 2);
+      previousPeriodCost = allExpenses
+        .filter((e) => {
+          const d = new Date(e.date);
+          return d >= prevStart && d <= prevEnd && selectedVehicleIds.includes(e.vehicle_id);
+        })
+        .reduce((s, e) => s + (e.amount ?? 0), 0);
+    }
+  } else if (typeof selectedPeriod === 'object' && selectedPeriod.preset === 'custom') {
+    // Mirror the custom range backwards by the same duration
+    const start = new Date(selectedPeriod.start);
+    const end = new Date(selectedPeriod.end);
+    const duration = end.getTime() - start.getTime();
+    const prevEnd = new Date(start.getTime() - 1);
+    const prevStart = new Date(start.getTime() - duration - 1);
     previousPeriodCost = allExpenses
-      .filter(
-        (e) =>
-          new Date(e.date).getFullYear() === currentYear - 1 &&
-          selectedVehicleIds.includes(e.vehicle_id),
-      )
+      .filter((e) => {
+        const d = new Date(e.date);
+        return d >= prevStart && d <= prevEnd && selectedVehicleIds.includes(e.vehicle_id);
+      })
       .reduce((s, e) => s + (e.amount ?? 0), 0);
   }
 

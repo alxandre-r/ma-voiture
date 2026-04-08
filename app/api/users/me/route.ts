@@ -19,19 +19,17 @@ export async function GET() {
       );
     }
 
-    // Récupérer si l'utilisateur fait partie d'une famille
-    const { data: familyMemberData, error: fmError } = await supabase
+    // Récupérer toutes les familles de l'utilisateur (multi-famille)
+    const { data: familyMemberships, error: fmError } = await supabase
       .from('family_members')
       .select('family_id')
-      .eq('user_id', user.id)
-      .single(); // un user ne peut être que dans une famille
+      .eq('user_id', user.id);
 
-    if (fmError && fmError.code !== 'PGRST116') {
-      // PGRST116 = 0 rows
+    if (fmError) {
       console.error('Erreur lors de la vérification de la famille:', fmError);
     }
 
-    const hasFamily = !!familyMemberData?.family_id;
+    const hasFamily = !!(familyMemberships && familyMemberships.length > 0);
 
     // Récupérer les infos de profil utilisateur
     const { data: profile, error: profileError } = await supabase

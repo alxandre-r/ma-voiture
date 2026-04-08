@@ -36,7 +36,7 @@ function MonthCardSkeleton({ rows = 3 }: { rows?: number }) {
 
 export default function Loading() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Add button placeholder */}
       <div className="hidden sm:flex justify-end">
         <div className="h-9 w-40 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />

@@ -1,3 +1,10 @@
+export interface UserFamily {
+  id: string;
+  name: string;
+  role: 'owner' | 'member';
+  is_owner: boolean;
+}
+
 // User type definition based on the "users_info" view in Supabase.
 export interface User {
   id: string;
@@ -5,10 +12,7 @@ export interface User {
   name: string;
   avatar_url?: string | null;
   has_family: boolean;
-  family_id?: string | null;
-  family_name?: string | null;
-  family_role?: 'owner' | 'member' | null;
-  is_family_owner: boolean;
+  families: UserFamily[];
   has_vehicles: boolean;
   vehicle_count: number;
   vehicle_ids: number[];

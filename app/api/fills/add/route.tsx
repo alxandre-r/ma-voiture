@@ -32,18 +32,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Le champ vehicle_id est requis' }, { status: 400 });
     }
 
-    // Verify vehicle ownership
+    // Verify vehicle access (owner or family member with write permission)
     const { data: vehicle, error: vehicleError } = await supabase
-      .from('vehicles')
-      .select('id, name, fuel_type')
-      .eq('id', body.vehicle_id)
-      .eq('owner_id', user.id)
-      .single();
+      .from('vehicles_for_display')
+      .select('vehicle_id, owner_id, name, fuel_type, permission_level')
+      .eq('vehicle_id', body.vehicle_id)
+      .maybeSingle();
 
     if (vehicleError || !vehicle) {
+      return NextResponse.json({ error: 'Véhicule introuvable' }, { status: 404 });
+    }
+
+    const canWrite = vehicle.owner_id === user.id || vehicle.permission_level === 'write';
+    if (!canWrite) {
       return NextResponse.json(
-        { error: 'Vehicle not found or you are not the owner' },
-        { status: 404 },
+        { error: "Vous n'avez pas les droits pour ajouter une dépense à ce véhicule" },
+        { status: 403 },
       );
     }
 
@@ -101,13 +105,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Erreur lors de l'ajout du plein" }, { status: 500 });
     }
 
-    // Update vehicle odometer if fill has odometer data
+    // Update vehicle odometer if fill has odometer data (RLS enforces write permission)
     if (body.odometer) {
       const { error: updateError } = await supabase
         .from('vehicles')
         .update({ odometer: body.odometer })
-        .eq('id', body.vehicle_id)
-        .eq('owner_id', user.id);
+        .eq('id', body.vehicle_id);
 
       if (updateError) {
         console.error('Error updating vehicle odometer:', updateError);

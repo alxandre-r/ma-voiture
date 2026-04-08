@@ -56,8 +56,8 @@ export default function AssuranceClient({ vehicles, ownedVehicleIds }: Assurance
   // ── Stats ──────────────────────────────────────────────────────────────────
 
   const allActiveContracts: InsuranceContract[] = [];
-  for (const vehicleId of ownedVehicleIds) {
-    const active = getActiveContract(contractsMap.get(vehicleId) ?? []);
+  for (const vehicle of vehicles) {
+    const active = getActiveContract(contractsMap.get(vehicle.vehicle_id) ?? []);
     if (active) allActiveContracts.push(active);
   }
 
@@ -209,16 +209,23 @@ export default function AssuranceClient({ vehicles, ownedVehicleIds }: Assurance
               Véhicules de la famille
             </h3>
           </div>
-          {familyVehicles.map((vehicle) => (
-            <InsuranceVehicleCard
-              key={vehicle.vehicle_id}
-              vehicle={vehicle}
-              contracts={[]}
-              isFamily
-              isExpanded={false}
-              onToggleExpand={() => {}}
-            />
-          ))}
+          {familyVehicles.map((vehicle) => {
+            const contracts = contractsMap.get(vehicle.vehicle_id) ?? [];
+            return (
+              <InsuranceVehicleCard
+                key={vehicle.vehicle_id}
+                vehicle={vehicle}
+                contracts={contracts}
+                isFamily
+                isExpanded={expandedVehicleId === vehicle.vehicle_id}
+                onToggleExpand={() =>
+                  setExpandedVehicleId((prev) =>
+                    prev === vehicle.vehicle_id ? null : vehicle.vehicle_id,
+                  )
+                }
+              />
+            );
+          })}
         </div>
       )}
 

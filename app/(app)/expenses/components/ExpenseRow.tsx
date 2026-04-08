@@ -21,6 +21,7 @@ interface ExpenseRowProps {
   onEdit?: (e: Expense) => void;
   onDelete?: (id: number) => void;
   currentUserId?: string | null;
+  writableVehicleIds?: Set<number>;
 }
 
 export default function ExpenseRow({
@@ -30,11 +31,13 @@ export default function ExpenseRow({
   onEdit,
   onDelete,
   currentUserId,
+  writableVehicleIds,
 }: ExpenseRowProps) {
   const desc = getDescription(expense);
   const isOwner = !!(currentUserId && expense.owner_id === currentUserId);
-  const canEdit = isOwner && expense.type !== 'insurance';
-  const canDelete = isOwner && expense.type !== 'insurance';
+  const hasVehicleWrite = !!(expense.vehicle_id && writableVehicleIds?.has(expense.vehicle_id));
+  const canEdit = (isOwner || hasVehicleWrite) && expense.type !== 'insurance';
+  const canDelete = (isOwner || hasVehicleWrite) && expense.type !== 'insurance';
   const hasAttachments = !!expense.attachments?.length;
 
   return (

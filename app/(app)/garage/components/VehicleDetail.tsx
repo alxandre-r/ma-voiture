@@ -57,6 +57,7 @@ export default function VehicleDetail({
   const router = useRouter();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Non renseignée';
@@ -115,53 +116,77 @@ export default function VehicleDetail({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
           <button
             onClick={onBack}
-            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition items-center flex 
+            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition items-center flex shrink-0
             bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
           >
             <Icon name="arrow-back" size={18} />
           </button>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 truncate">
               {vehicle.make} {vehicle.model}
               <div
-                className="w-3 h-3 rounded-full"
+                className="w-3 h-3 rounded-full shrink-0"
                 style={{ backgroundColor: vehicle.color || '#64748b' }}
               ></div>
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 font-mono text-sm">
+            <p className="text-gray-500 dark:text-gray-400 font-mono text-sm truncate">
               {vehicle.plate || 'Plaque non renseignée'}
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          {onEdit && !isFamilyVehicle && (
+
+        {/* Settings menu — only shown when at least one action is available */}
+        {(onEdit && (!isFamilyVehicle || vehicle.permission_level === 'write')) ||
+        !isFamilyVehicle ? (
+          <div className="relative shrink-0">
             <button
-              onClick={onEdit}
-              className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:text-gray-700 hover:bg-gray-50 transition 
-              dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-300
-              items-center flex cursor-pointer bg-white "
+              onClick={() => setShowMenu((v) => !v)}
+              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-100 transition flex items-center
+              bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 cursor-pointer"
+              aria-label="Paramètres"
             >
-              <Icon name="edit" size={18} className="inline mr-2" />
-              Modifier
+              <Icon name="settings" size={18} />
             </button>
-          )}
-          {!isFamilyVehicle && (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2 rounded-lg border border-gray-200 text-red-600 hover:text-white hover:bg-red-600 transition
-              dark:bg-gray-800 dark:border-gray-700 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white
-              items-center flex cursor-pointer bg-white group"
-              disabled={deleting}
-            >
-              <Icon name="delete" size={18} className="inline mr-2 group-hover:invert" />
-              Supprimer
-            </button>
-          )}
-        </div>
+
+            {showMenu && (
+              <>
+                {/* Backdrop */}
+                <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                  {onEdit && (!isFamilyVehicle || vehicle.permission_level === 'write') && (
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        onEdit();
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer flex items-center gap-2"
+                    >
+                      <Icon name="edit" size={16} />
+                      Modifier
+                    </button>
+                  )}
+                  {!isFamilyVehicle && (
+                    <button
+                      onClick={() => {
+                        setShowMenu(false);
+                        setShowDeleteConfirm(true);
+                      }}
+                      disabled={deleting}
+                      className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                    >
+                      <Icon name="delete" size={16} />
+                      Supprimer
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {/* Image & General informations - side by side */}
@@ -327,7 +352,7 @@ export default function VehicleDetail({
               savedAttachments={vehicle.attachments}
               entityType="vehicle"
               entityId={vehicle.vehicle_id}
-              isOwner={!isFamilyVehicle}
+              isOwner={!isFamilyVehicle || vehicle.permission_level === 'write'}
             />
           </CardContent>
         </Card>

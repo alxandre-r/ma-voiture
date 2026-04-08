@@ -8,5 +8,5 @@ interface FamilyLayoutProps {
 }
 
 export default function FamilyLayout({ children }: FamilyLayoutProps) {
-  return <PrivateLayoutContent title="Famille">{children}</PrivateLayoutContent>;
+  return <PrivateLayoutContent title="Famille & partage">{children}</PrivateLayoutContent>;
 }

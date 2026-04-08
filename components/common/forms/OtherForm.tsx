@@ -1,0 +1,210 @@
+'use client';
+
+import { useState } from 'react';
+
+import AttachmentSection from '@/components/common/attachments/AttachmentSection';
+import { FormField, FormInput, FormDate } from '@/components/common/ui/form';
+import Icon from '@/components/common/ui/Icon';
+import Spinner from '@/components/common/ui/Spinner';
+
+import type { OtherFormData } from '@/hooks/other/useOtherActions';
+import type { Expense } from '@/types/expense';
+import type { VehicleMinimal } from '@/types/vehicle';
+
+const SELECT_CLASS =
+  'w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 ' +
+  'px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ' +
+  'hover:border-gray-400 dark:hover:border-gray-600 transition-colors';
+
+interface OtherFormProps {
+  initialExpense?: Expense | null;
+  vehicles: VehicleMinimal[];
+  onSave: (data: OtherFormData, expenseId?: number, pendingFiles?: File[]) => Promise<boolean>;
+  onCancel: () => void;
+  saving?: boolean;
+}
+
+export default function OtherForm({
+  initialExpense,
+  vehicles,
+  onSave,
+  onCancel,
+  saving = false,
+}: OtherFormProps) {
+  const isEditing = !!initialExpense;
+  const today = new Date().toISOString().split('T')[0];
+
+  const defaultVehicleId =
+    initialExpense?.vehicle_id ?? (vehicles.length === 1 ? vehicles[0].vehicle_id : 0);
+
+  const [formData, setFormData] = useState<OtherFormData>({
+    vehicle_id: defaultVehicleId,
+    label: initialExpense?.label ?? '',
+    date: initialExpense?.date ?? today,
+    amount: initialExpense?.amount ?? 0,
+    notes: initialExpense?.notes ?? '',
+  });
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+
+  const getVehicleName = (id: number) => {
+    const v = vehicles.find((v) => v.vehicle_id === id);
+    return v ? v.name || `${v.make} ${v.model}` : 'Véhicule';
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'vehicle_id' || name === 'amount' ? Number(value) : value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await onSave(formData, initialExpense?.id, pendingFiles);
+  };
+
+  const title = isEditing ? 'Modifier la dépense' : 'Ajouter une dépense';
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 flex items-center justify-center
+          dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+          aria-label="Retour"
+        >
+          <Icon name="arrow-back" size={18} />
+        </button>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Véhicule */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Icon name="car" size={16} className="inline mr-2 text-gray-500" />
+            Véhicule <span className="text-red-500">*</span>
+          </label>
+          {vehicles.length === 1 ? (
+            <input
+              readOnly
+              value={getVehicleName(vehicles[0].vehicle_id)}
+              className={`${SELECT_CLASS} bg-gray-100 dark:bg-gray-700 text-gray-500 cursor-not-allowed`}
+            />
+          ) : (
+            <select
+              name="vehicle_id"
+              value={formData.vehicle_id}
+              onChange={handleChange}
+              required
+              className={SELECT_CLASS}
+            >
+              <option value="">Sélectionnez un véhicule</option>
+              {vehicles.map((v) => (
+                <option key={v.vehicle_id} value={v.vehicle_id}>
+                  {v.name || `${v.make} ${v.model}`}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {/* Libellé */}
+        <FormField label="Libellé" icon="notes" required>
+          <FormInput
+            type="text"
+            name="label"
+            value={formData.label}
+            onChange={handleChange}
+            placeholder="Ex: Parking, Péage, Lavage..."
+            required
+            autoFocus
+          />
+        </FormField>
+
+        {/* Date & Montant */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField label="Date" icon="calendar">
+            <FormDate name="date" value={formData.date} onChange={handleChange} required />
+          </FormField>
+
+          <FormField label="Montant" icon="euro">
+            <FormInput
+              type="number"
+              inputMode="decimal"
+              name="amount"
+              value={formData.amount || ''}
+              onChange={handleChange}
+              placeholder="0.00"
+              step="0.01"
+              required
+            />
+          </FormField>
+        </div>
+
+        {/* Notes */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Icon name="notes" size={16} className="inline mr-2 text-gray-500" />
+            Notes
+          </label>
+          <textarea
+            name="notes"
+            value={formData.notes || ''}
+            onChange={handleChange}
+            rows={3}
+            placeholder="Détails supplémentaires..."
+            className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2.5 text-sm resize-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-400 dark:hover:border-gray-600 transition-colors"
+          />
+        </div>
+
+        {/* Pièces jointes */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Icon name="notes" size={16} className="inline mr-2 text-gray-500" />
+            Pièces jointes
+          </label>
+          <AttachmentSection
+            savedAttachments={initialExpense?.attachments}
+            entityType="expense"
+            entityId={initialExpense?.id}
+            onPendingFilesChange={setPendingFiles}
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            className="px-5 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium transition-colors cursor-pointer"
+          >
+            Annuler
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-5 py-2 rounded-lg bg-custom-2 hover:bg-custom-2-hover text-white text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-2"
+          >
+            {saving ? (
+              <>
+                <Spinner color="white" /> Enregistrement...
+              </>
+            ) : (
+              <>
+                <Icon name="check" size={16} className="invert dark:invert-0" /> Enregistrer
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

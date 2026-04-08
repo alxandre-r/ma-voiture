@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useCallback } from 'react';
 
 import { useNotifications } from '@/contexts/NotificationContext';
+import { apiCall } from '@/lib/api/client';
 import { uploadPendingAttachments } from '@/lib/utils/uploadAttachments';
 
 import type { Vehicle } from '@/types/vehicle';
@@ -44,6 +45,7 @@ export function useGarageActions(): UseGarageActionsReturn {
     setSelectedVehicle(vehicle);
     setViewState('detail');
     setIsEditing(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   /** --- Handle edit --- */
@@ -86,14 +88,10 @@ export function useGarageActions(): UseGarageActionsReturn {
         const endpoint = isUpdate ? '/api/vehicles/update' : '/api/vehicles/add';
         const method = isUpdate ? 'PATCH' : 'POST';
 
-        const res = await fetch(endpoint, {
+        const data = await apiCall<{ vehicle?: { vehicle_id: number } }>(endpoint, {
           method,
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(vehicleData),
         });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Erreur lors de l'enregistrement");
 
         if (!isUpdate && pendingFiles?.length && data.vehicle?.vehicle_id) {
           await uploadPendingAttachments(pendingFiles, 'vehicle', data.vehicle.vehicle_id);
@@ -122,14 +120,10 @@ export function useGarageActions(): UseGarageActionsReturn {
     async (vehicleId: string): Promise<boolean> => {
       setIsLoading(true);
       try {
-        const res = await fetch('/api/vehicles/delete', {
+        await apiCall('/api/vehicles/delete', {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ vehicleId }),
         });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erreur lors de la suppression');
 
         showSuccess('Véhicule supprimé avec succès !');
 

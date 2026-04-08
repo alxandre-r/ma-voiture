@@ -24,11 +24,21 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Le paramètre vehicle_id est requis' }, { status: 400 });
   }
 
+  // Verify the user has at least read access to this vehicle
+  const { data: vehicle } = await supabase
+    .from('vehicles_for_display')
+    .select('vehicle_id')
+    .eq('vehicle_id', Number(vehicleId))
+    .maybeSingle();
+
+  if (!vehicle) {
+    return NextResponse.json({ error: 'Véhicule introuvable ou accès refusé' }, { status: 403 });
+  }
+
   const { data, error } = await supabase
     .from('insurance_contracts')
     .select('*')
     .eq('vehicle_id', Number(vehicleId))
-    .eq('owner_id', user.id)
     .order('start_date', { ascending: false });
 
   if (error) {

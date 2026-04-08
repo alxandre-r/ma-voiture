@@ -18,8 +18,27 @@ export const getFamilyVehicles = cache(async (familyId?: string) => {
   const { data, error } = await supabase
     .from('vehicles_for_display')
     .select('*')
-    .eq('family_id', familyId)
+    .contains('family_ids', [familyId])
     .neq('owner_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to fetch vehicles: ${error.message}`);
+  }
+
+  return data;
+});
+
+// Tous les véhicules de la famille pour affichage (incluant les véhicules de l'utilisateur courant)
+export const getFamilyAllVehicles = cache(async (familyId?: string) => {
+  const supabase = await createSupabaseServerClient();
+
+  if (!familyId) return [];
+
+  const { data, error } = await supabase
+    .from('vehicles_for_display')
+    .select('vehicle_id, owner_id, owner_name, make, model, year, image, name, permission_level')
+    .contains('family_ids', [familyId])
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -41,8 +60,10 @@ export const getFamilyVehiclesMinimal = cache(async (familyId?: string) => {
 
   const { data, error } = await supabase
     .from('vehicles_for_display')
-    .select('vehicle_id, owner_id, make, model, year, odometer')
-    .eq('family_id', familyId)
+    .select(
+      'vehicle_id, owner_id, owner_name, family_ids, name, make, model, year, odometer, color, fuel_type, status, permission_level',
+    )
+    .contains('family_ids', [familyId])
     .neq('owner_id', user.id)
     .order('created_at', { ascending: false });
 

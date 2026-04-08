@@ -1,24 +1,39 @@
-import { getUserFamilyId } from '../user/getUserFamilyId';
+import { getUserFamilyIds } from '../user/getUserFamilyIds';
 
 import { getFamilyVehicles, getFamilyVehiclesMinimal } from './getFamilyVehicles';
 import { getUserVehicles, getUserVehiclesMinimal } from './getUserVehicles';
 
 export async function getAllVehicles() {
-  const [userVehicles, familyId] = await Promise.all([getUserVehicles(), getUserFamilyId()]);
+  const [userVehicles, familyIds] = await Promise.all([getUserVehicles(), getUserFamilyIds()]);
 
-  if (!familyId) return userVehicles;
+  if (!familyIds.length) return userVehicles;
 
-  const familyVehicles = await getFamilyVehicles(familyId);
+  const perFamily = await Promise.all(familyIds.map((id) => getFamilyVehicles(id)));
+  const seen = new Set(userVehicles.map((v) => v.vehicle_id));
+  const familyVehicles = perFamily.flat().filter((v) => {
+    if (seen.has(v.vehicle_id)) return false;
+    seen.add(v.vehicle_id);
+    return true;
+  });
 
   return [...userVehicles, ...familyVehicles];
 }
 
 export async function getAllVehiclesMinimal() {
-  const [userVehicles, familyId] = await Promise.all([getUserVehiclesMinimal(), getUserFamilyId()]);
+  const [userVehicles, familyIds] = await Promise.all([
+    getUserVehiclesMinimal(),
+    getUserFamilyIds(),
+  ]);
 
-  if (!familyId) return userVehicles;
+  if (!familyIds.length) return userVehicles;
 
-  const familyVehicles = await getFamilyVehiclesMinimal(familyId);
+  const perFamily = await Promise.all(familyIds.map((id) => getFamilyVehiclesMinimal(id)));
+  const seen = new Set(userVehicles.map((v) => v.vehicle_id));
+  const familyVehicles = perFamily.flat().filter((v) => {
+    if (seen.has(v.vehicle_id)) return false;
+    seen.add(v.vehicle_id);
+    return true;
+  });
 
   return [...userVehicles, ...familyVehicles];
 }

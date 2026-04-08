@@ -15,18 +15,20 @@ import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintena
 import ExpenseButton from '@/components/common/ExpenseButton';
 import FillForm from '@/components/common/forms/FillForm';
 import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
+import OtherForm from '@/components/common/forms/OtherForm';
 import ReminderForm from '@/components/common/forms/ReminderForm';
 import Drawer from '@/components/common/ui/Drawer';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useFillActions } from '@/hooks/fill/useFillActions';
+import { useOtherActions } from '@/hooks/other/useOtherActions';
 import { useReminderActions } from '@/hooks/reminders/useReminderActions';
 import { detectAnomalies } from '@/lib/utils/anomalyUtils';
-import { getPeriodCutoff } from '@/lib/utils/filterUtils';
-import { enrichReminder } from '@/lib/utils/reminderUtils';
+import { getEffectivePeriodRange } from '@/lib/utils/filterUtils';
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import type { ExpenseType } from '@/components/common/ExpenseButton';
+import type { OtherFormData } from '@/hooks/other/useOtherActions';
 import type { Expense } from '@/types/expense';
 import type { FillFormData } from '@/types/fill';
 import type { Reminder, ReminderFormData } from '@/types/reminder';
@@ -55,16 +57,24 @@ function DashboardContent({
   const [selectedExpenseType, setSelectedExpenseType] = useState<ExpenseType | null>(null);
   const [showFillForm, setShowFillForm] = useState(false);
   const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
+  const [showOtherForm, setShowOtherForm] = useState(false);
   const [showReminderForm, setShowReminderForm] = useState(false);
 
   const { addFill, adding } = useFillActions();
   const { addMaintenance } = useMaintenanceActions();
+  const { addOther } = useOtherActions();
   const { creating, createReminder } = useReminderActions();
 
   const filteredExpenses = useMemo(() => {
     const byVehicle = expenses.filter((e) => selectedVehicleIds.includes(e.vehicle_id));
-    const cutoff = getPeriodCutoff(selectedPeriod);
-    return cutoff ? byVehicle.filter((e) => new Date(e.date) >= cutoff) : byVehicle;
+    const { start, end } = getEffectivePeriodRange(selectedPeriod);
+    let result = start ? byVehicle.filter((e) => new Date(e.date) >= start) : byVehicle;
+    if (end) {
+      const endOfDay = new Date(end);
+      endOfDay.setHours(23, 59, 59, 999);
+      result = result.filter((e) => new Date(e.date) <= endOfDay);
+    }
+    return result;
   }, [expenses, selectedVehicleIds, selectedPeriod]);
 
   const sortedExpenses = useMemo(
@@ -110,35 +120,21 @@ function DashboardContent({
     [fillExpenses, vehicles],
   );
 
-  const overdueReminders = useMemo(
-    () =>
-      reminders
-        .filter((r) => !r.is_completed)
-        .filter((r) => {
-          const vehicle =
-            r.vehicle_id != null
-              ? (vehicles.find((v) => v.vehicle_id === r.vehicle_id) ?? null)
-              : null;
-          return enrichReminder(r, vehicle, fillExpenses).status === 'overdue';
-        }).length,
-    [reminders, vehicles, fillExpenses],
-  );
-
-  const ownedActiveVehicles = vehicles.filter((v) => {
+  const writableActiveVehicles = vehicles.filter((v) => {
     const isActive = v.status === 'active' || v.status === null || v.status === undefined;
-    const isOwner = v.owner_id === currentUserId;
-    return isActive && isOwner;
+    const canWrite = v.owner_id === currentUserId || v.permission_level === 'write';
+    return isActive && canWrite;
   });
 
-  const fillVehicles = ownedActiveVehicles.filter(
+  const fillVehicles = writableActiveVehicles.filter(
     (v) => v.fuel_type !== 'Électrique' && v.fuel_type !== 'Hybride non rechargeable',
   );
-  const chargeVehicles = ownedActiveVehicles.filter(
+  const chargeVehicles = writableActiveVehicles.filter(
     (v) => v.fuel_type === 'Électrique' || v.fuel_type === 'Hybride rechargeable',
   );
   const formVehicles = selectedExpenseType === 'charge' ? chargeVehicles : fillVehicles;
 
-  const vehiclesMinimal: VehicleMinimal[] = ownedActiveVehicles.map((v) => ({
+  const vehiclesMinimal: VehicleMinimal[] = writableActiveVehicles.map((v) => ({
     vehicle_id: v.vehicle_id,
     name: v.name ?? `${v.make} ${v.model}`,
     make: v.make ?? '',
@@ -147,12 +143,14 @@ function DashboardContent({
     odometer: v.odometer,
     status: v.status ?? 'active',
     owner_id: v.owner_id,
+    permission_level: v.permission_level ?? null,
   }));
 
   const handleSuccess = () => {
     router.refresh();
     setShowFillForm(false);
     setShowMaintenanceForm(false);
+    setShowOtherForm(false);
     setShowReminderForm(false);
     setSelectedExpenseType(null);
   };
@@ -161,6 +159,8 @@ function DashboardContent({
     setSelectedExpenseType(type);
     if (type === 'maintenance') {
       setShowMaintenanceForm(true);
+    } else if (type === 'other') {
+      setShowOtherForm(true);
     } else {
       setShowFillForm(true);
     }
@@ -182,6 +182,16 @@ function DashboardContent({
     return success;
   };
 
+  const handleOtherSave = async (
+    data: OtherFormData,
+    _expenseId?: number,
+    pendingFiles?: File[],
+  ) => {
+    const success = await addOther(data, pendingFiles);
+    if (success) handleSuccess();
+    return success;
+  };
+
   const handleReminderSave = async (data: ReminderFormData): Promise<boolean> => {
     const success = await createReminder(data);
     if (success) handleSuccess();
@@ -189,21 +199,21 @@ function DashboardContent({
   };
 
   return (
-    <div className="space-y-6 px-2 sm:px-0 pb-8">
-      {/* Add expense button — desktop right-aligned + mobile FAB, both handled by ExpenseButton */}
-      <ExpenseButton
-        vehicles={vehicles as VehicleMinimal[]}
-        currentUserId={currentUserId}
-        onSelectType={handleSelectType}
-        onAddReminder={() => setShowReminderForm(true)}
-      />
-
-      {/* Stats Cards */}
-      <StatsCards
-        avgConsumption={avgConsumption}
-        totalExpenses={totalExpenses}
-        overdueReminders={overdueReminders}
-      />
+    <div className="space-y-6 px-2 sm:px-0 pb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Stats + add button on same row (desktop) */}
+      <div className="flex md:grid grid-cols-2 gap-6">
+        <div className="flex-1 min-w-0">
+          <StatsCards avgConsumption={avgConsumption} totalExpenses={totalExpenses} />
+        </div>
+        <div className="justify-end items-end hidden sm:flex">
+          <ExpenseButton
+            vehicles={vehicles as VehicleMinimal[]}
+            currentUserId={currentUserId}
+            onSelectType={handleSelectType}
+            onAddReminder={() => setShowReminderForm(true)}
+          />
+        </div>
+      </div>
 
       {/* Anomaly alert — only renders if anomalies are detected */}
       <AnomalyAlert anomalies={anomalies} />
@@ -260,6 +270,23 @@ function DashboardContent({
             setSelectedExpenseType(null);
           }}
           saving={false}
+        />
+      </Drawer>
+
+      <Drawer
+        isOpen={showOtherForm}
+        onClose={() => {
+          setShowOtherForm(false);
+          setSelectedExpenseType(null);
+        }}
+      >
+        <OtherForm
+          vehicles={vehiclesMinimal}
+          onSave={handleOtherSave}
+          onCancel={() => {
+            setShowOtherForm(false);
+            setSelectedExpenseType(null);
+          }}
         />
       </Drawer>
 

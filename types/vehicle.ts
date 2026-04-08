@@ -5,7 +5,7 @@ export interface Vehicle {
   vehicle_id: number;
   owner_id?: string | null;
   owner_name?: string | null;
-  family_id?: string | null;
+  family_ids?: string[] | null;
   name?: string | null;
   make?: string | null;
   model?: string | null;
@@ -31,6 +31,7 @@ export interface Vehicle {
   purchase_date?: string | null;
   purchase_price?: number | null;
   attachments?: Attachment[];
+  permission_level?: 'read' | 'write' | null;
 }
 
 // Owner info for family vehicles display
@@ -43,6 +44,8 @@ export interface VehicleOwner {
 export interface VehicleMinimal {
   vehicle_id: number;
   owner_id?: string | null;
+  owner_name?: string | null;
+  family_ids?: string[] | null;
   name?: string | null;
   make?: string | null;
   model?: string | null;
@@ -52,4 +55,5 @@ export interface VehicleMinimal {
   fuel_type?: string | null;
   // Added for filtering active vehicles
   status?: 'active' | 'inactive' | null;
+  permission_level?: 'read' | 'write' | null;
 }

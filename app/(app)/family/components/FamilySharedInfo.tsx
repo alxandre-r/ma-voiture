@@ -4,7 +4,7 @@
  */
 export default function FamilySharedInfo() {
   return (
-    <div className="mt-12 bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-200 dark:border-gray-700">
       <div className="flex items-start gap-4">
         <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
           <svg

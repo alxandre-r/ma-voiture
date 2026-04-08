@@ -103,12 +103,11 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
     }
 
-    // Verify ownership
+    // Verify ownership or write permission
     const { data: vehicle, error: fetchError } = await supabase
       .from('vehicles')
       .select('id, owner_id')
       .eq('id', id)
-      .eq('owner_id', user.id)
       .maybeSingle();
 
     if (fetchError) {
@@ -117,7 +116,18 @@ export async function PATCH(request: Request) {
     }
 
     if (!vehicle) {
-      return NextResponse.json({ error: 'Vehicle not found or no permission' }, { status: 404 });
+      return NextResponse.json({ error: 'Véhicule introuvable' }, { status: 404 });
+    }
+
+    if (vehicle.owner_id !== user.id) {
+      const { data: perm } = await supabase
+        .from('vehicles_for_display')
+        .select('permission_level')
+        .eq('vehicle_id', id)
+        .maybeSingle();
+      if (perm?.permission_level !== 'write') {
+        return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
+      }
     }
 
     // Update vehicle
@@ -125,7 +135,6 @@ export async function PATCH(request: Request) {
       .from('vehicles')
       .update(updateData)
       .eq('id', id)
-      .eq('owner_id', user.id)
       .select()
       .single<Vehicle>();
 

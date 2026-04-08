@@ -32,5 +32,9 @@ function PersonalVehiclesSkeleton() {
 }
 
 export default function Loading() {
-  return <PersonalVehiclesSkeleton />;
+  return (
+    <div className="animate-in fade-in duration-300">
+      <PersonalVehiclesSkeleton />
+    </div>
+  );
 }

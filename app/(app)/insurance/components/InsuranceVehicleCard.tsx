@@ -68,6 +68,17 @@ export default function InsuranceVehicleCard({
               {!activeContract && (
                 <span className="text-xs text-gray-400 dark:text-gray-500 italic">
                   Aucun contrat actif
+                  {!isFamily && onAdd && (
+                    <>
+                      {' · '}
+                      <button
+                        onClick={onAdd}
+                        className="text-custom-2 hover:underline not-italic font-medium cursor-pointer"
+                      >
+                        Ajouter
+                      </button>
+                    </>
+                  )}
                 </span>
               )}
             </div>
@@ -83,13 +94,6 @@ export default function InsuranceVehicleCard({
                 /mois
               </p>
             </div>
-          ) : !isFamily ? (
-            <button
-              onClick={onAdd}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-custom-2 hover:bg-custom-2-hover text-white transition-colors cursor-pointer"
-            >
-              <Icon name="add" size={13} className="invert dark:invert-0" /> Ajouter
-            </button>
           ) : null}
         </div>
 

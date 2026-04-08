@@ -9,6 +9,7 @@ import type { Vehicle } from '@/types/vehicle';
 interface OverdueRemindersProps {
   reminders: ReminderWithStatus[];
   vehicles: Vehicle[];
+  currentUserId?: string;
   onComplete: (id: number, completed: boolean) => void;
   onEdit: (reminder: ReminderWithStatus) => void;
   onDelete: (id: number) => void;
@@ -21,6 +22,7 @@ interface OverdueRemindersProps {
 export default function OverdueReminders({
   reminders,
   vehicles,
+  currentUserId,
   onComplete,
   onEdit,
   onDelete,
@@ -50,6 +52,7 @@ export default function OverdueReminders({
                 key={reminder.id}
                 reminder={reminder}
                 vehicleName={vehicle?.name ?? undefined}
+                currentUserId={currentUserId}
                 onComplete={onComplete}
                 onEdit={onEdit}
                 onDelete={onDelete}

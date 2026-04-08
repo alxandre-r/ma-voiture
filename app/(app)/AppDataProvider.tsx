@@ -11,11 +11,11 @@ import { redirect } from 'next/navigation';
 
 import { SelectorsProvider } from '@/contexts/SelectorsContext';
 import { UserProvider } from '@/contexts/UserContext';
+import { getUserFamilies } from '@/lib/data/family/getUserFamilies';
 import { getCurrentUserInfo } from '@/lib/data/user/getCurrentUserInfo';
 import { getUserPreferences } from '@/lib/data/user/getUserPreferences';
 import { getAllVehiclesMinimal } from '@/lib/data/vehicles';
 
-import type { User } from '@/types/user';
 import type { ReactNode } from 'react';
 
 interface AppDataProviderProps {
@@ -28,22 +28,27 @@ interface AppDataProviderProps {
  */
 export default async function AppDataProvider({ children }: AppDataProviderProps) {
   // Fetch user, vehicles and preferences in PARALLEL
-  const [user, initialVehicles, preferences] = await Promise.all([
+  const [user, initialVehicles, preferences, families] = await Promise.all([
     getCurrentUserInfo(),
     getAllVehiclesMinimal(),
     getUserPreferences(),
+    getUserFamilies(),
   ]);
 
   if (!user) {
-    redirect('/auth/not-identified');
+    redirect('/?reason=session_expired');
   }
 
+  // user is non-null after redirect above
+  const safeUser = user!;
+
   return (
-    <UserProvider user={user as User}>
+    <UserProvider user={safeUser}>
       <SelectorsProvider
         initialVehicles={initialVehicles}
         initialPreferences={preferences}
-        currentUserId={(user as User).id}
+        initialFamilies={families}
+        currentUserId={safeUser.id}
       >
         {children}
       </SelectorsProvider>

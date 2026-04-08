@@ -55,7 +55,7 @@ export async function DELETE(request: Request) {
     // Get the expense to check ownership
     const { data: existingExpense, error: expenseError } = await supabase
       .from('expenses')
-      .select('owner_id')
+      .select('owner_id, vehicle_id')
       .eq('id', existingFill.expense_id)
       .single();
 
@@ -64,10 +64,17 @@ export async function DELETE(request: Request) {
     }
 
     if (existingExpense.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: "Vous n'êtes pas autorisé à supprimer ce plein" },
-        { status: 403 },
-      );
+      const { data: vehicle } = await supabase
+        .from('vehicles_for_display')
+        .select('permission_level')
+        .eq('vehicle_id', existingExpense.vehicle_id)
+        .maybeSingle();
+      if (vehicle?.permission_level !== 'write') {
+        return NextResponse.json(
+          { error: "Vous n'êtes pas autorisé à supprimer ce plein" },
+          { status: 403 },
+        );
+      }
     }
 
     // Delete fill record (will cascade delete expense due to foreign key)

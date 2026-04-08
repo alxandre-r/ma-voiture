@@ -40,17 +40,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already has a family
-    const { data: existingFamily } = await supabase
-      .from('family_members')
-      .select('family_id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (existingFamily) {
-      return NextResponse.json({ error: "Vous faites déjà partie d'une famille" }, { status: 400 });
-    }
-
     // Create the family
     const { data: familyData, error: familyError } = await supabase
       .from('families')

@@ -29,7 +29,7 @@ export default function SettingsClient({ initialPreferences }: SettingsClientPro
   const [activeSection, setActiveSection] = useState('account');
 
   return (
-    <main>
+    <main className="animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Floating menu */}
         <aside className="lg:col-span-1">

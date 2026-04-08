@@ -13,6 +13,7 @@ import type { ReminderType, ReminderWithStatus } from '@/types/reminder';
 interface ReminderCardProps {
   reminder: ReminderWithStatus;
   vehicleName?: string;
+  currentUserId?: string;
   onComplete: (id: number, completed: boolean) => void;
   onEdit: (reminder: ReminderWithStatus) => void;
   onDelete: (id: number) => void;
@@ -32,6 +33,7 @@ const TYPE_LABELS: Record<ReminderType, string> = {
 export default function ReminderCard({
   reminder,
   vehicleName,
+  currentUserId,
   onComplete,
   onEdit,
   onDelete,
@@ -40,6 +42,7 @@ export default function ReminderCard({
   onDeleteAttachment,
   deletingAttachmentId,
 }: ReminderCardProps) {
+  const isOwner = !currentUserId || reminder.user_id === currentUserId;
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -78,7 +81,7 @@ export default function ReminderCard({
               className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20"
               onMouseLeave={() => setMenuOpen(false)}
             >
-              {!reminder.is_completed && (
+              {isOwner && !reminder.is_completed && (
                 <button
                   onClick={() => {
                     setMenuOpen(false);
@@ -101,14 +104,16 @@ export default function ReminderCard({
                 <Icon name="check" size={16} />
                 {reminder.is_completed ? 'Réactiver' : 'Marquer fait'}
               </button>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-700/50 transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50"
-              >
-                <Icon name="delete" size={16} />
-                {isDeleting ? 'Suppression…' : 'Supprimer'}
-              </button>
+              {isOwner && (
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-700/50 transition-colors cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Icon name="delete" size={16} />
+                  {isDeleting ? 'Suppression…' : 'Supprimer'}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -187,7 +192,7 @@ export default function ReminderCard({
             <AttachmentGallery
               savedAttachments={reminder.attachments}
               onDeleteSaved={onDeleteAttachment ?? (() => {})}
-              isOwner={true}
+              isOwner={isOwner}
               deletingId={deletingAttachmentId}
             />
           </div>

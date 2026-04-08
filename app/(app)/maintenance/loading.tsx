@@ -18,7 +18,7 @@ export default function Loading() {
       </div>
 
       {/* Timeline card — mirrors MaintenanceTimeline structure */}
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Historique Récent</CardTitle>

@@ -8,16 +8,29 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 // Using React's cache() for proper intra-request memoization
 // Note: React cache() works with dynamic data (cookies) unlike unstable_cache
 export const getCurrentUserInfo = cache(async () => {
-  const supabase = await createSupabaseServerClient();
+  try {
+    const supabase = await createSupabaseServerClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-  const { data, error } = await supabase.from('users_info').select('*').eq('id', user.id).single();
-  if (error) {
-    throw new Error(`Failed to fetch user info: ${error.message}`);
+    // Rate limit or other auth API errors — treat as unauthenticated
+    if (authError || !user) return null;
+
+    const { data, error } = await supabase
+      .from('users_info')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    if (error) {
+      console.error('Failed to fetch user info:', error.message);
+      return null;
+    }
+    return data;
+  } catch {
+    // Catches AuthApiError (e.g. 429 rate limit) and any network errors
+    return null;
   }
-  return data;
 });

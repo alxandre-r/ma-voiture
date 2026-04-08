@@ -16,7 +16,9 @@ interface MaintenanceTimelineProps {
   userId?: string;
   expenses?: Expense[];
   vehicles?: VehicleMinimal[];
+  writableVehicleIds?: Set<number>;
   onRefresh?: () => void;
+  onAdd?: () => void;
   onEditExpense?: (expense: Expense) => void;
   onDeleteExpense?: (expenseId: number) => Promise<boolean>;
   deletingId?: number | null;
@@ -29,7 +31,9 @@ export default function MaintenanceTimeline({
   userId,
   expenses = [],
   vehicles = [],
+  writableVehicleIds,
   onRefresh,
+  onAdd,
   onEditExpense,
   onDeleteExpense,
   deletingId,
@@ -51,8 +55,17 @@ export default function MaintenanceTimeline({
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Card with Timeline */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex-row items-center justify-between space-y-0">
           <CardTitle>Historique Récent</CardTitle>
+          {onAdd && (
+            <button
+              onClick={onAdd}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            >
+              <Icon name="add" size={16} className="invert dark:invert-0" />
+              Ajouter une intervention
+            </button>
+          )}
         </CardHeader>
         <CardContent>
           {isDataLoading ? (
@@ -73,6 +86,9 @@ export default function MaintenanceTimeline({
               {expenses.map((expense, index) => {
                 const vehicle = vehicles.find((v) => v.vehicle_id === expense.vehicle_id);
                 const isLast = index === expenses.length - 1;
+                const canModify = writableVehicleIds
+                  ? writableVehicleIds.has(expense.vehicle_id ?? -1)
+                  : !!(userId && expense.owner_id === userId);
 
                 return (
                   <MaintenanceCard
@@ -80,7 +96,7 @@ export default function MaintenanceTimeline({
                     expense={expense}
                     vehicle={vehicle}
                     isLast={isLast}
-                    userId={userId}
+                    canModify={canModify}
                     onEdit={() => onEditExpense?.(expense)}
                     onDeleteClick={() => setDeleteConfirmId(expense.id)}
                     deletingId={deletingId}

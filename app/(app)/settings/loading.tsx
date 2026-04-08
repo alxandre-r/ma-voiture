@@ -35,7 +35,7 @@ function SettingsContentSkeleton() {
 
 export default function Loading() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 animate-in fade-in duration-300">
       <div className="lg:col-span-1">
         <SettingsMenuSkeleton />
       </div>

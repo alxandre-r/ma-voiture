@@ -8,7 +8,7 @@ import { useClickOutside } from '@/lib/utils/clickOutside';
 
 import type { VehicleMinimal } from '@/types/vehicle';
 
-export type ExpenseType = 'fill' | 'charge' | 'maintenance';
+export type ExpenseType = 'fill' | 'charge' | 'maintenance' | 'other';
 
 interface ExpenseButtonProps {
   vehicles: VehicleMinimal[];
@@ -29,22 +29,11 @@ export default function ExpenseButton({
 
   useClickOutside(menuRef, () => setShowMenu(false), showMenu);
 
-  const minimalVehicles = vehicles
-    .map((v) => ({
-      vehicle_id: v.vehicle_id,
-      name: v.name,
-      make: v.make,
-      model: v.model,
-      fuel_type: v.fuel_type,
-      odometer: v.odometer,
-      status: v.status,
-      owner_id: v.owner_id,
-    }))
-    .filter((v) => {
-      const isActive = v.status === 'active' || v.status === null || v.status === undefined;
-      const isOwner = v.owner_id === currentUserId;
-      return isActive && isOwner;
-    });
+  const minimalVehicles = vehicles.filter((v) => {
+    const isActive = v.status === 'active' || v.status === null || v.status === undefined;
+    const canWrite = v.owner_id === currentUserId || v.permission_level === 'write';
+    return isActive && canWrite;
+  });
 
   const fillVehicles = minimalVehicles.filter((v) => {
     const fuelType = v.fuel_type;
@@ -114,6 +103,19 @@ export default function ExpenseButton({
           <div className="font-medium text-gray-900 dark:text-gray-100">Entretien / Réparation</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
             Ajouter un entretien ou une réparation
+          </div>
+        </div>
+      </button>
+
+      <button
+        onClick={() => handleSelect('other')}
+        className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
+      >
+        <Icon name="euro" size={20} className="text-violet-500" />
+        <div>
+          <div className="font-medium text-gray-900 dark:text-gray-100">Autre dépense</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            Ajouter une dépense diverse (péage, parking...)
           </div>
         </div>
       </button>

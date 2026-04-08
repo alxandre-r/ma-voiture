@@ -9,16 +9,19 @@ import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintena
 import ExpenseButton from '@/components/common/ExpenseButton';
 import FillForm from '@/components/common/forms/FillForm';
 import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
+import OtherForm from '@/components/common/forms/OtherForm';
 import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import Drawer from '@/components/common/ui/Drawer';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useFillActions } from '@/hooks/fill/useFillActions';
+import { useOtherActions } from '@/hooks/other/useOtherActions';
 import { filterByVehiclesAndPeriod } from '@/lib/utils/filterUtils';
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import type { ExpenseType } from '@/components/common/ExpenseButton';
+import type { OtherFormData } from '@/hooks/other/useOtherActions';
 import type { Expense } from '@/types/expense';
 import type { FillFormData } from '@/types/fill';
 import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
@@ -28,7 +31,7 @@ interface ExpensesClientProps {
   initialExpenses: Expense[];
 }
 
-type EditFormType = 'fill' | 'maintenance' | null;
+type EditFormType = 'fill' | 'maintenance' | 'other' | null;
 
 /**
  * Expenses content component that uses shared selectors.
@@ -55,11 +58,13 @@ function ExpensesContent({
   const [addExpenseType, setAddExpenseType] = useState<ExpenseType | null>(null);
   const [showAddFillForm, setShowAddFillForm] = useState(false);
   const [showAddMaintenanceForm, setShowAddMaintenanceForm] = useState(false);
+  const [showAddOtherForm, setShowAddOtherForm] = useState(false);
 
   const { showError } = useNotifications();
   const { deleteExpense } = useExpenseActions();
   const { addFill, adding } = useFillActions();
   const { addMaintenance } = useMaintenanceActions();
+  const { addOther, updateOther } = useOtherActions();
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
   // Filter expenses by selected vehicles and period (client-side)
@@ -78,6 +83,8 @@ function ExpensesContent({
     setAddExpenseType(type);
     if (type === 'maintenance') {
       setShowAddMaintenanceForm(true);
+    } else if (type === 'other') {
+      setShowAddOtherForm(true);
     } else {
       setShowAddFillForm(true);
     }
@@ -111,15 +118,29 @@ function ExpensesContent({
     return success;
   };
 
+  const handleAddOtherSave = async (
+    data: OtherFormData,
+    _expenseId?: number,
+    pendingFiles?: File[],
+  ): Promise<boolean> => {
+    const success = await addOther(data, pendingFiles);
+    if (success) {
+      handleSuccess();
+      setShowAddOtherForm(false);
+      setAddExpenseType(null);
+    }
+    return success;
+  };
+
   // Handle edit expense - opens the appropriate form based on expense type
   const handleEditExpense = (expense: Expense) => {
-    // Determine form type based on expense type
     if (expense.type === 'fuel' || expense.type === 'electric_charge') {
       setEditFormType('fill');
     } else if (expense.type === 'maintenance') {
       setEditFormType('maintenance');
+    } else if (expense.type === 'other') {
+      setEditFormType('other');
     } else {
-      // For other types (insurance, other), we could show a message or just close
       return;
     }
     setEditingExpense(expense);
@@ -164,6 +185,21 @@ function ExpensesContent({
     } catch (err) {
       showError(err instanceof Error ? err.message : 'Erreur lors de la modification du plein');
       return false;
+    } finally {
+      setSavingForm(false);
+    }
+  };
+
+  // Handle save for other form
+  const handleSaveOther = async (data: OtherFormData): Promise<boolean> => {
+    setSavingForm(true);
+    try {
+      const success = await updateOther(editingExpense!.id, data);
+      if (success) {
+        handleSuccess();
+        handleCancelEdit();
+      }
+      return success;
     } finally {
       setSavingForm(false);
     }
@@ -245,23 +281,40 @@ function ExpensesContent({
       odometer: (v as Vehicle | VehicleMinimal).odometer,
       owner_id: v.owner_id,
       status: (v as Vehicle | VehicleMinimal).status,
+      permission_level: (v as Vehicle).permission_level ?? null,
     }));
   }, [vehicles]);
 
-  // Vehicles filtered for the add fill/charge form
+  // All active vehicles the current user can write to
+  const writableVehicles = useMemo(
+    () =>
+      minimalVehicles.filter((v) => {
+        const isActive = v.status === 'active' || v.status === null || v.status === undefined;
+        const canWrite = v.owner_id === user?.id || v.permission_level === 'write';
+        return isActive && canWrite;
+      }),
+    [minimalVehicles, user?.id],
+  );
+
+  // Vehicles for the add fill/charge form — writable + fuel-type filter
   const addFormVehicles = useMemo(() => {
-    const ownedActive = minimalVehicles.filter((v) => {
-      const isActive = v.status === 'active' || v.status === null || v.status === undefined;
-      return isActive && v.owner_id === user?.id;
-    });
     return addExpenseType === 'charge'
-      ? ownedActive.filter(
+      ? writableVehicles.filter(
           (v) => v.fuel_type === 'Électrique' || v.fuel_type === 'Hybride rechargeable',
         )
-      : ownedActive.filter(
+      : writableVehicles.filter(
           (v) => v.fuel_type !== 'Électrique' && v.fuel_type !== 'Hybride non rechargeable',
         );
-  }, [minimalVehicles, addExpenseType, user?.id]);
+  }, [writableVehicles, addExpenseType]);
+
+  // Vehicles for edit forms — writable + always include the expense being edited
+  const editFormVehicles = useMemo(() => {
+    if (!editingExpense) return writableVehicles;
+    if (writableVehicles.some((v) => v.vehicle_id === editingExpense.vehicle_id))
+      return writableVehicles;
+    const editingVehicle = minimalVehicles.find((v) => v.vehicle_id === editingExpense.vehicle_id);
+    return editingVehicle ? [...writableVehicles, editingVehicle] : writableVehicles;
+  }, [writableVehicles, minimalVehicles, editingExpense]);
 
   // Computed initial data for the edit fill form
   const editFillInitial =
@@ -298,21 +351,21 @@ function ExpensesContent({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Add expense button — desktop right-aligned + mobile FAB, both handled by ExpenseButton */}
-      <ExpenseButton
-        vehicles={vehicles as VehicleMinimal[]}
-        currentUserId={user?.id}
-        onSelectType={handleSelectAddType}
-      />
-
-      {/* Expense List */}
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Expense List — ExpenseButton passed as headerAction to sit alongside stats */}
       <ExpenseList
         vehicles={vehicles}
         expenses={filteredExpenses}
         onEditExpense={handleEditExpense}
         onDeleteExpense={handleDeleteExpenseClick}
         currentUserId={user?.id}
+        headerAction={
+          <ExpenseButton
+            vehicles={vehicles as VehicleMinimal[]}
+            currentUserId={user?.id}
+            onSelectType={handleSelectAddType}
+          />
+        }
       />
 
       {/* Delete Confirmation Modal */}
@@ -355,7 +408,7 @@ function ExpensesContent({
         }}
       >
         <MaintenanceForm
-          vehicles={minimalVehicles}
+          vehicles={writableVehicles}
           onSave={handleAddMaintenanceSave}
           onCancel={() => {
             setShowAddMaintenanceForm(false);
@@ -368,7 +421,7 @@ function ExpensesContent({
       <Drawer isOpen={editFormType === 'fill' && !!editingExpense} onClose={handleCancelEdit}>
         <FillForm
           initialFill={editFillInitial}
-          vehicles={minimalVehicles}
+          vehicles={editFormVehicles}
           onSave={handleSaveFill}
           onCancel={handleCancelEdit}
           saving={savingForm}
@@ -381,8 +434,35 @@ function ExpensesContent({
       >
         <MaintenanceForm
           initialExpense={editingExpense}
-          vehicles={minimalVehicles}
+          vehicles={editFormVehicles}
           onSave={handleSaveMaintenance}
+          onCancel={handleCancelEdit}
+          saving={savingForm}
+        />
+      </Drawer>
+
+      <Drawer
+        isOpen={showAddOtherForm}
+        onClose={() => {
+          setShowAddOtherForm(false);
+          setAddExpenseType(null);
+        }}
+      >
+        <OtherForm
+          vehicles={writableVehicles}
+          onSave={handleAddOtherSave}
+          onCancel={() => {
+            setShowAddOtherForm(false);
+            setAddExpenseType(null);
+          }}
+        />
+      </Drawer>
+
+      <Drawer isOpen={editFormType === 'other' && !!editingExpense} onClose={handleCancelEdit}>
+        <OtherForm
+          initialExpense={editingExpense}
+          vehicles={editFormVehicles}
+          onSave={handleSaveOther}
           onCancel={handleCancelEdit}
           saving={savingForm}
         />

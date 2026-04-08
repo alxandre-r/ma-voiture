@@ -7,6 +7,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import SignInForm from '@/components/auth/forms/SignInForm';
@@ -16,8 +17,15 @@ import SignUpForm from '@/components/auth/forms/SignUpForm';
 import Aurora from '../components/common/ui/effects/AuroraBackground';
 import ShinyText from '../components/common/ui/effects/ShinyText';
 
+const REASON_MESSAGES: Record<string, string> = {
+  session_expired: 'Votre session a expiré. Veuillez vous reconnecter.',
+};
+
 export default function LandingPage() {
   const [formType, setFormType] = useState<'signin' | 'signup'>('signin');
+  const searchParams = useSearchParams();
+  const reason = searchParams.get('reason');
+  const reasonMessage = reason ? REASON_MESSAGES[reason] : null;
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
@@ -62,6 +70,25 @@ export default function LandingPage() {
           Une solution simple, rapide et intuitive pour suivre et gérer vos véhicules.
         </motion.p>
       </section>
+
+      {/* Session-expired / auth error banner */}
+      {reasonMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full flex justify-center px-6 mb-2"
+        >
+          <div
+            className="w-full max-w-md flex items-center gap-3 px-4 py-3 rounded-xl
+            bg-amber-50 dark:bg-amber-900/30
+            border border-amber-200 dark:border-amber-700
+            text-amber-800 dark:text-amber-300 text-sm"
+          >
+            <span className="text-base shrink-0">⚠️</span>
+            <span>{reasonMessage}</span>
+          </div>
+        </motion.div>
+      )}
 
       {/* Form Section - Always visible */}
       <section className="w-full flex justify-center px-6 pb-10">

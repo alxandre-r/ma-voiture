@@ -54,10 +54,17 @@ export async function PATCH(request: Request) {
     }
 
     if (existingExpense.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: "Vous n'êtes pas autorisé à modifier cette dépense" },
-        { status: 403 },
-      );
+      const { data: vehicle } = await supabase
+        .from('vehicles_for_display')
+        .select('permission_level')
+        .eq('vehicle_id', existingExpense.vehicle_id)
+        .maybeSingle();
+      if (vehicle?.permission_level !== 'write') {
+        return NextResponse.json(
+          { error: "Vous n'êtes pas autorisé à modifier cette dépense" },
+          { status: 403 },
+        );
+      }
     }
 
     // Prepare update data — only keep columns that belong to the expenses table.
@@ -78,12 +85,11 @@ export async function PATCH(request: Request) {
       ...updateData
     } = body;
 
-    // Update expense record
+    // Update expense record (ownership/permission already verified above)
     const { data: updatedExpense, error } = await supabase
       .from('expenses')
       .update(updateData)
       .eq('id', body.id)
-      .eq('owner_id', user.id)
       .select()
       .single();
 

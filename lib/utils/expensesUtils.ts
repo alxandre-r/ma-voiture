@@ -1,5 +1,15 @@
 import type { Expense } from '@/types/expense';
 
+type ExpenseType = 'fuel' | 'electric_charge' | 'maintenance' | 'insurance' | 'other';
+
+const EXPENSE_CONFIG: Record<ExpenseType, { color: string; icon: string }> = {
+  fuel: { color: 'bg-orange-600/90', icon: 'car' },
+  electric_charge: { color: 'bg-blue-600/90', icon: 'elec' },
+  maintenance: { color: 'bg-amber-600/90', icon: 'tool' },
+  insurance: { color: 'bg-green-600/90', icon: 'secure' },
+  other: { color: 'bg-violet-600/90', icon: 'euro' },
+};
+
 const getCategoryLabel = (expense: Expense) => {
   switch (expense.type) {
     case 'fuel':
@@ -7,7 +17,6 @@ const getCategoryLabel = (expense: Expense) => {
     case 'electric_charge':
       return 'Recharge';
     case 'maintenance':
-      // Use maintenance_type_label from the database (French label)
       return expense.maintenance_type_label || 'Entretien';
     case 'insurance':
       return 'Assurance';
@@ -18,35 +27,9 @@ const getCategoryLabel = (expense: Expense) => {
   }
 };
 
-const getCategoryColor = (type: string) => {
-  switch (type) {
-    case 'fuel':
-      return 'bg-orange-600/90';
-    case 'electric_charge':
-      return 'bg-blue-600/90';
-    case 'maintenance':
-      return 'bg-amber-600/90';
-    case 'insurance':
-      return 'bg-green-600/90';
-    case 'other':
-    default:
-      return 'bg-violet-600/90';
-  }
-};
+const getCategoryColor = (type: string) =>
+  EXPENSE_CONFIG[type as ExpenseType]?.color ?? 'bg-violet-600/90';
 
-const getCategoryIcon = (type: string) => {
-  switch (type) {
-    case 'fuel':
-      return 'car';
-    case 'electric_charge':
-      return 'elec';
-    case 'maintenance':
-      return 'tool';
-    case 'insurance':
-      return 'secure';
-    default:
-      return 'euro';
-  }
-};
+const getCategoryIcon = (type: string) => EXPENSE_CONFIG[type as ExpenseType]?.icon ?? 'euro';
 
 export { getCategoryLabel, getCategoryColor, getCategoryIcon };

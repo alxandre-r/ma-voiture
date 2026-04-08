@@ -13,7 +13,7 @@ interface MaintenanceCardProps {
   expense: Expense;
   vehicle?: VehicleMinimal;
   isLast: boolean;
-  userId?: string;
+  canModify?: boolean;
   onEdit: () => void;
   onDeleteClick: () => void;
   deletingId?: number | null;
@@ -25,7 +25,7 @@ function MaintenanceCard({
   expense,
   vehicle,
   isLast,
-  userId,
+  canModify,
   onEdit,
   onDeleteClick,
   deletingId,
@@ -80,8 +80,8 @@ function MaintenanceCard({
                       dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700
                       border border-gray-100 hover:shadow-sm transition-shadow relative"
         >
-          {/* Edit + Delete buttons — top right, visible only for owner */}
-          {userId && expense.owner_id === userId && (
+          {/* Edit + Delete buttons — top right, visible only for owner or write-permission holders */}
+          {canModify && (
             <div className="absolute top-3 right-3 flex items-center gap-1">
               <button
                 onClick={onEdit}
@@ -144,7 +144,7 @@ function MaintenanceCard({
               <AttachmentGallery
                 savedAttachments={expense.attachments}
                 onDeleteSaved={onDeleteAttachment ?? (() => {})}
-                isOwner={userId === expense.owner_id}
+                isOwner={canModify ?? false}
                 deletingId={deletingAttachmentId}
               />
             </div>

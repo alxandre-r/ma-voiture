@@ -44,7 +44,7 @@ export async function DELETE(request: Request) {
     // Verify expense ownership
     const { data: existingExpense, error: expenseError } = await supabase
       .from('expenses')
-      .select('id, owner_id, type')
+      .select('id, owner_id, vehicle_id, type')
       .eq('id', body.expenseId)
       .single();
 
@@ -53,10 +53,17 @@ export async function DELETE(request: Request) {
     }
 
     if (existingExpense.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: "Vous n'êtes pas autorisé à supprimer cette dépense" },
-        { status: 403 },
-      );
+      const { data: vehicle } = await supabase
+        .from('vehicles_for_display')
+        .select('permission_level')
+        .eq('vehicle_id', existingExpense.vehicle_id)
+        .maybeSingle();
+      if (vehicle?.permission_level !== 'write') {
+        return NextResponse.json(
+          { error: "Vous n'êtes pas autorisé à supprimer cette dépense" },
+          { status: 403 },
+        );
+      }
     }
 
     // Don't allow deleting insurance expenses

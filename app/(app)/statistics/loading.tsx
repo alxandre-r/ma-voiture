@@ -211,7 +211,7 @@ function BottomStatsSkeleton() {
 
 export default function Loading() {
   return (
-    <div className="space-y-4 px-2 sm:px-0">
+    <div className="space-y-4 px-2 sm:px-0 animate-in fade-in duration-300">
       <OverviewSkeleton />
       <ChartCardSkeleton title="Dépenses mensuelles" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

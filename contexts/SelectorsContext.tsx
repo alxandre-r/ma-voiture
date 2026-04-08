@@ -2,7 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 
-import type { PeriodType } from '@/types/period';
+import { PERIOD_PRESET_LABELS } from '@/types/period';
+
+import type { FamilyInfo } from '@/lib/data/family/getUserFamilies';
+import type { CustomPeriod, PeriodPreset, PeriodSelection } from '@/types/period';
 import type { UserPreferences } from '@/types/userPreferences';
 import type { VehicleMinimal } from '@/types/vehicle';
 import type { ReactNode } from 'react';
@@ -10,12 +13,14 @@ import type { ReactNode } from 'react';
 interface SelectorsContextType {
   // Vehicles list
   vehicles: VehicleMinimal[];
+  // Families the user belongs to
+  families: FamilyInfo[];
   // Vehicle selection
   selectedVehicleIds: number[];
   setSelectedVehicleIds: (ids: number[]) => void;
   // Period selection
-  selectedPeriod: PeriodType;
-  setSelectedPeriod: (period: PeriodType) => void;
+  selectedPeriod: PeriodSelection;
+  setSelectedPeriod: (period: PeriodSelection) => void;
   // Computed
   periodLabel: string;
 }
@@ -23,6 +28,7 @@ interface SelectorsContextType {
 interface SelectorsProviderProps {
   children: ReactNode;
   initialVehicles: VehicleMinimal[];
+  initialFamilies?: FamilyInfo[];
   initialPreferences?: UserPreferences | null;
   currentUserId?: string;
 }
@@ -37,6 +43,49 @@ const STORAGE_KEYS = {
   KNOWN_VEHICLE_IDS: 'ma-voiture-known-vehicles',
 } as const;
 
+const VALID_PRESETS: PeriodPreset[] = ['month', '3months', '6months', 'year', '12months', 'all'];
+
+/** Deserialize a stored period string — handles both preset keys and custom JSON objects */
+function deserializePeriod(raw: string): PeriodSelection | null {
+  // Try JSON first (custom period)
+  if (raw.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(raw) as CustomPeriod;
+      if (parsed.preset === 'custom' && parsed.start && parsed.end) return parsed;
+    } catch {
+      // fall through
+    }
+  }
+  // Plain preset key
+  if ((VALID_PRESETS as string[]).includes(raw)) return raw as PeriodPreset;
+  // Legacy 'month'/'year'/'all' are valid presets — already covered above
+  return null;
+}
+
+/** Serialize a period for localStorage */
+function serializePeriod(period: PeriodSelection): string {
+  if (typeof period === 'object') return JSON.stringify(period);
+  return period;
+}
+
+/** Build a human-readable label for the period selector button */
+function buildPeriodLabel(period: PeriodSelection): string {
+  if (typeof period === 'object' && period.preset === 'custom') {
+    const fmt = (s: string) =>
+      new Date(s).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    return `${fmt(period.start)} – ${fmt(period.end)}`;
+  }
+  const labels: Record<PeriodPreset, string> = {
+    month: 'ce mois',
+    '3months': '3 derniers mois',
+    '6months': '6 derniers mois',
+    year: 'cette année',
+    '12months': '12 derniers mois',
+    all: 'tout',
+  };
+  return labels[period as PeriodPreset] ?? 'cette année';
+}
+
 /**
  * Global context for vehicle and period selection state.
  * Uses localStorage for persistence across page navigations in the browser.
@@ -45,16 +94,16 @@ const STORAGE_KEYS = {
 export function SelectorsProvider({
   children,
   initialVehicles,
+  initialFamilies = [],
   initialPreferences,
   currentUserId,
 }: SelectorsProviderProps) {
-  // Initialize state from localStorage or from props
   const [selectedVehicleIds, setSelectedVehicleIdsState] = useState<number[]>(() => {
     return initialVehicles.map((v) => v.vehicle_id);
   });
 
-  const [selectedPeriod, setSelectedPeriodState] = useState<PeriodType>(
-    () => (initialPreferences?.default_period as PeriodType) ?? 'year',
+  const [selectedPeriod, setSelectedPeriodState] = useState<PeriodSelection>(
+    () => (initialPreferences?.default_period as PeriodPreset | undefined) ?? 'year',
   );
 
   // Hydrate from localStorage on mount, respecting DB preferences when they are newer
@@ -73,9 +122,14 @@ export function SelectorsProvider({
 
       if (preferencesAreNewer && initialPreferences) {
         // Apply DB preferences and re-sync localStorage
-        const period = initialPreferences.default_period as PeriodType;
+        // Map legacy 3-value DB field to new PeriodSelection (DB only stores presets)
+        const rawPeriod = initialPreferences.default_period as string | undefined;
+        const period: PeriodSelection =
+          rawPeriod && (VALID_PRESETS as string[]).includes(rawPeriod)
+            ? (rawPeriod as PeriodPreset)
+            : 'year';
         setSelectedPeriodState(period);
-        localStorage.setItem(STORAGE_KEYS.PERIOD, period);
+        localStorage.setItem(STORAGE_KEYS.PERIOD, serializePeriod(period));
 
         const scope = initialPreferences.default_vehicle_scope;
         let ids: number[];
@@ -101,11 +155,7 @@ export function SelectorsProvider({
       // localStorage wins — apply stored values
       if (storedVehicleIds) {
         const parsed = JSON.parse(storedVehicleIds) as number[];
-        // Keep previously-selected IDs that still exist
         const validIds = parsed.filter((id) => initialVehicles.some((v) => v.vehicle_id === id));
-        // Auto-select only vehicles that are genuinely new (absent from knownVehicleIds at last save).
-        // If knownVehicleIds is not present we cannot safely distinguish "new" from "intentionally
-        // excluded", so we skip auto-add to avoid overriding preference-based selections.
         const newIds = storedKnownVehicleIds
           ? initialVehicles
               .map((v) => v.vehicle_id)
@@ -113,15 +163,15 @@ export function SelectorsProvider({
           : [];
         const merged = [...validIds, ...newIds];
         if (merged.length > 0) setSelectedVehicleIdsState(merged);
-        // Update known vehicles to current list
         localStorage.setItem(
           STORAGE_KEYS.KNOWN_VEHICLE_IDS,
           JSON.stringify(initialVehicles.map((v) => v.vehicle_id)),
         );
       }
 
-      if (storedPeriod && ['month', 'year', 'all'].includes(storedPeriod)) {
-        setSelectedPeriodState(storedPeriod as PeriodType);
+      if (storedPeriod) {
+        const deserialized = deserializePeriod(storedPeriod);
+        if (deserialized) setSelectedPeriodState(deserialized);
       }
     } catch {
       // Ignore localStorage errors
@@ -133,7 +183,6 @@ export function SelectorsProvider({
     setSelectedVehicleIdsState(ids);
     try {
       localStorage.setItem(STORAGE_KEYS.VEHICLE_IDS, JSON.stringify(ids));
-      // Track all currently known vehicles so future sessions can distinguish new vs excluded
       localStorage.setItem(
         STORAGE_KEYS.KNOWN_VEHICLE_IDS,
         JSON.stringify(initialVehicles.map((v) => v.vehicle_id)),
@@ -143,34 +192,29 @@ export function SelectorsProvider({
     }
   };
 
-  const setSelectedPeriod = (period: PeriodType) => {
+  const setSelectedPeriod = (period: PeriodSelection) => {
     setSelectedPeriodState(period);
     try {
-      localStorage.setItem(STORAGE_KEYS.PERIOD, period);
+      localStorage.setItem(STORAGE_KEYS.PERIOD, serializePeriod(period));
     } catch {
       // Ignore storage errors
     }
   };
 
-  // Computed period label
-  const periodLabel = useMemo(() => {
-    return selectedPeriod === 'month'
-      ? 'ce mois'
-      : selectedPeriod === 'year'
-        ? 'cette année'
-        : 'tout';
-  }, [selectedPeriod]);
+  // Computed period label (lowercase, used in stats summaries)
+  const periodLabel = useMemo(() => buildPeriodLabel(selectedPeriod), [selectedPeriod]);
 
   const value = useMemo(
     () => ({
       vehicles: initialVehicles,
+      families: initialFamilies,
       selectedVehicleIds,
       setSelectedVehicleIds,
       selectedPeriod,
       setSelectedPeriod,
       periodLabel,
     }),
-    [initialVehicles, selectedVehicleIds, selectedPeriod, periodLabel],
+    [initialVehicles, initialFamilies, selectedVehicleIds, selectedPeriod, periodLabel],
   );
 
   return <SelectorsContext.Provider value={value}>{children}</SelectorsContext.Provider>;
@@ -187,3 +231,6 @@ export function useSelectors() {
   }
   return context;
 }
+
+// Re-export for convenience
+export { PERIOD_PRESET_LABELS };

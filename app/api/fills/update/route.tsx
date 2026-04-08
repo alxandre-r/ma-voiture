@@ -56,7 +56,7 @@ export async function PATCH(request: Request) {
     // Get the expense to check ownership
     const { data: existingExpense, error: expenseError } = await supabase
       .from('expenses')
-      .select('owner_id, type')
+      .select('owner_id, type, vehicle_id')
       .eq('id', existingFill.expense_id)
       .single();
 
@@ -65,10 +65,17 @@ export async function PATCH(request: Request) {
     }
 
     if (existingExpense.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: "Vous n'êtes pas autorisé à modifier ce plein" },
-        { status: 403 },
-      );
+      const { data: vehicle } = await supabase
+        .from('vehicles_for_display')
+        .select('permission_level')
+        .eq('vehicle_id', existingExpense.vehicle_id)
+        .maybeSingle();
+      if (vehicle?.permission_level !== 'write') {
+        return NextResponse.json(
+          { error: "Vous n'êtes pas autorisé à modifier ce plein" },
+          { status: 403 },
+        );
+      }
     }
 
     // Handle charge_type to set appropriate values for NOT NULL constraints
@@ -119,13 +126,12 @@ export async function PATCH(request: Request) {
       console.error('Error updating expense:', expenseUpdateError);
     }
 
-    // Update vehicle odometer if fill has odometer data
+    // Update vehicle odometer if fill has odometer data (RLS enforces write permission)
     if (body.odometer) {
       const { error: updateError } = await supabase
         .from('vehicles')
         .update({ odometer: body.odometer })
-        .eq('id', existingFill.vehicle_id)
-        .eq('owner_id', user.id);
+        .eq('id', existingFill.vehicle_id);
 
       if (updateError) {
         console.error('Error updating vehicle odometer:', updateError);

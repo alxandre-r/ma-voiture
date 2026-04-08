@@ -4,9 +4,9 @@ import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
- * GET /api/familyVehicles
+ * GET /api/vehicles/get/familyVehicles
  * Expects query param userId
- * Retourne les véhicules de la famille, en excluant ceux de l'utilisateur
+ * Retourne les véhicules de toutes les familles de l'utilisateur, en excluant les siens
  */
 export async function GET(req: Request) {
   try {
@@ -17,25 +17,25 @@ export async function GET(req: Request) {
 
     const supabase = await createSupabaseServerClient();
 
-    // Récupérer la family_id de l'utilisateur
-    const { data: familyData, error: familyError } = await supabase
+    // Récupérer toutes les famille_ids de l'utilisateur (multi-famille)
+    const { data: memberships, error: familyError } = await supabase
       .from('family_members')
       .select('family_id')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
     if (familyError) {
-      console.error('Error fetching family id:', familyError);
+      console.error('Error fetching family ids:', familyError);
       return NextResponse.json({ error: familyError.message }, { status: 500 });
     }
 
-    const family_id = familyData.family_id;
+    const familyIds = memberships?.map((m) => m.family_id) ?? [];
+    if (familyIds.length === 0) return NextResponse.json([], { status: 200 });
 
-    // Récupérer les véhicules de la famille (sauf ceux de l'utilisateur)
+    // Récupérer les véhicules de toutes les familles (sauf ceux de l'utilisateur)
     const { data, error } = await supabase
       .from('vehicles_for_display')
       .select('*')
-      .eq('family_id', family_id)
+      .overlaps('family_ids', familyIds)
       .neq('owner_id', userId)
       .order('created_at', { ascending: false });
 

@@ -54,7 +54,7 @@ function RecentExpensesSkeleton() {
 
 export default function Loading() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 animate-in fade-in duration-300">
       <StatsCardsSkeleton />
       <RecentExpensesSkeleton />
     </div>
