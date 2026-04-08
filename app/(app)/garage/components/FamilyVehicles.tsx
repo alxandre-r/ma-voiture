@@ -47,6 +47,7 @@ export default async function FamilyVehicles({ onVehicleClick }: FamilyVehiclesP
 
   return (
     <FamilyVehiclesList
+      familyName={familyVehicles[0].family_name}
       vehicles={familyVehicles}
       familyMembers={familyMembers}
       onVehicleClick={onVehicleClick}
