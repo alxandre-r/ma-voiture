@@ -17,6 +17,7 @@ import {
 } from '@/app/(app)/statistics/components';
 import CarbonFootprint from '@/app/(app)/statistics/components/CarbonFootprint';
 import OdometerEvolutionChart from '@/app/(app)/statistics/components/charts/OdometerEvolutionChart';
+import VehicleComparisonTable from '@/app/(app)/statistics/components/VehicleComparisonTable';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { filterExpenses, computeStatistics } from '@/lib/utils/statisticsUtils';
 
@@ -115,6 +116,12 @@ export default function StatisticsClient({ vehicles }: StatisticsClientProps) {
       />
 
       <OdometerEvolutionChart series={stats.odometerSeries} />
+
+      <VehicleComparisonTable
+        expenses={filteredExpenses}
+        vehicles={vehicles}
+        vehicleIds={selectedVehicleIds}
+      />
     </div>
   );
 }

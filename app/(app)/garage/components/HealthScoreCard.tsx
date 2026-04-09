@@ -12,10 +12,10 @@ interface HealthScoreCardProps {
 }
 
 function gradeLabel(score: number): string {
-  if (score >= 80) return 'Bon état';
-  if (score >= 60) return 'État correct';
-  if (score >= 40) return 'À surveiller';
-  if (score >= 20) return 'Mauvais état';
+  if (score >= 8) return 'Complet';
+  if (score >= 6) return 'Bien suivi';
+  if (score >= 4) return 'À compléter';
+  if (score >= 2) return 'Incomplet';
   return 'Critique';
 }
 
@@ -64,15 +64,15 @@ function StatusIcon({ status }: { status: 'good' | 'warning' | 'critical' }) {
 }
 
 const METHODOLOGY_DETAILS = [
-  'Score de départ : 100 pts',
+  'Score de départ : 10 pts',
   '─────────────────────',
-  'Contrôle technique expiré : −25 pts',
-  'Contrôle technique < 30 jours : −10 pts',
-  'Rappel en retard : −20 pts (max −40)',
-  'Rappel imminent : −10 pts (max −20)',
-  'Pas de plein depuis 6 mois : −10 pts',
-  "Pas d'entretien depuis 18 mois : −10 pts",
-  "Pas d'assurance active : −20 pts",
+  'Contrôle technique expiré : −3 pts',
+  'Contrôle technique < 30 jours : −1 pt',
+  'Rappel en retard : −2 pts (max −4)',
+  'Rappel imminent : −1 pt (max −2)',
+  'Pas de plein depuis 6 mois : −1 pt',
+  "Pas d'entretien depuis 18 mois : −1 pt",
+  "Pas d'assurance active : −2 pts",
   '─────────────────────',
   'Les données manquantes ne sont pas prises en compte.',
 ];
@@ -100,7 +100,7 @@ export default function HealthScoreCard({ health }: HealthScoreCardProps) {
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
               />
             </svg>
-            État du véhicule
+            Score de suivi
             <InfoTooltip
               title="Comment est calculé ce score ?"
               details={METHODOLOGY_DETAILS}
@@ -113,7 +113,7 @@ export default function HealthScoreCard({ health }: HealthScoreCardProps) {
             <span className={`text-2xl font-black tabular-nums leading-none ${textClass}`}>
               {score}
             </span>
-            <span className={`text-sm font-semibold opacity-60 ${textClass}`}>/100</span>
+            <span className={`text-sm font-semibold opacity-60 ${textClass}`}>/10</span>
             <span className={`ml-2 text-xs font-semibold ${textClass}`}>{label}</span>
           </div>
         </div>

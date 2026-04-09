@@ -17,6 +17,8 @@ import type { VehicleMinimal } from '@/types/vehicle';
 
 interface ReminderFormProps {
   initialReminder?: Reminder | null;
+  /** Pre-fill form fields without entering edit mode (creates a new reminder) */
+  prefill?: Partial<ReminderFormData>;
   vehicles: VehicleMinimal[];
   onSave: (data: ReminderFormData, id?: number) => Promise<boolean>;
   onCancel: () => void;
@@ -32,6 +34,7 @@ const TYPE_OPTIONS: { value: ReminderType; label: string }[] = [
 
 export default function ReminderForm({
   initialReminder,
+  prefill,
   vehicles,
   onSave,
   onCancel,
@@ -40,14 +43,15 @@ export default function ReminderForm({
   const isEditing = !!initialReminder;
 
   const [form, setForm] = useState<ReminderFormData>({
-    vehicle_id: initialReminder?.vehicle_id ?? vehicles[0]?.vehicle_id ?? null,
-    type: initialReminder?.type ?? 'maintenance',
-    title: initialReminder?.title ?? '',
-    description: initialReminder?.description ?? '',
+    vehicle_id:
+      initialReminder?.vehicle_id ?? prefill?.vehicle_id ?? vehicles[0]?.vehicle_id ?? null,
+    type: initialReminder?.type ?? prefill?.type ?? 'maintenance',
+    title: initialReminder?.title ?? prefill?.title ?? '',
+    description: initialReminder?.description ?? prefill?.description ?? '',
     due_date: initialReminder?.due_date
       ? new Date(initialReminder.due_date).toISOString().split('T')[0]
-      : '',
-    due_odometer: initialReminder?.due_odometer ?? undefined,
+      : (prefill?.due_date ?? ''),
+    due_odometer: initialReminder?.due_odometer ?? prefill?.due_odometer ?? undefined,
     is_recurring: initialReminder?.is_recurring ?? false,
     recurrence_type: initialReminder?.recurrence_type ?? undefined,
     recurrence_value: initialReminder?.recurrence_value ?? undefined,
@@ -70,8 +74,18 @@ export default function ReminderForm({
         recurrence_type: initialReminder.recurrence_type ?? undefined,
         recurrence_value: initialReminder.recurrence_value ?? undefined,
       });
+    } else if (prefill) {
+      setForm((prev) => ({
+        ...prev,
+        vehicle_id: prefill.vehicle_id ?? prev.vehicle_id,
+        type: prefill.type ?? prev.type,
+        title: prefill.title ?? prev.title,
+        description: prefill.description ?? prev.description,
+        due_date: prefill.due_date ?? prev.due_date,
+        due_odometer: prefill.due_odometer ?? prev.due_odometer,
+      }));
     }
-  }, [initialReminder]);
+  }, [initialReminder, prefill]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -275,7 +289,7 @@ export default function ReminderForm({
               </>
             ) : (
               <>
-                <Icon name="check" size={16} className="invert dark:invert-0" />
+                <Icon name="check" size={16} />
                 {isEditing ? 'Enregistrer' : 'Créer le rappel'}
               </>
             )}

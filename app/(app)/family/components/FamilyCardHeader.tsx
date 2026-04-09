@@ -62,7 +62,7 @@ export function FamilyCardHeader({ family, isOwner, memberCount }: FamilyCardHea
         {/* Nom + nb membres */}
         <div className="flex items-center gap-3">
           <div className="p-2 flex items-center justify-center">
-            <Icon name="family" size={24} className="text-custom-1 dark:invert-0 opacity-70" />
+            <Icon name="family" size={24} className="text-custom-1 opacity-70" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{family.name}</h2>

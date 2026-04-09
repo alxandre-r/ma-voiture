@@ -40,11 +40,7 @@ export default function SettingsMenu({
             : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-98 transition-colors'
         }`}
           >
-            <Icon
-              name={item.icon}
-              size={18}
-              className={activeSection === item.id ? 'invert dark:invert-0' : ''}
-            />
+            <Icon name={item.icon} size={18} />
             <span className="font-medium text-sm md:text-base">{item.label}</span>
           </button>
         ))}

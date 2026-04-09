@@ -153,7 +153,7 @@ export default function PrivacySection() {
             className={`px-4 py-3 text-white rounded-lg bg-custom-1/70 font-medium flex items-center gap-2 hover:cursor-not-allowed`}
             title="Cette fonctionnalité sera disponible dans une prochaine mise à jour"
           >
-            <Icon name="add" size={18} className="invert dark:invert-0" />{' '}
+            <Icon name="add" size={18} />{' '}
             {exportingData ? 'Export en cours...' : 'Exporter mes données'}
           </button>
           {exportSuccess && (
@@ -185,7 +185,7 @@ export default function PrivacySection() {
             disabled={deletingAccount}
             className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 hover:cursor-pointer ${deletingAccount ? 'bg-red-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 text-white'}`}
           >
-            <Icon name="delete" size={18} className="invert dark:invert-0" />{' '}
+            <Icon name="delete" size={18} />{' '}
             {deletingAccount ? 'Suppression en cours...' : 'Supprimer mon compte'}
           </button>
           {deleteSuccess && (

@@ -199,7 +199,7 @@ export default function OtherForm({
               </>
             ) : (
               <>
-                <Icon name="check" size={16} className="invert dark:invert-0" /> Enregistrer
+                <Icon name="check" size={16} /> Enregistrer
               </>
             )}
           </button>

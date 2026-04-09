@@ -166,7 +166,7 @@ export default function AssuranceClient({ vehicles, ownedVehicleIds }: Assurance
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-lg bg-custom-2 hover:bg-custom-2-hover text-white transition-colors cursor-pointer"
           >
-            <Icon name="add" size={14} className="invert dark:invert-0" /> Ajouter
+            <Icon name="add" size={14} /> Ajouter
           </button>
         )}
       </div>

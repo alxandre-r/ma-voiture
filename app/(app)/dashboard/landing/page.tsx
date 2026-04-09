@@ -20,7 +20,7 @@ export default function DashboardLandingPage() {
             href="/garage?addVehicle=true"
             className="inline-flex items-center gap-2 px-8 py-4 bg-custom-1 hover:bg-custom-1-hover text-white rounded-lg font-semibold transition-all duration-200"
           >
-            <Icon name="add" className="invert dark:invert-0" size={20} />
+            <Icon name="add" size={20} />
             Ajouter votre premier véhicule
           </a>
         </div>
@@ -81,11 +81,7 @@ export default function DashboardLandingPage() {
             href="/settings"
             className="inline-flex items-center gap-2 px-6 py-3 border-2 border-custom-1 text-gray-700 dark:text-white rounded-lg font-semibold hover:bg-custom-1 hover:text-white dark:hover:bg-custom-1 transition-all duration-400 group"
           >
-            <Icon
-              name="settings"
-              className="group-hover:invert dark:group-hover:invert-0"
-              size={20}
-            />
+            <Icon name="settings" size={20} />
             Accéder aux paramètres
           </a>
         </div>

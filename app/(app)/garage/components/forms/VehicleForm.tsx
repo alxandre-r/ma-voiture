@@ -165,7 +165,7 @@ export default function VehicleForm({
         </span>
       ) : (
         <span className="flex items-center gap-2">
-          <Icon name="check" size={18} className="invert dark:invert-0" />
+          <Icon name="check" size={18} />
           Enregistrer
         </span>
       )}

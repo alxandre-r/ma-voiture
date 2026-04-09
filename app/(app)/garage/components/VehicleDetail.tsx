@@ -57,6 +57,9 @@ export default function VehicleDetail({
   const router = useRouter();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editingOdometer, setEditingOdometer] = useState(false);
+  const [odometerValue, setOdometerValue] = useState(String(vehicle.odometer ?? ''));
+  const [savingOdometer, setSavingOdometer] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -87,6 +90,33 @@ export default function VehicleDetail({
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleSaveOdometer = async () => {
+    const parsed = parseInt(odometerValue, 10);
+    if (isNaN(parsed) || parsed < 0) {
+      showError('Kilométrage invalide');
+      return;
+    }
+    setSavingOdometer(true);
+    try {
+      const res = await fetch('/api/vehicles/update', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vehicle_id: vehicle.vehicle_id, odometer: parsed }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? 'Erreur lors de la mise à jour');
+      }
+      showSuccess('Kilométrage mis à jour');
+      setEditingOdometer(false);
+      router.refresh();
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setSavingOdometer(false);
     }
   };
 
@@ -260,10 +290,58 @@ export default function VehicleDetail({
             <CardContent className="space-y-3 text-sm">
               <CardRow label="Carburant" value={vehicle.fuel_type || '—'} />
               <CardRow label="Transmission" value={vehicle.transmission || '—'} />
-              <CardRow
-                label="Kilométrage"
-                value={vehicle.odometer?.toLocaleString() + ' km' || '—'}
-              />
+              {/* Odometer — inline editable */}
+              <div className="flex items-center justify-between py-2 px-1 gap-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">
+                  Kilométrage
+                </span>
+                {editingOdometer ? (
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="number"
+                      value={odometerValue}
+                      onChange={(e) => setOdometerValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveOdometer();
+                        if (e.key === 'Escape') setEditingOdometer(false);
+                      }}
+                      className="w-28 text-sm text-right border border-gray-300 dark:border-gray-600 rounded px-2 py-0.5 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      autoFocus
+                    />
+                    <span className="text-sm text-gray-400">km</span>
+                    <button
+                      onClick={handleSaveOdometer}
+                      disabled={savingOdometer}
+                      className="p-1 text-green-600 hover:text-green-700 disabled:opacity-50"
+                    >
+                      <Icon name="check" size={14} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingOdometer(false);
+                        setOdometerValue(String(vehicle.odometer ?? ''));
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <Icon name="delete" size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 group">
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {vehicle.odometer != null ? vehicle.odometer.toLocaleString() + ' km' : '—'}
+                    </span>
+                    {!isFamilyVehicle && (
+                      <button
+                        onClick={() => setEditingOdometer(true)}
+                        className="p-0.5 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Icon name="edit" size={13} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
               <CardRow
                 label={
                   <span className="flex items-center gap-1">

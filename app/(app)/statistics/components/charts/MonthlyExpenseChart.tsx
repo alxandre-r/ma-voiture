@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useMemo } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -15,6 +15,8 @@ import {
 
 import { EXPENSE_CATEGORIES } from '@/app/(app)/expenses/components/expenseCategories';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/ui/card';
+import Icon from '@/components/common/ui/Icon';
+import { downloadChartSVG } from '@/lib/utils/exportChart';
 import { formatCurrency } from '@/lib/utils/format';
 
 type ChartMode = 'category' | 'vehicle';
@@ -86,6 +88,7 @@ export default function MonthlyExpenseChart({
   previousYearData,
 }: MonthlyExpenseChartProps) {
   const [chartMode, setChartMode] = useState<ChartMode>('category');
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Create a map for previous year data
   const prevDataMap = useMemo(
@@ -142,7 +145,16 @@ export default function MonthlyExpenseChart({
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <CardTitle>Dépenses mensuelles</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>Dépenses mensuelles</CardTitle>
+          <button
+            onClick={() => downloadChartSVG(containerRef, 'depenses-mensuelles')}
+            className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors"
+            title="Exporter en SVG"
+          >
+            <Icon name="arrow-down" size={14} />
+          </button>
+        </div>
         {/* Toggle Switch */}
         <div
           className="relative w-36 sm:w-40 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full 
@@ -183,7 +195,7 @@ export default function MonthlyExpenseChart({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-56">
+        <div className="h-56" ref={containerRef}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} stackOffset="sign" margin={{ left: -20 }}>
               <CartesianGrid

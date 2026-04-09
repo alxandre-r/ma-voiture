@@ -16,6 +16,7 @@ interface MaintenanceCardProps {
   canModify?: boolean;
   onEdit: () => void;
   onDeleteClick: () => void;
+  onCreateReminder?: (expense: Expense) => void;
   deletingId?: number | null;
   onDeleteAttachment?: (attachmentId: number) => void;
   deletingAttachmentId?: number | null;
@@ -28,6 +29,7 @@ function MaintenanceCard({
   canModify,
   onEdit,
   onDeleteClick,
+  onCreateReminder,
   deletingId,
   onDeleteAttachment,
   deletingAttachmentId,
@@ -80,28 +82,39 @@ function MaintenanceCard({
                       dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700
                       border border-gray-100 hover:shadow-sm transition-shadow relative"
         >
-          {/* Edit + Delete buttons — top right, visible only for owner or write-permission holders */}
-          {canModify && (
-            <div className="absolute top-3 right-3 flex items-center gap-1">
+          {/* Actions — top right */}
+          <div className="absolute top-3 right-3 flex items-center gap-1">
+            {onCreateReminder && (
               <button
-                onClick={onEdit}
-                className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                title="Modifier"
+                onClick={() => onCreateReminder(expense)}
+                className="p-1.5 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors cursor-pointer"
+                title="Créer un rappel"
               >
-                <Icon name="edit" size={16} className="text-gray-500 dark:text-gray-400" />
+                <Icon name="bell" size={15} className="text-orange-500" />
               </button>
-              <button
-                onClick={onDeleteClick}
-                disabled={deletingId === expense.id}
-                className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Supprimer"
-              >
-                <Icon name="delete" size={16} className="text-red-500 dark:text-red-400" />
-              </button>
-            </div>
-          )}
+            )}
+            {canModify && (
+              <>
+                <button
+                  onClick={onEdit}
+                  className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  title="Modifier"
+                >
+                  <Icon name="edit" size={16} className="text-gray-500 dark:text-gray-400" />
+                </button>
+                <button
+                  onClick={onDeleteClick}
+                  disabled={deletingId === expense.id}
+                  className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Supprimer"
+                >
+                  <Icon name="delete" size={16} className="text-red-500 dark:text-red-400" />
+                </button>
+              </>
+            )}
+          </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2 sm:gap-0 pr-20">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-2 sm:gap-0 pr-24">
             <div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                 <h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">

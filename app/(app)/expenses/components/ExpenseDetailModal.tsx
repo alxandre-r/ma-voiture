@@ -159,7 +159,7 @@ export default function ExpenseDetailModal({
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-custom-2 hover:bg-custom-2-hover text-white transition-colors cursor-pointer"
             >
-              <Icon name="edit" size={15} className="invert dark:invert-0" />
+              <Icon name="edit" size={15} />
               Modifier
             </button>
           )}

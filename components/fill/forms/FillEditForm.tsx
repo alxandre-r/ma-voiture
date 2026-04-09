@@ -170,7 +170,7 @@ export default function FillEditForm({
             disabled={saving}
             className="px-4 py-2 rounded text-sm bg-custom-1 text-white hover:bg-custom-1/90 flex items-center gap-2 cursor-pointer"
           >
-            <Icon name="check" className="invert dark:invert-0" size={14} />
+            <Icon name="check" size={14} />
             {saving ? 'Sauvegarde...' : 'Valider'}
           </button>
         </div>

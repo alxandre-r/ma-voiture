@@ -49,7 +49,7 @@ export default function ExpenseRow({
       <div
         className={`flex items-center justify-center p-2 sm:p-2.5 rounded-xl shrink-0 ${getCategoryColor(expense.type)}`}
       >
-        <Icon name={getCategoryIcon(expense.type)} size={16} className="invert dark:invert-0" />
+        <Icon name={getCategoryIcon(expense.type)} size={16} className="text-white" />
       </div>
 
       {/* Main info */}

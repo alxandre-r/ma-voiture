@@ -154,7 +154,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
           onClick={openCreate}
           className="hidden sm:flex items-center gap-2 px-4 py-2 mb-px bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg text-sm font-medium transition-colors cursor-pointer"
         >
-          <Icon name="add" size={16} className="invert dark:invert-0" />
+          <Icon name="add" size={16} />
           Nouveau rappel
         </button>
       </div>
@@ -253,7 +253,7 @@ function RemindersContent({ reminders, vehicles, fillExpenses }: RemindersClient
         className="sm:hidden fixed bottom-20 right-4 z-40 w-14 h-14 bg-custom-2 hover:bg-custom-2-hover text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer"
         aria-label="Nouveau rappel"
       >
-        <Icon name="add" size={24} className="invert dark:invert-0" />
+        <Icon name="add" size={24} />
       </button>
 
       {/* Drawer */}

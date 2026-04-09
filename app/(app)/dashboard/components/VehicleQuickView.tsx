@@ -101,7 +101,7 @@ function VehicleRow({
           )}
           {/* Health score badge */}
           <span
-            title={`État du véhicule : ${health.score}/100`}
+            title={`Score de suivi : ${health.score}/10`}
             className={`inline-flex items-center gap-1 text-[11px] font-bold px-1.5 py-0.5 rounded-md ${health.bgClass} ${health.textClass}`}
           >
             {health.grade}

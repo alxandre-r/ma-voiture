@@ -5,23 +5,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import BellIcon from '@/public/icons/bell.svg';
-import ChartIcon from '@/public/icons/chart.svg';
-import DashboardIcon from '@/public/icons/dashboard.svg';
-import EuroIcon from '@/public/icons/euro.svg';
-import FamilyIcon from '@/public/icons/family.svg';
-import GarageIcon from '@/public/icons/garage.svg';
-import SecureIcon from '@/public/icons/secure.svg';
-import SettingsIcon from '@/public/icons/settings.svg';
-import ToolIcon from '@/public/icons/tool.svg';
-
-import type { FC, SVGProps } from 'react';
+import Icon from '@/components/common/ui/Icon';
 
 // ----- Types -----
 type MenuItem = {
   name: string;
   path: string;
-  icon: FC<SVGProps<SVGSVGElement>>;
+  icon: string;
 };
 
 // ----- Configuration -----
@@ -29,20 +19,20 @@ type MenuItem = {
 const SEPARATOR_AFTER = new Set([1, 5, 6]);
 
 const MENU_ITEMS: MenuItem[] = [
-  { name: 'Tableau de bord', path: '/dashboard', icon: DashboardIcon },
-  { name: 'Statistiques', path: '/statistics', icon: ChartIcon },
-  { name: 'Dépenses', path: '/expenses', icon: EuroIcon },
-  { name: 'Maintenance', path: '/maintenance', icon: ToolIcon },
-  { name: 'Rappels', path: '/reminders', icon: BellIcon },
-  { name: 'Assurance', path: '/insurance', icon: SecureIcon },
-  { name: 'Véhicules', path: '/garage', icon: GarageIcon },
-  { name: 'Famille', path: '/family', icon: FamilyIcon },
+  { name: 'Tableau de bord', path: '/dashboard', icon: 'dashboard' },
+  { name: 'Statistiques', path: '/statistics', icon: 'chart' },
+  { name: 'Dépenses', path: '/expenses', icon: 'euro' },
+  { name: 'Maintenance', path: '/maintenance', icon: 'tool' },
+  { name: 'Rappels', path: '/reminders', icon: 'bell' },
+  { name: 'Assurance', path: '/insurance', icon: 'secure' },
+  { name: 'Véhicules', path: '/garage', icon: 'garage' },
+  { name: 'Famille', path: '/family', icon: 'family' },
 ];
 
 const BOTTOM_ITEM: MenuItem = {
   name: 'Paramètres',
   path: '/settings',
-  icon: SettingsIcon,
+  icon: 'settings',
 };
 
 // ----- Separator component -----
@@ -60,7 +50,6 @@ function SidebarItem({
   active?: boolean;
   onClick?: () => void;
 }) {
-  const Icon = item.icon;
   return (
     <Link
       href={item.path}
@@ -71,7 +60,7 @@ function SidebarItem({
          ${active ? 'text-white' : 'hover:bg-gray-800 hover:text-white'}`}
       aria-current={active ? 'page' : undefined}
     >
-      <Icon className="w-[22px] h-[22px] shrink-0" />
+      <Icon name={item.icon} size={22} className="shrink-0" />
       <span className="truncate">{item.name}</span>
     </Link>
   );

@@ -1,9 +1,12 @@
 'use client';
 
+import { useRef } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { EXPENSE_CATEGORIES } from '@/app/(app)/expenses/components/expenseCategories';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/ui/card';
+import Icon from '@/components/common/ui/Icon';
+import { downloadChartSVG } from '@/lib/utils/exportChart';
 import { formatCurrency } from '@/lib/utils/format';
 
 interface ExpenseCategoryChartProps {
@@ -44,6 +47,7 @@ const CustomTooltip = ({
 };
 
 export default function ExpenseCategoryChart({ data, totalCost }: ExpenseCategoryChartProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   // Add percentage to data
@@ -56,10 +60,19 @@ export default function ExpenseCategoryChart({ data, totalCost }: ExpenseCategor
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Répartition des dépenses</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>Répartition des dépenses</CardTitle>
+          <button
+            onClick={() => downloadChartSVG(containerRef, 'repartition-depenses')}
+            className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors"
+            title="Exporter en SVG"
+          >
+            <Icon name="arrow-down" size={14} />
+          </button>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="flex z-40 flex-col items-center">
+        <div className="flex z-40 flex-col items-center" ref={containerRef}>
           {/* Donut Chart with Recharts - Responsive size */}
           <div className="relative w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">

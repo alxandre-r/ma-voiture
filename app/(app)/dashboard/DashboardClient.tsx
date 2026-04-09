@@ -9,7 +9,7 @@ import {
   StatsCards,
   VehicleQuickView,
 } from '@/app/(app)/dashboard/components';
-import AnomalyAlert from '@/app/(app)/dashboard/components/AnomalyAlert';
+import InsightsPanel from '@/app/(app)/dashboard/components/InsightsPanel';
 import RemindersWidget from '@/app/(app)/dashboard/components/RemindersWidget';
 import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import ExpenseButton from '@/components/common/ExpenseButton';
@@ -30,7 +30,7 @@ import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaint
 import type { ExpenseType } from '@/components/common/ExpenseButton';
 import type { OtherFormData } from '@/hooks/other/useOtherActions';
 import type { Expense } from '@/types/expense';
-import type { FillFormData } from '@/types/fill';
+import type { Fill, FillFormData } from '@/types/fill';
 import type { Reminder, ReminderFormData } from '@/types/reminder';
 import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
@@ -59,8 +59,11 @@ function DashboardContent({
   const [showMaintenanceForm, setShowMaintenanceForm] = useState(false);
   const [showOtherForm, setShowOtherForm] = useState(false);
   const [showReminderForm, setShowReminderForm] = useState(false);
+  const [showEditFillForm, setShowEditFillForm] = useState(false);
+  const [editingFillExpense, setEditingFillExpense] = useState<Expense | null>(null);
+  const [savingEditFill, setSavingEditFill] = useState(false);
 
-  const { addFill, adding } = useFillActions();
+  const { addFill, adding, updateFill } = useFillActions();
   const { addMaintenance } = useMaintenanceActions();
   const { addOther } = useOtherActions();
   const { creating, createReminder } = useReminderActions();
@@ -166,6 +169,42 @@ function DashboardContent({
     }
   };
 
+  const handleEditFill = (expense: Expense) => {
+    setEditingFillExpense(expense);
+    setShowEditFillForm(true);
+  };
+
+  const handleEditFillSave = async (data: FillFormData, fillId?: number): Promise<boolean> => {
+    if (!fillId) return false;
+    setSavingEditFill(true);
+    const success = await updateFill(fillId, data);
+    setSavingEditFill(false);
+    if (success) {
+      setShowEditFillForm(false);
+      setEditingFillExpense(null);
+      router.refresh();
+    }
+    return success;
+  };
+
+  const editFillInitial: Fill | null = editingFillExpense
+    ? {
+        id: editingFillExpense.id,
+        expense_id: editingFillExpense.id,
+        vehicle_id: editingFillExpense.vehicle_id,
+        owner: editingFillExpense.owner_id,
+        date: editingFillExpense.date,
+        odometer: editingFillExpense.odometer ?? 0,
+        liters: editingFillExpense.liters ?? 0,
+        amount: editingFillExpense.amount ?? 0,
+        price_per_liter: editingFillExpense.price_per_liter ?? 0,
+        notes: editingFillExpense.notes,
+        charge_type: editingFillExpense.type === 'electric_charge' ? 'charge' : 'fill',
+        kwh: editingFillExpense.kwh ?? null,
+        price_per_kwh: editingFillExpense.price_per_kwh ?? null,
+      }
+    : null;
+
   const handleFillSave = async (data: FillFormData, _fillId?: number, pendingFiles?: File[]) => {
     const success = await addFill(data, pendingFiles);
     if (success) handleSuccess();
@@ -215,12 +254,18 @@ function DashboardContent({
         </div>
       </div>
 
-      {/* Anomaly alert — only renders if anomalies are detected */}
-      <AnomalyAlert anomalies={anomalies} />
+      {/* Insights panel — only renders when there are actionable items */}
+      <InsightsPanel
+        vehicles={vehicles}
+        reminders={reminders}
+        expenses={expenses}
+        activeInsuranceVehicleIds={activeInsuranceVehicleIds}
+        anomalies={anomalies}
+      />
 
       {/* Recent Expenses + Reminders */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentExpenses expenses={sortedExpenses} vehicles={vehicles} />
+        <RecentExpenses expenses={sortedExpenses} vehicles={vehicles} onEditFill={handleEditFill} />
         <RemindersWidget reminders={reminders} vehicles={vehicles} fillExpenses={fillExpenses} />
       </div>
 
@@ -288,6 +333,28 @@ function DashboardContent({
             setSelectedExpenseType(null);
           }}
         />
+      </Drawer>
+
+      <Drawer
+        isOpen={showEditFillForm}
+        onClose={() => {
+          setShowEditFillForm(false);
+          setEditingFillExpense(null);
+        }}
+      >
+        {editFillInitial && (
+          <FillForm
+            vehicles={writableActiveVehicles as VehicleMinimal[]}
+            initialFill={editFillInitial}
+            forcedType={editingFillExpense?.type === 'electric_charge' ? 'charge' : 'fill'}
+            onSave={handleEditFillSave}
+            onCancel={() => {
+              setShowEditFillForm(false);
+              setEditingFillExpense(null);
+            }}
+            saving={savingEditFill}
+          />
+        )}
       </Drawer>
 
       <Drawer isOpen={showReminderForm} onClose={() => setShowReminderForm(false)}>

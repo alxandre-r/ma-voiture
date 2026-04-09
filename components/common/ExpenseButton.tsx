@@ -82,7 +82,7 @@ export default function ExpenseButton({
           onClick={() => handleSelect('charge')}
           className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
         >
-          <Icon name="elec" size={20} className="text-blue-500" />
+          <Icon name="elec" size={20} />
           <div>
             <div className="font-medium text-gray-900 dark:text-gray-100">Recharge électrique</div>
             <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -92,13 +92,13 @@ export default function ExpenseButton({
         </button>
       )}
 
-      <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+      <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
 
       <button
         onClick={() => handleSelect('maintenance')}
         className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
       >
-        <Icon name="tool" size={20} className="text-green-500" />
+        <Icon name="tool" size={20} />
         <div>
           <div className="font-medium text-gray-900 dark:text-gray-100">Entretien / Réparation</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -107,11 +107,13 @@ export default function ExpenseButton({
         </div>
       </button>
 
+      <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
+
       <button
         onClick={() => handleSelect('other')}
         className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
       >
-        <Icon name="euro" size={20} className="text-violet-500" />
+        <Icon name="euro" size={20} />
         <div>
           <div className="font-medium text-gray-900 dark:text-gray-100">Autre dépense</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -122,12 +124,12 @@ export default function ExpenseButton({
 
       {onAddReminder && (
         <>
-          <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+          <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
           <button
             onClick={handleReminderSelect}
             className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3 transition-colors cursor-pointer"
           >
-            <Icon name="bell" size={20} className="text-purple-500" />
+            <Icon name="bell" size={20} />
             <div>
               <div className="font-medium text-gray-900 dark:text-gray-100">Nouveau rappel</div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -149,9 +151,9 @@ export default function ExpenseButton({
             onClick={() => setShowMenu(!showMenu)}
             className="px-4 py-2 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
           >
-            <Icon name="add" size={18} className="invert dark:invert-0" />
+            <Icon name="add" size={18} />
             Ajouter une dépense
-            <Icon name="arrow-down" size={14} className="invert dark:invert-0" />
+            <Icon name="arrow-down" size={14} />
           </button>
 
           {showMenu && (
@@ -168,7 +170,7 @@ export default function ExpenseButton({
         className="sm:hidden fixed bottom-20 right-4 z-40 w-14 h-14 bg-custom-2 hover:bg-custom-2-hover text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer"
         aria-label="Ajouter une dépense"
       >
-        <Icon name="add" size={24} className="invert dark:invert-0" />
+        <Icon name="add" size={24} />
       </button>
 
       {/* Mobile Bottom Sheet */}

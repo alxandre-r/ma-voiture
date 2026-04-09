@@ -8,6 +8,7 @@
 import { redirect } from 'next/navigation';
 
 import { getMaintenanceExpenses } from '@/lib/data/maintenance/getMaintenanceExpenses';
+import { getMaintenanceTypes } from '@/lib/data/maintenance/getMaintenanceTypes';
 import { getAllVehicles } from '@/lib/data/vehicles';
 
 import MaintenanceClient from './MaintenanceClient';
@@ -20,11 +21,19 @@ export default async function MaintenancePage() {
   }
 
   const vehicleIds = vehicles.map((v) => v.vehicle_id).filter((id) => id > 0);
-  const expenses = await getMaintenanceExpenses(vehicleIds);
+  const [expenses, maintenanceTypes] = await Promise.all([
+    getMaintenanceExpenses(vehicleIds),
+    getMaintenanceTypes(),
+  ]);
 
   return (
     <main>
-      <MaintenanceClient vehicles={vehicles} vehicleIds={vehicleIds} initialExpenses={expenses} />
+      <MaintenanceClient
+        vehicles={vehicles}
+        vehicleIds={vehicleIds}
+        initialExpenses={expenses}
+        maintenanceTypes={maintenanceTypes}
+      />
     </main>
   );
 }

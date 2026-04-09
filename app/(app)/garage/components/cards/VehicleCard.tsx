@@ -72,11 +72,11 @@ export default function VehicleCard({
         <div className="absolute bottom-3 left-3">
           <span
             className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold backdrop-blur-sm ${health.bgClass} ${health.textClass}`}
-            title={`État du véhicule : ${health.score}/100`}
+            title={`Score de suivi : ${health.score}/10`}
           >
-            <span>État</span>
+            <span>Score</span>
             <span className={`font-black tabular-nums ${health.textClass}`}>{health.score}</span>
-            <span className="font-normal opacity-60 text-[10px]">/100</span>
+            <span className="font-normal opacity-60 text-[10px]">/10</span>
           </span>
         </div>
 

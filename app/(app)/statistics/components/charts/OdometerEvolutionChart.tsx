@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -14,6 +14,8 @@ import {
 } from 'recharts';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/common/ui/card';
+import Icon from '@/components/common/ui/Icon';
+import { downloadChartSVG } from '@/lib/utils/exportChart';
 import { formatNumber } from '@/lib/utils/format';
 
 // ---------------------------------------------------------------------------
@@ -100,6 +102,7 @@ const CustomTooltip = ({
 
 export default function OdometerEvolutionChart({ series }: OdometerEvolutionChartProps) {
   const [mode, setMode] = useState<ChartMode>('relative');
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const hasData = series.some((s) => s.entries?.length > 0);
 
@@ -149,7 +152,16 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <CardTitle>Évolution du kilométrage</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle>Évolution du kilométrage</CardTitle>
+          <button
+            onClick={() => downloadChartSVG(containerRef, 'evolution-kilometrage')}
+            className="p-1 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 transition-colors"
+            title="Exporter en SVG"
+          >
+            <Icon name="arrow-down" size={14} />
+          </button>
+        </div>
 
         {/* Toggle — same pattern as MonthlyExpenseChart */}
         <div className="relative w-36 sm:w-40 h-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-full border border-gray-100 hover:shadow-sm transition-all dark:border-gray-700 dark:hover:shadow-xl dark:from-gray-800 dark:to-gray-900 shrink-0 overflow-hidden p-1">
@@ -183,7 +195,7 @@ export default function OdometerEvolutionChart({ series }: OdometerEvolutionChar
       </CardHeader>
 
       <CardContent>
-        <div className="h-56">
+        <div className="h-56" ref={containerRef}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ left: -10, right: 10 }}>
               <CartesianGrid

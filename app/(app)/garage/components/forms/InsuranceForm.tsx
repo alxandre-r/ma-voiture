@@ -126,7 +126,7 @@ export default function InsuranceForm({
             </>
           ) : (
             <>
-              <Icon name="check" size={16} className="invert dark:invert-0" />
+              <Icon name="check" size={16} />
               {submitLabel ?? (initialContract ? 'Enregistrer' : 'Ajouter')}
             </>
           )}

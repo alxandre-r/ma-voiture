@@ -35,11 +35,7 @@ export default function CategoryFilters({
         onClick={onReset}
         className={`${base} ${activeCategories.length === 0 ? allActive : inactive}`}
       >
-        <Icon
-          name="stack"
-          size={mobile ? 12 : 14}
-          className={`${activeCategories.length === 0 ? 'invert' : ''}`}
-        />
+        <Icon name="stack" size={mobile ? 12 : 14} />
         <span>Toutes</span>
         {!mobile && <span className="ml-auto text-xs opacity-50 font-normal">{totalCount}</span>}
       </button>

@@ -1,6 +1,6 @@
 /**
  * @file lib/utils/vehicleHealthUtils.ts
- * @description Computes a 0-100 health score for each vehicle based on
+ * @description Computes a 0-10 tracking score for each vehicle based on
  * tech control expiry, active reminders, last fill date, and maintenance history.
  * All functions are pure and fully testable.
  */
@@ -26,7 +26,7 @@ export interface HealthFactor {
 }
 
 export interface VehicleHealthScore {
-  score: number; // 0–100
+  score: number; // 0–10
   grade: HealthGrade;
   bgClass: string; // Tailwind bg color
   textClass: string; // Tailwind text color
@@ -39,10 +39,10 @@ export interface VehicleHealthScore {
 // ---------------------------------------------------------------------------
 
 function gradeFromScore(score: number): HealthGrade {
-  if (score >= 80) return 'A';
-  if (score >= 60) return 'B';
-  if (score >= 40) return 'C';
-  if (score >= 20) return 'D';
+  if (score >= 8) return 'A';
+  if (score >= 6) return 'B';
+  if (score >= 4) return 'C';
+  if (score >= 2) return 'D';
   return 'F';
 }
 
@@ -90,15 +90,15 @@ function colorFromGrade(grade: HealthGrade): {
 // ---------------------------------------------------------------------------
 
 /**
- * Compute a vehicle health score from 0 to 100.
+ * Compute a vehicle tracking score from 0 to 10.
  *
- * Factors (all are penalties subtracted from 100):
- * - Tech control: expired −25, due soon (<30 d) −10
- * - Overdue reminders: −20 each, capped at −40
- * - Due-soon reminders: −10 each, capped at −20
- * - No recent fill (>6 months, active vehicle): −10
- * - No maintenance in >18 months: −10
- * - No active insurance contract: −20
+ * Factors (all are penalties subtracted from 10):
+ * - Tech control: expired −3, due soon (<30 d) −1
+ * - Overdue reminders: −2 each, capped at −4
+ * - Due-soon reminders: −1 each, capped at −2
+ * - No recent fill (>6 months, active vehicle): −1
+ * - No maintenance in >18 months: −1
+ * - No active insurance contract: −2
  *
  * @param vehicle  The vehicle to score
  * @param options  Optional context data for richer scoring
@@ -121,19 +121,19 @@ export function computeHealthScore(
     const expiry = new Date(vehicle.tech_control_expiry);
     const daysUntil = Math.floor((expiry.getTime() - now.getTime()) / 86_400_000);
     if (daysUntil < 0) {
-      penalty += 25;
+      penalty += 3;
       factors.push({
         label: 'Contrôle technique',
-        penalty: 25,
+        penalty: 3,
         status: 'critical',
         detail: `Expiré depuis ${Math.abs(daysUntil)} jour${Math.abs(daysUntil) > 1 ? 's' : ''}`,
         recommendation: 'Prenez rendez-vous pour le contrôle technique dès que possible',
       });
     } else if (daysUntil <= 30) {
-      penalty += 10;
+      penalty += 1;
       factors.push({
         label: 'Contrôle technique',
-        penalty: 10,
+        penalty: 1,
         status: 'warning',
         detail: `Expire dans ${daysUntil} jour${daysUntil > 1 ? 's' : ''}`,
         recommendation: 'Planifiez votre contrôle technique avant expiration',
@@ -160,8 +160,8 @@ export function computeHealthScore(
       if (status === 'overdue') overdueCount++;
       else if (status === 'due-soon') dueSoonCount++;
     }
-    const overduePenalty = Math.min(overdueCount * 20, 40);
-    const dueSoonPenalty = Math.min(dueSoonCount * 10, 20);
+    const overduePenalty = Math.min(overdueCount * 2, 4);
+    const dueSoonPenalty = Math.min(dueSoonCount * 1, 2);
     penalty += overduePenalty + dueSoonPenalty;
 
     if (overdueCount > 0) {
@@ -190,10 +190,10 @@ export function computeHealthScore(
       (now.getTime() - new Date(vehicle.last_fill_date).getTime()) / 86_400_000,
     );
     if (daysSince > 180) {
-      penalty += 10;
+      penalty += 1;
       factors.push({
         label: 'Activité récente',
-        penalty: 10,
+        penalty: 1,
         status: 'warning',
         detail: `Pas de plein depuis ${Math.floor(daysSince / 30)} mois`,
         recommendation: "Enregistrez un plein pour maintenir l'historique à jour",
@@ -220,10 +220,10 @@ export function computeHealthScore(
       const daysSince = Math.floor((now.getTime() - new Date(last.date).getTime()) / 86_400_000);
       if (daysSince > 548) {
         // > 18 months
-        penalty += 10;
+        penalty += 1;
         factors.push({
           label: 'Entretien récent',
-          penalty: 10,
+          penalty: 1,
           status: 'warning',
           detail: `Dernier entretien il y a ${Math.floor(daysSince / 30)} mois`,
           recommendation: 'Ajoutez un entretien dans la page Entretien',
@@ -241,10 +241,10 @@ export function computeHealthScore(
 
   // ── Insurance ─────────────────────────────────────────────────────────────
   if (options?.hasActiveInsurance === false) {
-    penalty += 20;
+    penalty += 2;
     factors.push({
       label: 'Assurance',
-      penalty: 20,
+      penalty: 2,
       status: 'critical',
       detail: "Aucun contrat d'assurance actif",
       recommendation: 'Souscrivez à une assurance via la page Assurance',
@@ -258,7 +258,7 @@ export function computeHealthScore(
     });
   }
 
-  const score = Math.max(0, Math.min(100, 100 - penalty));
+  const score = Math.max(0, Math.min(10, 10 - penalty));
   const grade = gradeFromScore(score);
   const { bg, text, ring } = colorFromGrade(grade);
 

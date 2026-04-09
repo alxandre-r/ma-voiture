@@ -12,18 +12,24 @@ import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
 import OtherForm from '@/components/common/forms/OtherForm';
 import { ConfirmationModal } from '@/components/common/ui/ConfirmationModal';
 import Drawer from '@/components/common/ui/Drawer';
+import Icon from '@/components/common/ui/Icon';
+import { Modal } from '@/components/common/ui/Modal';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
 import { useFillActions } from '@/hooks/fill/useFillActions';
 import { useOtherActions } from '@/hooks/other/useOtherActions';
+import { exportExpensesCSV } from '@/lib/utils/exportCSV';
 import { filterByVehiclesAndPeriod } from '@/lib/utils/filterUtils';
+import { PERIOD_PRESET_LABELS } from '@/types/period';
+
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import type { ExpenseType } from '@/components/common/ExpenseButton';
 import type { OtherFormData } from '@/hooks/other/useOtherActions';
 import type { Expense } from '@/types/expense';
 import type { FillFormData } from '@/types/fill';
+import type { PeriodSelection } from '@/types/period';
 import type { Vehicle, VehicleMinimal } from '@/types/vehicle';
 
 interface ExpensesClientProps {
@@ -32,6 +38,84 @@ interface ExpensesClientProps {
 }
 
 type EditFormType = 'fill' | 'maintenance' | 'other' | null;
+
+function periodLabel(period: PeriodSelection): string {
+  if (typeof period === 'object' && period.preset === 'custom') {
+    return `Du ${period.start} au ${period.end}`;
+  }
+  return PERIOD_PRESET_LABELS[period as keyof typeof PERIOD_PRESET_LABELS] ?? period;
+}
+
+function CSVExportModal({
+  isOpen,
+  expenses,
+  vehicles,
+  selectedVehicleIds,
+  selectedPeriod,
+  onConfirm,
+  onClose,
+}: {
+  isOpen: boolean;
+  expenses: Expense[];
+  vehicles: (Vehicle | VehicleMinimal)[];
+  selectedVehicleIds: number[];
+  selectedPeriod: PeriodSelection;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  const selectedVehicleNames = vehicles
+    .filter((v) => selectedVehicleIds.includes((v as Vehicle | VehicleMinimal).vehicle_id))
+    .map((v) => v.name ?? `${v.make} ${v.model}`)
+    .join(', ');
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Exporter en CSV" size="sm">
+      <div className="space-y-4">
+        <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex justify-between">
+            <span>Dépenses</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              {expenses.length} entrée{expenses.length > 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span>Véhicule{selectedVehicleIds.length > 1 ? 's' : ''}</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100 text-right max-w-[55%] truncate">
+              {selectedVehicleNames || 'Tous'}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span>Période</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              {periodLabel(selectedPeriod)}
+            </span>
+          </div>
+          <div className="pt-1 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Colonnes</p>
+            <p className="text-xs font-mono text-gray-500 dark:text-gray-400">
+              Date · Véhicule · Catégorie · Montant · Notes
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 hover:cursor-pointer dark:bg-gray-700 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 text-white hover:cursor-pointer rounded-md bg-custom-1 hover:bg-custom-1-hover transition-colors"
+          >
+            Télécharger
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 
 /**
  * Expenses content component that uses shared selectors.
@@ -48,6 +132,7 @@ function ExpensesContent({
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingExpenseId, setDeletingExpenseId] = useState<number | null>(null);
+  const [showCSVModal, setShowCSVModal] = useState(false);
 
   // State for edit form
   const [editFormType, setEditFormType] = useState<EditFormType>(null);
@@ -360,12 +445,36 @@ function ExpensesContent({
         onDeleteExpense={handleDeleteExpenseClick}
         currentUserId={user?.id}
         headerAction={
-          <ExpenseButton
-            vehicles={vehicles as VehicleMinimal[]}
-            currentUserId={user?.id}
-            onSelectType={handleSelectAddType}
-          />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCSVModal(true)}
+              disabled={filteredExpenses.length === 0}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Icon name="arrow-down" size={15} />
+              CSV
+            </button>
+            <ExpenseButton
+              vehicles={vehicles as VehicleMinimal[]}
+              currentUserId={user?.id}
+              onSelectType={handleSelectAddType}
+            />
+          </div>
         }
+      />
+
+      {/* CSV Export Modal */}
+      <CSVExportModal
+        isOpen={showCSVModal}
+        expenses={filteredExpenses}
+        vehicles={vehicles}
+        selectedVehicleIds={selectedVehicleIds}
+        selectedPeriod={selectedPeriod}
+        onConfirm={() => {
+          exportExpensesCSV(filteredExpenses, vehicles);
+          setShowCSVModal(false);
+        }}
+        onClose={() => setShowCSVModal(false)}
       />
 
       {/* Delete Confirmation Modal */}

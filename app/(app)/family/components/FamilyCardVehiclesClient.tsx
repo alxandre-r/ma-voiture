@@ -8,6 +8,8 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
+import Icon from '@/components/common/ui/Icon';
+
 import { VehiclePermissionsModal } from './VehiclePermissionsModal';
 
 interface Vehicle {
@@ -114,9 +116,10 @@ export function FamilyCardVehiclesClient({
               {isOwn ? (
                 <button
                   onClick={() => setPermissionVehicle(vehicle)}
-                  className="flex-shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:border-custom-1/50 hover:text-custom-1 hover:bg-custom-1/5 rounded-lg transition-all cursor-pointer whitespace-nowrap"
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium 
+                  text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:border-custom-1/50 hover:text-custom-1 hover:bg-custom-1/5 rounded-lg transition-all cursor-pointer whitespace-nowrap"
                 >
-                  <Image src="/icons/secure.svg" alt="Droits" width={12} height={12} />
+                  <Icon name="secure" size={12} />
                   Droits
                 </button>
               ) : vehicle.permission_level ? (

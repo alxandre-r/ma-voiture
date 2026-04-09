@@ -279,7 +279,7 @@ export default function FillForm({
               </>
             ) : (
               <>
-                <Icon name="check" size={16} className="invert dark:invert-0" />
+                <Icon name="check" size={16} />
                 Enregistrer
               </>
             )}

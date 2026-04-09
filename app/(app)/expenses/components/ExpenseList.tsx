@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Card } from '@/components/common/ui/card';
 import Icon from '@/components/common/ui/Icon';
@@ -38,6 +38,7 @@ export default function ExpenseList({
   const router = useRouter();
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [detailExpense, setDetailExpense] = useState<Expense | null>(null);
+  const [visibleMonths, setVisibleMonths] = useState(6);
 
   const writableVehicleIds = useMemo(
     () =>
@@ -90,6 +91,16 @@ export default function ExpenseList({
     }
     return [...map.values()].sort((a, b) => b.sortKey.localeCompare(a.sortKey));
   }, [filteredExpenses]);
+
+  // Reset pagination when filters or data change
+  useEffect(() => {
+    setVisibleMonths(6);
+  }, [activeCategories, filteredExpenses]);
+
+  const visibleGroups = useMemo(
+    () => monthGroups.slice(0, visibleMonths),
+    [monthGroups, visibleMonths],
+  );
 
   const stats = useMemo(() => {
     const total = filteredExpenses.reduce((s, e) => s + (e.amount ?? 0), 0);
@@ -158,18 +169,28 @@ export default function ExpenseList({
             </div>
           </Card>
         ) : (
-          monthGroups.map((group) => (
-            <ExpenseMonthGroup
-              key={group.sortKey}
-              group={group}
-              vehicles={vehicles}
-              onViewDetail={setDetailExpense}
-              onEdit={onEditExpense}
-              onDelete={onDeleteExpense}
-              currentUserId={currentUserId}
-              writableVehicleIds={writableVehicleIds}
-            />
-          ))
+          <>
+            {visibleGroups.map((group) => (
+              <ExpenseMonthGroup
+                key={group.sortKey}
+                group={group}
+                vehicles={vehicles}
+                onViewDetail={setDetailExpense}
+                onEdit={onEditExpense}
+                onDelete={onDeleteExpense}
+                currentUserId={currentUserId}
+                writableVehicleIds={writableVehicleIds}
+              />
+            ))}
+            {monthGroups.length > visibleMonths && (
+              <button
+                onClick={() => setVisibleMonths((v) => v + 6)}
+                className="w-full py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg transition-colors"
+              >
+                Voir plus · {monthGroups.length - visibleMonths} mois restants
+              </button>
+            )}
+          </>
         )}
       </div>
 

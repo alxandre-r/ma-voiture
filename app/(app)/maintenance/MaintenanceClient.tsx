@@ -14,23 +14,31 @@
 import { useRouter } from 'next/navigation';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 
+import MaintenanceSuggestions from '@/app/(app)/maintenance/components/MaintenanceSuggestions';
 import MaintenanceTimeline from '@/app/(app)/maintenance/components/MaintenanceTimeline';
 import { useMaintenanceActions } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
 import MaintenanceForm from '@/components/common/forms/MaintenanceForm';
+import ReminderForm from '@/components/common/forms/ReminderForm';
 import Drawer from '@/components/common/ui/Drawer';
 import Icon from '@/components/common/ui/Icon';
 import { useSelectors } from '@/contexts/SelectorsContext';
 import { useUser } from '@/contexts/UserContext';
+import { useReminderActions } from '@/hooks/reminders/useReminderActions';
 import { filterByVehiclesAndPeriod } from '@/lib/utils/filterUtils';
+import { computeMaintenanceSuggestions } from '@/lib/utils/maintenanceInsights';
 
 import type { MaintenanceFormData } from '@/app/(app)/maintenance/hooks/useMaintenanceActions';
+import type { MaintenanceTypeInfo } from '@/lib/data/maintenance/getMaintenanceTypes';
+import type { MaintenanceSuggestion } from '@/lib/utils/maintenanceInsights';
 import type { Expense } from '@/types/expense';
+import type { ReminderFormData } from '@/types/reminder';
 import type { VehicleMinimal } from '@/types/vehicle';
 
 interface MaintenanceClientProps {
   vehicles: VehicleMinimal[];
   vehicleIds: number[];
   initialExpenses: Expense[];
+  maintenanceTypes?: Record<string, MaintenanceTypeInfo>;
 }
 
 /**
@@ -42,10 +50,12 @@ function MaintenanceContent({
   vehicleIds,
   vehicles: initialVehicles,
   initialExpenses,
+  maintenanceTypes = {},
 }: {
   vehicleIds: number[];
   vehicles: VehicleMinimal[];
   initialExpenses: Expense[];
+  maintenanceTypes?: Record<string, MaintenanceTypeInfo>;
 }) {
   const router = useRouter();
 
@@ -55,6 +65,8 @@ function MaintenanceContent({
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingAttachmentId, setDeletingAttachmentId] = useState<number | null>(null);
+  const [showReminderForm, setShowReminderForm] = useState(false);
+  const [reminderPrefill, setReminderPrefill] = useState<Partial<ReminderFormData> | undefined>();
 
   // Use ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -67,6 +79,7 @@ function MaintenanceContent({
 
   const { saving, adding, deletingId, addMaintenance, updateMaintenance, deleteMaintenance } =
     useMaintenanceActions();
+  const { creating, createReminder } = useReminderActions();
 
   const { selectedVehicleIds, selectedPeriod } = useSelectors();
 
@@ -130,6 +143,40 @@ function MaintenanceContent({
   const filteredExpenses = useMemo(
     () => filterByVehiclesAndPeriod(expenses, selectedVehicleIds, selectedPeriod),
     [expenses, selectedVehicleIds, selectedPeriod],
+  );
+
+  const suggestions = useMemo(
+    () => computeMaintenanceSuggestions(expenses, vehicles, maintenanceTypes),
+    [expenses, vehicles, maintenanceTypes],
+  );
+
+  const handleCreateReminderFromCard = useCallback((expense: Expense) => {
+    setReminderPrefill({
+      vehicle_id: expense.vehicle_id,
+      type: 'maintenance',
+      title: `Rappel : ${expense.maintenance_type_label || 'Entretien'}`,
+    });
+    setShowReminderForm(true);
+  }, []);
+
+  const handleCreateReminderFromSuggestion = useCallback((suggestion: MaintenanceSuggestion) => {
+    setReminderPrefill({
+      vehicle_id: suggestion.vehicleId,
+      type: 'maintenance',
+      title: `Rappel : ${suggestion.label}`,
+      due_date: suggestion.suggestedDueDate ?? undefined,
+      due_odometer: suggestion.suggestedDueOdometer ?? undefined,
+    });
+    setShowReminderForm(true);
+  }, []);
+
+  const handleReminderSave = useCallback(
+    async (data: ReminderFormData): Promise<boolean> => {
+      const success = await createReminder(data);
+      if (success) setShowReminderForm(false);
+      return success;
+    },
+    [createReminder],
   );
 
   /**
@@ -212,6 +259,11 @@ function MaintenanceContent({
 
   return (
     <div className="space-y-6">
+      <MaintenanceSuggestions
+        suggestions={suggestions}
+        onCreateReminder={handleCreateReminderFromSuggestion}
+      />
+
       <MaintenanceTimeline
         vehicles={initialVehicles}
         expenses={filteredExpenses}
@@ -219,6 +271,7 @@ function MaintenanceContent({
         onAdd={handleAddClick}
         onEditExpense={handleEditExpense}
         onDeleteExpense={handleDeleteExpense}
+        onCreateReminder={handleCreateReminderFromCard}
         deletingId={deletingId}
         isDataLoading={isRefreshing}
         onDeleteAttachment={handleDeleteAttachment}
@@ -231,10 +284,10 @@ function MaintenanceContent({
         className="sm:hidden fixed bottom-20 right-4 z-40 w-14 h-14 bg-custom-2 hover:bg-custom-2-hover text-white rounded-full shadow-lg flex items-center justify-center cursor-pointer"
         aria-label="Ajouter une intervention"
       >
-        <Icon name="add" size={24} className="invert dark:invert-0" />
+        <Icon name="add" size={24} />
       </button>
 
-      {/* Drawer */}
+      {/* Maintenance form drawer */}
       <Drawer isOpen={showForm} onClose={handleCancelForm}>
         <MaintenanceForm
           initialExpense={editingExpense}
@@ -242,6 +295,18 @@ function MaintenanceContent({
           onSave={handleSaveForm}
           onCancel={handleCancelForm}
           saving={!editingExpense ? adding : saving}
+        />
+      </Drawer>
+
+      {/* Reminder form drawer */}
+      <Drawer isOpen={showReminderForm} onClose={() => setShowReminderForm(false)}>
+        <ReminderForm
+          initialReminder={null}
+          prefill={reminderPrefill}
+          vehicles={vehicles}
+          onSave={handleReminderSave}
+          onCancel={() => setShowReminderForm(false)}
+          saving={creating}
         />
       </Drawer>
     </div>
@@ -257,12 +322,14 @@ export default function MaintenanceClient({
   vehicles,
   vehicleIds,
   initialExpenses,
+  maintenanceTypes,
 }: MaintenanceClientProps) {
   return (
     <MaintenanceContent
       vehicles={vehicles}
       vehicleIds={vehicleIds}
       initialExpenses={initialExpenses}
+      maintenanceTypes={maintenanceTypes}
     />
   );
 }

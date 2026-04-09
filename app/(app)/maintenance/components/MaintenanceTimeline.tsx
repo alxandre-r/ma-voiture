@@ -21,6 +21,7 @@ interface MaintenanceTimelineProps {
   onAdd?: () => void;
   onEditExpense?: (expense: Expense) => void;
   onDeleteExpense?: (expenseId: number) => Promise<boolean>;
+  onCreateReminder?: (expense: Expense) => void;
   deletingId?: number | null;
   isDataLoading?: boolean;
   onDeleteAttachment?: (attachmentId: number) => void;
@@ -36,6 +37,7 @@ export default function MaintenanceTimeline({
   onAdd,
   onEditExpense,
   onDeleteExpense,
+  onCreateReminder,
   deletingId,
   isDataLoading = false,
   onDeleteAttachment,
@@ -60,10 +62,11 @@ export default function MaintenanceTimeline({
           {onAdd && (
             <button
               onClick={onAdd}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-custom-2 hover:bg-custom-2-hover text-white rounded-lg text-sm font-medium transition-colors cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-custom-2 hover:bg-custom-2-hover 
+              text-white rounded-lg text-sm font-medium transition-colors cursor-pointer"
             >
-              <Icon name="add" size={16} className="invert dark:invert-0" />
-              Ajouter une intervention
+              <Icon name="add" size={16} className="text-white" />
+              Ajouter un entretien
             </button>
           )}
         </CardHeader>
@@ -99,6 +102,9 @@ export default function MaintenanceTimeline({
                     canModify={canModify}
                     onEdit={() => onEditExpense?.(expense)}
                     onDeleteClick={() => setDeleteConfirmId(expense.id)}
+                    onCreateReminder={
+                      onCreateReminder ? () => onCreateReminder(expense) : undefined
+                    }
                     deletingId={deletingId}
                     onDeleteAttachment={onDeleteAttachment}
                     deletingAttachmentId={deletingAttachmentId}
